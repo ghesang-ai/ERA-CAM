@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERA-CAM — Panel Admin</title>
+<link rel="stylesheet" href="nav.css?v=2">
+<style>
+  :root {
+    --primary:#1a2e5a; --gold:#f4a11d; --green:#2dc653; --red:#e63946;
+    --blue:#3a86ff; --purple:#7c3aed; --orange:#ea580c;
+    --bg:#f0f2f7; --card:#fff; --text:#1a1a2e; --muted:#6b7280; --border:#e5e7eb;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); color:var(--text); }
+
+  .hero {
+    background:linear-gradient(135deg,#1a2e5a 0%,#243b6e 100%);
+    padding:30px 32px 24px; color:#fff;
+  }
+  .hero h1 { font-size:24px; font-weight:800; }
+  .hero p { color:#a8b8d8; font-size:13px; margin-top:4px; }
+  .hero-meta { display:flex; gap:14px; margin-top:14px; flex-wrap:wrap; }
+  .hero-meta span { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:4px 13px; font-size:12px; color:#c8d8f0; }
+  .hero-meta span b { color:var(--gold); }
+
+  .section { padding:24px 32px; }
+  .section-title { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:18px; }
+
+  /* UPLOAD GRID */
+  .upload-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:22px; }
+
+  .upload-card {
+    background:var(--card); border-radius:16px;
+    box-shadow:0 1px 6px rgba(0,0,0,0.08);
+    overflow:hidden; transition:box-shadow 0.2s;
+  }
+  .upload-card:hover { box-shadow:0 6px 24px rgba(0,0,0,0.12); }
+
+  .upload-card-head {
+    padding:18px 22px 14px;
+    display:flex; align-items:center; gap:14px;
+    border-bottom:1px solid var(--border);
+  }
+  .upload-card-icon {
+    width:46px; height:46px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; flex-shrink:0;
+  }
+  .upload-card-icon.flyer   { background:#dbeafe; }
+  .upload-card-icon.spanduk { background:#fef3c7; }
+  .upload-card-icon.banner  { background:#f3e8ff; }
+  .upload-card-head h3 { font-size:15px; font-weight:700; }
+  .upload-card-head p  { font-size:12px; color:var(--muted); margin-top:2px; }
+
+  .upload-card-body { padding:20px 22px; }
+
+  /* UPLOAD TABS (sub-links) */
+  .upload-tabs { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+  .upload-tab {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 14px; border-radius:10px;
+    border:1.5px solid var(--border); background:#fafbfc;
+    cursor:pointer; transition:all 0.18s; text-decoration:none; color:var(--text);
+  }
+  .upload-tab:hover { border-color:var(--primary); background:#f0f4ff; }
+  .upload-tab.active-tab { border-color:var(--primary); background:#eef2ff; }
+  .upload-tab .tab-icon { font-size:18px; width:28px; text-align:center; flex-shrink:0; }
+  .upload-tab .tab-info { flex:1; min-width:0; }
+  .upload-tab .tab-name { font-size:13px; font-weight:700; }
+  .upload-tab .tab-desc { font-size:11px; color:var(--muted); margin-top:1px; }
+  .upload-tab .tab-badge {
+    font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px;
+    background:var(--primary); color:#fff; flex-shrink:0;
+  }
+  .upload-tab .tab-badge.soon { background:#f3f4f6; color:#9ca3af; }
+
+  /* DROP ZONE */
+  .dropzone {
+    border:2px dashed #cbd5e1; border-radius:12px;
+    padding:28px 20px; text-align:center;
+    background:#f8fafc; cursor:pointer;
+    transition:all 0.2s; position:relative;
+  }
+  .dropzone:hover, .dropzone.dragover { border-color:var(--primary); background:#eef2ff; }
+  .dropzone input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+  .dropzone .dz-icon { font-size:36px; margin-bottom:10px; }
+  .dropzone h4 { font-size:14px; font-weight:700; color:var(--text); }
+  .dropzone p  { font-size:12px; color:var(--muted); margin-top:4px; }
+  .dropzone .dz-hint { font-size:11px; color:#94a3b8; margin-top:8px; }
+
+  .btn-upload {
+    width:100%; margin-top:14px; padding:11px;
+    background:var(--primary); color:#fff;
+    border:none; border-radius:10px; font-size:14px; font-weight:700;
+    cursor:pointer; transition:background 0.2s; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn-upload:hover { background:#243b6e; }
+  .btn-upload:disabled { background:#94a3b8; cursor:not-allowed; }
+
+  /* FILE PREVIEW */
+  .file-preview {
+    display:none; align-items:center; gap:10px;
+    background:#f0fdf4; border:1.5px solid #86efac;
+    border-radius:10px; padding:10px 14px; margin-top:12px;
+  }
+  .file-preview.show { display:flex; }
+  .file-preview .fp-icon { font-size:22px; }
+  .file-preview .fp-name { font-size:13px; font-weight:700; color:#166534; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .file-preview .fp-size { font-size:11px; color:#16a34a; flex-shrink:0; }
+  .file-preview .fp-remove { background:none; border:none; cursor:pointer; font-size:16px; color:#dc2626; padding:0 4px; }
+
+  /* STATUS LOG */
+  .status-log {
+    background:#f8fafc; border-radius:10px; border:1px solid var(--border);
+    padding:12px 14px; margin-top:14px; max-height:120px; overflow-y:auto;
+    font-size:12px; font-family:'Courier New',monospace;
+    display:none;
+  }
+  .status-log.show { display:block; }
+  .log-line { padding:2px 0; }
+  .log-line.ok   { color:#16a34a; }
+  .log-line.err  { color:#dc2626; }
+  .log-line.info { color:#2563eb; }
+
+  /* HISTORY TABLE */
+  .history-wrap { background:var(--card); border-radius:14px; box-shadow:0 1px 4px rgba(0,0,0,0.07); overflow:hidden; margin-top:0; }
+  .history-head { padding:16px 22px 12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .history-head h3 { font-size:14px; font-weight:700; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { background:#f8f9fb; padding:10px 16px; text-align:left; font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--border); }
+  td { padding:10px 16px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#f8f9fb; }
+  .badge-type { font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:8px; }
+  .badge-type.flyer   { background:#dbeafe; color:#1e40af; }
+  .badge-type.spanduk { background:#fef3c7; color:#92400e; }
+  .badge-type.banner  { background:#f3e8ff; color:#6d28d9; }
+  .badge-ok  { background:#dcfce7; color:#166534; font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; }
+  .badge-err { background:#fee2e2; color:#991b1b; font-size:11px; font-weight:700; padding:2px 8px; border-radius:8px; }
+
+  /* STATS CARDS */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:24px; }
+  .stat-card { background:var(--card); border-radius:12px; padding:16px 18px; box-shadow:0 1px 4px rgba(0,0,0,0.07); border-left:4px solid var(--primary); }
+  .stat-card.blue   { border-left-color:var(--blue); }
+  .stat-card.gold   { border-left-color:var(--gold); }
+  .stat-card.purple { border-left-color:var(--purple); }
+  .stat-card.green  { border-left-color:var(--green); }
+  .stat-label { font-size:10.5px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+  .stat-value { font-size:22px; font-weight:800; margin-top:4px; }
+  .stat-sub   { font-size:11px; color:var(--muted); margin-top:2px; }
+
+  footer { background:var(--primary); color:#a8b8d8; text-align:center; padding:14px; font-size:12px; margin-top:32px; }
+  footer b { color:var(--gold); }
+
+  @media (max-width:768px) { .section { padding:14px; } .hero { padding:20px 14px; } }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="topnav">
+  <a class="logo" href="index.html">
+    <div class="logo-icon">EC</div>
+    <div><div class="logo-text">ERA-CAM</div><div class="logo-sub">Panel Admin</div></div>
+  </a>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
+  <nav>
+    <div class="nav-item"><a href="index.html" class="nav-link">Overview</a></div>
+    <div class="nav-item">
+      <button class="nav-link">Flyer <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Flyer Campaign</div>
+        <a href="flyer.html"><span class="icon">📊</span><span class="lbl">Flyer Promo Feb By Sales</span><span class="dbadge">135</span></a>
+        <a href="flyer-february.html"><span class="icon">📦</span><span class="lbl">Flyer Promo Feb By Qty</span><span class="dbadge">131</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-link">Spanduk <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Spanduk Campaign</div>
+        <a href="spanduk.html"><span class="icon">🪧</span><span class="lbl">Spanduk Fasad</span><span class="dbadge">13</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-link">Umbul-Umbul <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Umbul-Umbul Campaign</div>
+        <a href="#"><span class="icon">🏮</span><span class="lbl">Umbul-Umbul</span><span class="dbadge soon">Soon</span></a>
+      </div>
+    </div>
+    <div class="nav-item"><a href="admin.html" class="nav-link nav-admin active">⚙ Admin</a></div>
+  </nav>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>⚙ Panel Admin — Upload Data</h1>
+  <p>Submit file Excel untuk update data campaign secara mandiri per kategori media</p>
+  <div class="hero-meta">
+    <span>Format: <b>.xlsx / .xls</b></span>
+    <span>Max size: <b>10 MB</b></span>
+    <span>Campaign: <b>Flyer · Spanduk · Banner</b></span>
+    <span id="lastUpdate">Last upload: <b>—</b></span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="section">
+  <div class="section-title">Status Upload</div>
+  <div class="stats-grid">
+    <div class="stat-card blue">
+      <div class="stat-label">Total Upload</div>
+      <div class="stat-value" id="statTotal">0</div>
+      <div class="stat-sub">Semua sesi</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Berhasil</div>
+      <div class="stat-value" id="statOk" style="color:var(--green)">0</div>
+      <div class="stat-sub">File diproses</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-label">Flyer Upload</div>
+      <div class="stat-value" id="statFlyer" style="color:var(--gold)">0</div>
+      <div class="stat-sub">Sales + Qty</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">Spanduk Upload</div>
+      <div class="stat-value" id="statSpanduk" style="color:var(--purple)">0</div>
+      <div class="stat-sub">Fasad</div>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOAD CARDS -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">Upload Data Excel per Campaign</div>
+  <div class="upload-grid">
+
+    <!-- FLYER CARD -->
+    <div class="upload-card">
+      <div class="upload-card-head">
+        <div class="upload-card-icon flyer">📋</div>
+        <div>
+          <h3>Flyer Campaign</h3>
+          <p>Upload data penjualan &amp; QTY flyer</p>
+        </div>
+      </div>
+      <div class="upload-card-body">
+        <div class="upload-tabs">
+          <div class="upload-tab active-tab" onclick="selectUploadTab('flyer','sales',this)">
+            <span class="tab-icon">📊</span>
+            <div class="tab-info">
+              <div class="tab-name">Flyer Promo Feb — By Sales</div>
+              <div class="tab-desc">Data revenue (Rp) per outlet · Sheet: Input Data</div>
+            </div>
+            <span class="tab-badge">135</span>
+          </div>
+          <div class="upload-tab" onclick="selectUploadTab('flyer','qty',this)">
+            <span class="tab-icon">📦</span>
+            <div class="tab-info">
+              <div class="tab-name">Flyer Promo Feb — By Qty</div>
+              <div class="tab-desc">QTY unit per produk per outlet · Sheet: SUM R5</div>
+            </div>
+            <span class="tab-badge">131</span>
+          </div>
+        </div>
+
+        <div class="dropzone" id="dz-flyer"
+          ondragover="dzOver(event,'flyer')" ondragleave="dzLeave('flyer')" ondrop="dzDrop(event,'flyer')">
+          <input type="file" id="file-flyer" accept=".xlsx,.xls" onchange="fileSelected('flyer',this)">
+          <div class="dz-icon">📤</div>
+          <h4>Drag &amp; drop file Excel di sini</h4>
+          <p>atau klik untuk pilih file</p>
+          <div class="dz-hint">Format: .xlsx | Sheet: <span id="hint-flyer">Input Data</span></div>
+        </div>
+        <div class="file-preview" id="prev-flyer">
+          <span class="fp-icon">📗</span>
+          <span class="fp-name" id="prevname-flyer">—</span>
+          <span class="fp-size" id="prevsize-flyer">—</span>
+          <button class="fp-remove" onclick="removeFile('flyer')">✕</button>
+        </div>
+        <div class="status-log" id="log-flyer"></div>
+        <button class="btn-upload" id="btn-flyer" onclick="uploadFile('flyer')" disabled>
+          ⬆ Upload Flyer Data
+        </button>
+      </div>
+    </div>
+
+    <!-- SPANDUK CARD -->
+    <div class="upload-card">
+      <div class="upload-card-head">
+        <div class="upload-card-icon spanduk">🪧</div>
+        <div>
+          <h3>Spanduk Fasad</h3>
+          <p>Upload data Walk-In, Sales &amp; ROI</p>
+        </div>
+      </div>
+      <div class="upload-card-body">
+        <div class="upload-tabs">
+          <div class="upload-tab active-tab" onclick="selectUploadTab('spanduk','rekap',this)">
+            <span class="tab-icon">📈</span>
+            <div class="tab-info">
+              <div class="tab-name">Spanduk Fasad — REKAP</div>
+              <div class="tab-desc">Walk-in, Sales, Profit, ROI · Sheet: REKAP</div>
+            </div>
+            <span class="tab-badge">13</span>
+          </div>
+          <div class="upload-tab" onclick="selectUploadTab('spanduk','wic',this)">
+            <span class="tab-icon">👥</span>
+            <div class="tab-info">
+              <div class="tab-name">Spanduk Fasad — WiC &amp; Sales</div>
+              <div class="tab-desc">Walk-in Customer &amp; Deal · Sheet: Wic</div>
+            </div>
+            <span class="tab-badge">13</span>
+          </div>
+        </div>
+
+        <div class="dropzone" id="dz-spanduk"
+          ondragover="dzOver(event,'spanduk')" ondragleave="dzLeave('spanduk')" ondrop="dzDrop(event,'spanduk')">
+          <input type="file" id="file-spanduk" accept=".xlsx,.xls" onchange="fileSelected('spanduk',this)">
+          <div class="dz-icon">📤</div>
+          <h4>Drag &amp; drop file Excel di sini</h4>
+          <p>atau klik untuk pilih file</p>
+          <div class="dz-hint">Format: .xlsx | Sheet: <span id="hint-spanduk">REKAP</span></div>
+        </div>
+        <div class="file-preview" id="prev-spanduk">
+          <span class="fp-icon">📗</span>
+          <span class="fp-name" id="prevname-spanduk">—</span>
+          <span class="fp-size" id="prevsize-spanduk">—</span>
+          <button class="fp-remove" onclick="removeFile('spanduk')">✕</button>
+        </div>
+        <div class="status-log" id="log-spanduk"></div>
+        <button class="btn-upload" id="btn-spanduk" onclick="uploadFile('spanduk')" disabled>
+          ⬆ Upload Spanduk Data
+        </button>
+      </div>
+    </div>
+
+    <!-- HANGING BANNER CARD -->
+    <div class="upload-card">
+      <div class="upload-card-head">
+        <div class="upload-card-icon banner">🏮</div>
+        <div>
+          <h3>Umbul-Umbul</h3>
+          <p>Upload data campaign hanging banner</p>
+        </div>
+      </div>
+      <div class="upload-card-body">
+        <div class="upload-tabs">
+          <div class="upload-tab active-tab" onclick="selectUploadTab('banner','sales',this)">
+            <span class="tab-icon">📊</span>
+            <div class="tab-info">
+              <div class="tab-name">Umbul-Umbul — Sales</div>
+              <div class="tab-desc">Data revenue per outlet per bulan</div>
+            </div>
+            <span class="tab-badge soon">Soon</span>
+          </div>
+          <div class="upload-tab" onclick="selectUploadTab('banner','walkin',this)">
+            <span class="tab-icon">👥</span>
+            <div class="tab-info">
+              <div class="tab-name">Umbul-Umbul — Walk-In</div>
+              <div class="tab-desc">Data traffic &amp; konversi per outlet</div>
+            </div>
+            <span class="tab-badge soon">Soon</span>
+          </div>
+        </div>
+
+        <div class="dropzone" id="dz-banner"
+          ondragover="dzOver(event,'banner')" ondragleave="dzLeave('banner')" ondrop="dzDrop(event,'banner')">
+          <input type="file" id="file-banner" accept=".xlsx,.xls" onchange="fileSelected('banner',this)">
+          <div class="dz-icon">📤</div>
+          <h4>Drag &amp; drop file Excel di sini</h4>
+          <p>atau klik untuk pilih file</p>
+          <div class="dz-hint">Format: .xlsx | Sheet: <span id="hint-banner">Sales</span></div>
+        </div>
+        <div class="file-preview" id="prev-banner">
+          <span class="fp-icon">📗</span>
+          <span class="fp-name" id="prevname-banner">—</span>
+          <span class="fp-size" id="prevsize-banner">—</span>
+          <button class="fp-remove" onclick="removeFile('banner')">✕</button>
+        </div>
+        <div class="status-log" id="log-banner"></div>
+        <button class="btn-upload" id="btn-banner" onclick="uploadFile('banner')" disabled>
+          ⬆ Upload Banner Data
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- UPLOAD HISTORY -->
+<div class="section" style="padding-top:0">
+  <div class="history-wrap">
+    <div class="history-head">
+      <div>
+        <h3>Riwayat Upload</h3>
+        <p style="font-size:11.5px;color:var(--muted);margin-top:2px">Log semua aktivitas upload dalam sesi ini</p>
+      </div>
+      <button onclick="clearHistory()" style="padding:6px 14px;border:1.5px solid var(--border);background:#fff;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted)">Hapus Log</button>
+    </div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Waktu</th>
+          <th>Campaign</th>
+          <th>Tipe Data</th>
+          <th>Nama File</th>
+          <th>Ukuran</th>
+          <th>Status</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody id="historyTbody">
+        <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Belum ada riwayat upload dalam sesi ini.</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<footer><b>ERA-CAM</b> — Panel Admin · Erajaya Campaign Monitoring System · © 2026 Erajaya Group</footer>
+
+<script>
+// ============================
+// STATE
+// ============================
+const state = {
+  flyer:   { tab: 'sales',  file: null },
+  spanduk: { tab: 'rekap',  file: null },
+  banner:  { tab: 'sales',  file: null },
+};
+
+const tabHints = {
+  flyer:   { sales: 'Input Data',  qty: 'SUM R5' },
+  spanduk: { rekap: 'REKAP',       wic: 'Wic' },
+  banner:  { sales: 'Sales',       walkin: 'Walk-In' },
+};
+
+const tabLabels = {
+  flyer:   { sales: 'By Sales',    qty: 'By Qty' },
+  spanduk: { rekap: 'REKAP',       wic: 'WiC & Sales' },
+  banner:  { sales: 'Sales',       walkin: 'Walk-In' },
+};
+
+let history = [];
+let stats = { total:0, ok:0, flyer:0, spanduk:0, banner:0 };
+
+// ============================
+// UPLOAD TAB SELECT
+// ============================
+function selectUploadTab(campaign, tab, el) {
+  state[campaign].tab = tab;
+  document.getElementById('hint-' + campaign).textContent = tabHints[campaign][tab];
+  // update active state on tabs
+  el.closest('.upload-tabs').querySelectorAll('.upload-tab').forEach(t => t.classList.remove('active-tab'));
+  el.classList.add('active-tab');
+}
+
+// ============================
+// DRAG & DROP
+// ============================
+function dzOver(e, id) { e.preventDefault(); document.getElementById('dz-'+id).classList.add('dragover'); }
+function dzLeave(id)   { document.getElementById('dz-'+id).classList.remove('dragover'); }
+function dzDrop(e, id) {
+  e.preventDefault();
+  dzLeave(id);
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(id, file);
+}
+
+// ============================
+// FILE SELECTED
+// ============================
+function fileSelected(id, input) {
+  if (input.files[0]) processFile(id, input.files[0]);
+}
+
+function processFile(id, file) {
+  if (!file.name.match(/\.(xlsx|xls)$/i)) {
+    addLog(id, 'err', '✕ File harus berformat .xlsx atau .xls');
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    addLog(id, 'err', '✕ Ukuran file melebihi batas 10 MB');
+    return;
+  }
+  state[id].file = file;
+  document.getElementById('prevname-'+id).textContent = file.name;
+  document.getElementById('prevsize-'+id).textContent = formatSize(file.size);
+  document.getElementById('prev-'+id).classList.add('show');
+  document.getElementById('btn-'+id).disabled = false;
+  addLog(id, 'info', '✓ File dipilih: ' + file.name + ' (' + formatSize(file.size) + ')');
+}
+
+function removeFile(id) {
+  state[id].file = null;
+  document.getElementById('prev-'+id).classList.remove('show');
+  document.getElementById('btn-'+id).disabled = true;
+  document.getElementById('file-'+id).value = '';
+  addLog(id, 'info', '— File dihapus');
+}
+
+// ============================
+// UPLOAD SIMULATE
+// ============================
+function uploadFile(id) {
+  const file = state[id].file;
+  if (!file) return;
+  const btn = document.getElementById('btn-'+id);
+  btn.disabled = true;
+  btn.textContent = '⏳ Memproses...';
+  addLog(id, 'info', '⏳ Membaca file: ' + file.name);
+
+  setTimeout(() => {
+    addLog(id, 'info', '⏳ Memvalidasi sheet "' + tabHints[id][state[id].tab] + '"...');
+  }, 400);
+
+  setTimeout(() => {
+    addLog(id, 'ok', '✓ Validasi berhasil — data siap digunakan');
+    addLog(id, 'ok', '✓ Upload selesai: ' + new Date().toLocaleTimeString('id-ID'));
+    btn.textContent = '✓ Upload Berhasil';
+    btn.style.background = '#2dc653';
+
+    // log to history
+    const campaignLabel = { flyer:'Flyer', spanduk:'Spanduk Fasad', banner:'Umbul-Umbul' }[id];
+    const typeLabel = tabLabels[id][state[id].tab];
+    addHistory(campaignLabel, typeLabel, file.name, file.size, true);
+
+    // update stats
+    stats.total++;
+    stats.ok++;
+    stats[id]++;
+    updateStats();
+    document.getElementById('lastUpdate').innerHTML = 'Last upload: <b>' + new Date().toLocaleTimeString('id-ID') + '</b>';
+
+    setTimeout(() => {
+      btn.textContent = '⬆ Upload ' + { flyer:'Flyer', spanduk:'Spanduk', banner:'Banner' }[id] + ' Data';
+      btn.style.background = '';
+      btn.disabled = false;
+      removeFile(id);
+    }, 3000);
+  }, 1400);
+}
+
+// ============================
+// HELPERS
+// ============================
+function addLog(id, type, msg) {
+  const log = document.getElementById('log-'+id);
+  log.classList.add('show');
+  const line = document.createElement('div');
+  line.className = 'log-line ' + type;
+  line.textContent = '[' + new Date().toLocaleTimeString('id-ID') + '] ' + msg;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(2) + ' MB';
+}
+
+function addHistory(campaign, type, name, size, ok) {
+  const row = {
+    time: new Date().toLocaleString('id-ID'),
+    campaign, type, name,
+    size: formatSize(size),
+    ok
+  };
+  history.unshift(row);
+  renderHistory();
+}
+
+function renderHistory() {
+  const tbody = document.getElementById('historyTbody');
+  if (history.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Belum ada riwayat upload dalam sesi ini.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = '';
+  history.forEach(r => {
+    const typeCls = { Flyer:'flyer', 'Spanduk Fasad':'spanduk', 'Umbul-Umbul':'banner' }[r.campaign] || 'flyer';
+    tbody.innerHTML += `<tr>
+      <td style="font-size:12px;white-space:nowrap">${r.time}</td>
+      <td><span class="badge-type ${typeCls}">${r.campaign}</span></td>
+      <td style="font-size:12.5px">${r.type}</td>
+      <td style="font-size:12.5px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.name}">${r.name}</td>
+      <td style="font-size:12px">${r.size}</td>
+      <td>${r.ok ? '<span class="badge-ok">✓ Berhasil</span>' : '<span class="badge-err">✕ Gagal</span>'}</td>
+      <td style="font-size:12px;color:var(--muted)">${r.ok ? 'Data diproses' : 'Cek format file'}</td>
+    </tr>`;
+  });
+}
+
+function clearHistory() {
+  history = [];
+  renderHistory();
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent   = stats.total;
+  document.getElementById('statOk').textContent      = stats.ok;
+  document.getElementById('statFlyer').textContent   = stats.flyer;
+  document.getElementById('statSpanduk').textContent = stats.spanduk;
+}
+</script>
+<script>
+function toggleMobileNav() {
+  const nav = document.querySelector('.topnav nav');
+  const btn = document.getElementById('navHamburger');
+  nav.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+// Accordion for dropdown items on mobile
+document.querySelectorAll('.nav-item > button.nav-link').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    if (window.innerWidth > 768) return;
+    e.stopPropagation();
+    const item = this.closest('.nav-item');
+    const isOpen = item.classList.contains('mobile-open');
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('mobile-open'));
+    if (!isOpen) item.classList.add('mobile-open');
+  });
+});
+// Close nav on outside click
+document.addEventListener('click', function(e) {
+  const nav = document.querySelector('.topnav nav');
+  const btn = document.getElementById('navHamburger');
+  if (nav && btn && !nav.contains(e.target) && !btn.contains(e.target)) {
+    nav.classList.remove('open');
+    btn.classList.remove('open');
+  }
+});
+// Close on link click
+document.querySelectorAll('.dropdown a').forEach(a => {
+  a.addEventListener('click', () => {
+    document.querySelector('.topnav nav')?.classList.remove('open');
+    document.getElementById('navHamburger')?.classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>

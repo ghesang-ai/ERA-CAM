@@ -71,6 +71,17 @@
   border: 1px solid #e5e7eb;
   z-index: 300;
 }
+
+/* Bridge invisible antara button dan dropdown agar hover tidak putus */
+.nav-item::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 0;
+  width: max(100%, 230px);
+  height: 8px;
+  display: none;
+}
+.nav-item:hover::after { display: block; }
 .nav-item:hover .dropdown { display: block; }
 
 .dropdown-header {

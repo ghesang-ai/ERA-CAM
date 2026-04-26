@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERA-CAM — Auto Executive Summary</title>
+<style>
+  :root {
+    --primary:#1a2e5a; --gold:#f4a11d; --green:#2dc653; --red:#e63946;
+    --blue:#3a86ff; --purple:#7c3aed; --orange:#ea580c; --teal:#0ea5e9;
+    --bg:#f0f2f7; --card:#ffffff; --text:#1a1a2e; --muted:#6b7280; --border:#e5e7eb;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); color:var(--text); }
+
+  .hero { background:linear-gradient(135deg,#1a2e5a 0%,#3b1f6b 60%,#1e3a5f 100%); padding:30px 32px 24px; color:#fff; }
+  .hero h1 { font-size:24px; font-weight:800; display:flex; align-items:center; gap:10px; }
+  .hero p  { color:#a8b8d8; font-size:13px; margin-top:4px; }
+  .hero-meta { display:flex; gap:14px; margin-top:14px; flex-wrap:wrap; }
+  .hero-meta span { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:4px 12px; font-size:12px; color:#c8d8f0; }
+  .hero-meta span b { color:var(--gold); }
+
+  .section { padding:20px 32px; }
+  .section-title { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
+
+  /* REPORT TYPE SELECTOR */
+  .report-selector { background:var(--card); border-radius:14px; box-shadow:0 1px 6px rgba(0,0,0,0.08); padding:20px 24px; margin-bottom:20px; }
+  .report-selector h3 { font-size:14px; font-weight:700; margin-bottom:14px; }
+  .report-types { display:grid; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); gap:10px; margin-bottom:16px; }
+  .rtype-card {
+    border:2px solid var(--border); border-radius:11px; padding:13px 15px;
+    cursor:pointer; transition:all 0.15s; background:#fafbfc;
+  }
+  .rtype-card:hover { border-color:var(--primary); background:#f0f4ff; }
+  .rtype-card.active { border-color:var(--primary); background:#eef2ff; box-shadow:0 0 0 3px rgba(26,46,90,0.1); }
+  .rtype-icon { font-size:20px; margin-bottom:6px; }
+  .rtype-label { font-size:12.5px; font-weight:700; }
+  .rtype-desc { font-size:10.5px; color:var(--muted); margin-top:3px; line-height:1.4; }
+  .btn { padding:9px 20px; border-radius:9px; border:none; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.15s; display:inline-flex; align-items:center; gap:6px; }
+  .btn-primary { background:var(--primary); color:#fff; }
+  .btn-primary:hover { background:#243b6e; }
+  .btn-outline { background:#f3f4f6; color:var(--text); }
+  .btn-outline:hover { background:#e5e7eb; }
+
+  /* REPORT OUTPUT */
+  .report-wrap { background:var(--card); border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,0.08); overflow:hidden; margin-bottom:24px; }
+  .report-topbar {
+    background:linear-gradient(135deg,#1a2e5a,#3b1f6b); color:#fff;
+    padding:18px 28px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  }
+  .report-topbar h2 { font-size:16px; font-weight:800; }
+  .report-topbar p  { font-size:11px; color:#a8b8d8; margin-top:3px; }
+  .report-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .report-body { padding:32px 36px; }
+
+  /* REPORT SECTIONS */
+  .r-section { margin-bottom:28px; }
+  .r-section:last-child { margin-bottom:0; }
+  .r-section-header {
+    display:flex; align-items:center; gap:10px;
+    border-bottom:2px solid var(--border); padding-bottom:10px; margin-bottom:16px;
+  }
+  .r-section-icon { font-size:18px; }
+  .r-section-title { font-size:15px; font-weight:800; color:var(--primary); }
+  .r-section-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; background:#eef2ff; color:var(--primary); }
+
+  /* NARRATIVE TEXT */
+  .narrative { font-size:13.5px; line-height:1.85; color:#2d3748; margin-bottom:12px; }
+  .narrative b { color:var(--primary); font-weight:700; }
+  .narrative .up   { color:#065f46; font-weight:700; }
+  .narrative .dn   { color:#991b1b; font-weight:700; }
+  .narrative .gold { color:#92400e; font-weight:700; }
+  .narrative .blue { color:#1e40af; font-weight:700; }
+
+  /* FINDING ITEMS */
+  .findings { display:flex; flex-direction:column; gap:10px; }
+  .finding-item {
+    display:flex; align-items:flex-start; gap:12px;
+    background:#f8f9fb; border-radius:10px; padding:12px 16px;
+    border-left:4px solid var(--border);
+  }
+  .finding-item.positive { border-left-color:var(--green); background:#f0fdf4; }
+  .finding-item.negative { border-left-color:var(--red);   background:#fff5f5; }
+  .finding-item.neutral  { border-left-color:var(--gold);  background:#fffbeb; }
+  .finding-item.info     { border-left-color:var(--blue);  background:#eff6ff; }
+  .finding-item.risk     { border-left-color:var(--orange);background:#fff7ed; }
+  .finding-icon { font-size:16px; margin-top:1px; flex-shrink:0; }
+  .finding-text { font-size:12.5px; line-height:1.6; }
+  .finding-text b { font-weight:700; }
+
+  /* STAT GRID (inside report) */
+  .r-stat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; margin-bottom:14px; }
+  .r-stat { background:#f8f9fb; border-radius:9px; padding:10px 13px; border-left:3px solid var(--primary); }
+  .r-stat.g { border-left-color:var(--green); }
+  .r-stat.b { border-left-color:var(--blue); }
+  .r-stat.gold { border-left-color:var(--gold); }
+  .r-stat.r { border-left-color:var(--red); }
+  .r-stat.p { border-left-color:var(--purple); }
+  .r-stat-label { font-size:9.5px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+  .r-stat-val   { font-size:17px; font-weight:800; margin-top:3px; }
+  .r-stat-sub   { font-size:10px; color:var(--muted); margin-top:2px; }
+
+  /* BRAND TABLE */
+  .r-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:8px; }
+  .r-table th { background:#f0f2f7; padding:8px 12px; text-align:left; font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; border-bottom:2px solid var(--border); }
+  .r-table td { padding:10px 12px; border-bottom:1px solid #f3f4f6; }
+  .r-table tr:last-child td { border-bottom:none; }
+  .r-table tr:hover td { background:#fafbfc; }
+  .badge-up { display:inline-block; padding:2px 7px; border-radius:7px; font-size:10.5px; font-weight:700; background:#d1fae5; color:#065f46; }
+  .badge-dn { display:inline-block; padding:2px 7px; border-radius:7px; font-size:10.5px; font-weight:700; background:#fee2e2; color:#991b1b; }
+  .badge-ok { display:inline-block; padding:2px 7px; border-radius:7px; font-size:10.5px; font-weight:700; background:#fef3c7; color:#92400e; }
+  .rank-num { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; font-size:10px; font-weight:800; background:#f3f4f6; color:var(--muted); }
+  .rank-num.r1 { background:#f4a11d; color:#1a2e5a; }
+  .rank-num.r2 { background:#9ca3af; color:#fff; }
+  .rank-num.r3 { background:#b45309; color:#fff; }
+
+  /* RECOMMENDATION CARDS */
+  .rec-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+  .rec-card { border:1.5px solid var(--border); border-radius:11px; padding:15px 18px; background:#fafbfc; }
+  .rec-card.priority-high   { border-color:var(--red);    background:#fff5f5; }
+  .rec-card.priority-medium { border-color:var(--gold);   background:#fffbeb; }
+  .rec-card.priority-low    { border-color:var(--green);  background:#f0fdf4; }
+  .rec-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .rec-icon { font-size:18px; }
+  .rec-title { font-size:12.5px; font-weight:800; }
+  .rec-priority { font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:7px; }
+  .rec-priority.high   { background:#fee2e2; color:#991b1b; }
+  .rec-priority.medium { background:#fef3c7; color:#92400e; }
+  .rec-priority.low    { background:#d1fae5; color:#065f46; }
+  .rec-body { font-size:11.5px; line-height:1.6; color:#374151; }
+
+  /* PROGRESS BAR (mini) */
+  .prog-bar { height:6px; background:#e5e7eb; border-radius:3px; overflow:hidden; margin-top:5px; }
+  .prog-fill { height:100%; border-radius:3px; transition:width 0.6s; }
+
+  /* DIVIDER */
+  .r-divider { height:1px; background:var(--border); margin:20px 0; }
+
+  /* PRINT STYLES */
+  @media print {
+    .topnav,.report-selector,.report-topbar .report-actions,.hero-meta { display:none !important; }
+    .hero { padding:16px 20px; }
+    .report-body { padding:20px; }
+    .section { padding:10px 20px; }
+    body { background:#fff; }
+    .report-wrap { box-shadow:none; border:1px solid #ccc; }
+    .finding-item, .r-stat, .rec-card { break-inside:avoid; }
+  }
+
+  footer { background:var(--primary); color:#a8b8d8; text-align:center; padding:14px; font-size:12px; margin-top:28px; }
+  footer b { color:var(--gold); }
+
+  @media(max-width:768px){
+    .section { padding:14px; }
+    .hero { padding:20px 14px; }
+    .report-body { padding:16px 18px; }
+    .report-types { grid-template-columns:1fr 1fr; }
+  }
+</style>
+<link rel="stylesheet" href="nav.css?v=2">
+</head>
+<body>
+
+<!-- NAV -->
+<div class="topnav">
+  <a class="logo" href="index.html">
+    <div class="logo-icon">EC</div>
+    <div><div class="logo-text">ERA-CAM</div><div class="logo-sub">Erajaya Campaign Monitoring</div></div>
+  </a>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
+  <nav>
+    <div class="nav-item"><a href="index.html" class="nav-link">Overview</a></div>
+    <div class="nav-item">
+      <button class="nav-link">Flyer <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Flyer Campaign</div>
+        <a href="flyer.html"><span class="icon">📊</span><span class="lbl">Flyer Promo Feb By Sales</span><span class="dbadge">135</span></a>
+        <a href="flyer-february.html"><span class="icon">📦</span><span class="lbl">Flyer Promo Feb By Qty</span><span class="dbadge">131</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-link">Spanduk <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Spanduk Campaign</div>
+        <a href="spanduk.html"><span class="icon">🪧</span><span class="lbl">Spanduk Fasad</span><span class="dbadge">13</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-link">Umbul-Umbul <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Umbul-Umbul Campaign</div>
+        <a href="#"><span class="icon">🏮</span><span class="lbl">Umbul-Umbul</span><span class="dbadge soon">Soon</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="nav-link active">AI Analysis <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">AI-Powered Analysis</div>
+        <a href="brand.html"><span class="icon">🏷️</span><span class="lbl">Per Brand Scorecard</span><span class="dbadge">15</span></a>
+        <a href="ai-summary.html" class="active"><span class="icon">📋</span><span class="lbl">Auto Executive Summary</span><span class="dbadge" style="background:#2dc653;color:#fff">Auto</span></a>
+      </div>
+    </div>
+    <div class="nav-item"><a href="admin.html" class="nav-link nav-admin">⚙ Admin</a></div>
+  </nav>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>📋 Auto Executive Summary</h1>
+  <p>Laporan otomatis berbasis data · Tanpa API · Tanpa biaya · Langsung dari data ERA-CAM</p>
+  <div class="hero-meta">
+    <span>Data: <b>Flyer + Spanduk + Brand</b></span>
+    <span>Periode: <b>Jan – Mar 2026</b></span>
+    <span>Outlet: <b>131</b></span>
+    <span>Region: <b>Jabodetabek + Banten</b></span>
+    <span style="background:rgba(45,198,83,0.2);border-color:rgba(45,198,83,0.3)">Status: <b style="color:#4ade80">Siap Generate ✓</b></span>
+  </div>
+</div>
+
+<!-- REPORT TYPE SELECTOR -->
+<div class="section" style="padding-bottom:0">
+  <div class="report-selector">
+    <h3>Pilih Jenis Laporan</h3>
+    <div class="report-types" id="reportTypes"></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="generateReport()">📄 Generate Laporan</button>
+      <button class="btn btn-outline" onclick="printReport()">🖨️ Print / Save PDF</button>
+      <button class="btn btn-outline" onclick="copyReport()">📋 Copy Teks</button>
+      <span id="genTimestamp" style="font-size:11px;color:var(--muted)"></span>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT OUTPUT -->
+<div class="section">
+  <div class="report-wrap" id="reportWrap">
+    <div class="report-topbar" id="reportTopbar">
+      <div>
+        <h2 id="reportTitle">—</h2>
+        <p id="reportMeta">—</p>
+      </div>
+      <div class="report-actions">
+        <button class="btn btn-outline" style="font-size:11.5px;padding:6px 12px;color:#fff;border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.08)" onclick="printReport()">🖨️ Print</button>
+        <button class="btn btn-outline" style="font-size:11.5px;padding:6px 12px;color:#fff;border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.08)" onclick="copyReport()">📋 Copy</button>
+      </div>
+    </div>
+    <div class="report-body" id="reportBody">
+      <div style="text-align:center;padding:60px 20px;color:var(--muted)">
+        <div style="font-size:48px;margin-bottom:14px">📋</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px">Pilih jenis laporan dan klik Generate</div>
+        <div style="font-size:12.5px;line-height:1.6">Laporan dibuat otomatis dari data nyata —<br>tidak memerlukan koneksi internet atau API key.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>ERA-CAM · Auto Executive Summary · Rule-Based Analytics Engine · <b>Erajaya Campaign Monitoring</b></footer>
+
+<script src="data.js"></script>
+<script src="data_flyer_feb.js"></script>
+<script>
+/* ===== MOBILE NAV ===== */
+function toggleMobileNav() {
+  document.getElementById('navHamburger').classList.toggle('open');
+  document.querySelector('.topnav nav').classList.toggle('open');
+}
+document.querySelectorAll('.nav-item .nav-link').forEach(btn => {
+  if (btn.tagName === 'BUTTON') btn.addEventListener('click', function(e) {
+    if (window.innerWidth <= 900) { e.preventDefault(); this.closest('.nav-item').classList.toggle('mobile-open'); }
+  });
+});
+
+/* ===== REPORT TYPES ===== */
+const REPORT_TYPES = [
+  { id:'executive', icon:'📋', label:'Executive Overview',    desc:'Ringkasan eksekutif lengkap: KPI utama, tren, pencapaian, dan sorotan campaign.' },
+  { id:'brand',     icon:'🏷️', label:'Brand Intelligence',   desc:'Analisis mendalam per brand: market share, momentum, risiko, dan peluang.' },
+  { id:'outlet',    icon:'🏪', label:'Outlet & Area Report',  desc:'Performa outlet per tier, area, format toko, dan distribusi dampak campaign.' },
+  { id:'risk',      icon:'⚠️', label:'Risk & Anomaly Report', desc:'Deteksi outlier, outlet bermasalah, produk declining, dan red flag campaign.' },
+  { id:'action',    icon:'🎯', label:'Action Plan Q2 2026',   desc:'Rekomendasi aksi konkret, prioritas brand, target KPI, dan strategi Q2.' },
+];
+
+let selectedReport = 'executive';
+
+function renderTypes() {
+  document.getElementById('reportTypes').innerHTML = REPORT_TYPES.map(t => `
+    <div class="rtype-card ${t.id===selectedReport?'active':''}" onclick="selectReport('${t.id}')">
+      <div class="rtype-icon">${t.icon}</div>
+      <div class="rtype-label">${t.label}</div>
+      <div class="rtype-desc">${t.desc}</div>
+    </div>`).join('');
+}
+
+function selectReport(id) { selectedReport = id; renderTypes(); }
+renderTypes();
+
+/* ===== HELPERS ===== */
+function fmt(n)  { return Math.round(n).toLocaleString('id'); }
+function fmtRp(n){ const a=Math.abs(n); return (n<0?'-':'')+'Rp '+(a>=1e9?(a/1e9).toFixed(2)+' M':a>=1e6?(a/1e6).toFixed(1)+' jt':a.toLocaleString('id')); }
+function pct(v)  { return (v>=0?'+':'')+(v*100).toFixed(1)+'%'; }
+function pctN(v) { return (v>=0?'+':'')+v.toFixed(1)+'%'; }
+function nowStr() {
+  return new Date().toLocaleString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+/* ===== BRAND ENGINE ===== */
+const BRAND_MAP = {
+  'Samsung':  ['Samsung Galaxy Z Fold7','Samsung Galaxy S25 FE','Samsung Galaxy Tab A11','Samsung Crystal UHD 4K Smart TV 43"','Samsung Galaxy Watch8 Series'],
+  'Apple':    ['iPhone 14','iPad Air (M3)','AirPods 4'],
+  'OPPO':     ['OPPO Reno15','OPPO A6X','OPPO Pad SE'],
+  'Xiaomi':   ['Xiaomi 15','Xiaomi Pad 7 Series','Xiaomi Smart Band 9 Active'],
+  'HONOR':    ['HONOR Magic V3','HONOR Pad 10'],
+  'HUAWEI':   ['HUAWEI Pura 80 Series','HUAWEI MatePad 11.5'],
+  'vivo':     ['vivo V60 5G'],
+  'Infinix':  ['Infinix Note Edge 5G','Infinix XPAD 20 Pro'],
+  'TECNO':    ['TECNO SPARK Go 3'],
+  'realme':   ['realme GT 7'],
+  'iQOO':     ['iQOO Neo 10'],
+  'Sharp':    ['Sharp AQUOS R10'],
+  'Advan':    ['Advan Tab A10'],
+  'Polytron': ['Polytron FHD Smart TV 43"'],
+  'Aksesoris':['LOOPS TWS Earphone Pop X26','IT 2 in 1 Magnetic Wireless WPB31 10.000 mAh']
+};
+
+function buildBrandStats() {
+  const stats = {};
+  for (const b of Object.keys(BRAND_MAP)) stats[b]={brand:b,jan:0,feb:0,mar:0};
+  for (const store of flyerFebStores) {
+    for (const [b, prods] of Object.entries(BRAND_MAP)) {
+      for (const p of prods) {
+        const d = store.products?.[p];
+        if (d) { stats[b].jan+=(d.jan||0); stats[b].feb+=(d.feb||0); stats[b].mar+=(d.mar||0); }
+      }
+    }
+  }
+  return Object.values(stats).map(d => {
+    d.total  = d.jan+d.feb+d.mar;
+    d.growth = d.jan>0 ? (d.mar-d.jan)/d.jan : 0;
+    d.skus   = BRAND_MAP[d.brand].length;
+    return d;
+  }).sort((a,b)=>b.total-a.total);
+}
+
+function buildProductStats() {
+  const stats = {};
+  for (const store of flyerFebStores) {
+    for (const [p, d] of Object.entries(store.products||{})) {
+      if (!stats[p]) stats[p]={product:p,jan:0,feb:0,mar:0};
+      stats[p].jan+=(d.jan||0); stats[p].feb+=(d.feb||0); stats[p].mar+=(d.mar||0);
+    }
+  }
+  return Object.values(stats).map(d=>({...d,total:d.jan+d.feb+d.mar,growth:d.jan>0?(d.mar-d.jan)/d.jan:0})).sort((a,b)=>b.total-a.total);
+}
+
+/* ===== PRE-COMPUTE ALL DATA ===== */
+const BRANDS   = buildBrandStats();
+const PRODUCTS = buildProductStats();
+const GRAND    = BRANDS.reduce((s,b)=>s+b.total,0);
+
+const STRONG   = flyerData.filter(o=>o.status_impact==='Strong');
+const MODERATE = flyerData.filter(o=>o.status_impact==='Moderate');
+const WEAK     = flyerData.filter(o=>o.status_impact==='Weak');
+const NO_IMPACT= flyerData.filter(o=>o.status_impact==='No Impact');
+const EXCELLENT= flyerData.filter(o=>o.tier==='Excellent');
+const GOOD_TIER= flyerData.filter(o=>o.tier==='Good');
+const DECLINE  = flyerData.filter(o=>o.tier==='Decline');
+
+const TOP_OUTLET_GROWTH = [...flyerData].sort((a,b)=>b.growth_feb_mar-a.growth_feb_mar);
+const WORST_OUTLET      = [...flyerData].sort((a,b)=>a.growth_feb_mar-b.growth_feb_mar);
+const TOP_OUTLET_MAR    = [...flyerData].sort((a,b)=>b.mar-a.mar);
+
+const TOTAL_JAN = flyerFebStores.reduce((s,o)=>s+o.total_jan,0);
+const TOTAL_FEB = flyerFebStores.reduce((s,o)=>s+o.total_feb,0);
+const TOTAL_MAR = flyerFebStores.reduce((s,o)=>s+o.total_mar,0);
+const GROWTH_JAN_FEB = (TOTAL_FEB-TOTAL_JAN)/TOTAL_JAN;
+const GROWTH_FEB_MAR = (TOTAL_MAR-TOTAL_FEB)/TOTAL_FEB;
+const GROWTH_JAN_MAR = (TOTAL_MAR-TOTAL_JAN)/TOTAL_JAN;
+
+const SPANDUK_BERHASIL = spandukData.filter(o=>o.status==='BERHASIL');
+const SPANDUK_GAGAL    = spandukData.filter(o=>o.status!=='BERHASIL');
+const TOTAL_PROFIT     = spandukData.reduce((s,o)=>s+o.profit_increment,0);
+const AVG_ROI          = spandukData.reduce((s,o)=>s+o.roi,0)/spandukData.length;
+const TOP_ROI_OUTLET   = [...spandukData].sort((a,b)=>b.roi-a.roi)[0];
+
+/* ===== ANOMALY DETECTION ===== */
+const AVG_GROWTH_FEB_MAR = flyerData.reduce((s,o)=>s+o.growth_feb_mar,0)/flyerData.length;
+const STD_GROWTH = Math.sqrt(flyerData.reduce((s,o)=>s+Math.pow(o.growth_feb_mar-AVG_GROWTH_FEB_MAR,2),0)/flyerData.length);
+const ANOMALY_UP   = flyerData.filter(o=>o.growth_feb_mar > AVG_GROWTH_FEB_MAR + 2*STD_GROWTH);
+const ANOMALY_DOWN = flyerData.filter(o=>o.growth_feb_mar < AVG_GROWTH_FEB_MAR - 1.5*STD_GROWTH && o.growth_feb_mar < -0.15);
+const CRITICAL     = flyerData.filter(o=>o.status_impact==='No Impact' && o.tier==='Decline');
+
+/* ===== BRAND CATEGORY SPLIT ===== */
+const SMARTPHONE_BRANDS = ['Samsung','Apple','OPPO','Xiaomi','HONOR','HUAWEI','vivo','Infinix','TECNO','realme','iQOO','Sharp'];
+const TABLET_BRANDS     = ['Advan'];
+const SM_TOTAL = BRANDS.filter(b=>SMARTPHONE_BRANDS.includes(b.brand)).reduce((s,b)=>s+b.total,0);
+const TAB_TOTAL= BRANDS.filter(b=>TABLET_BRANDS.includes(b.brand)).reduce((s,b)=>s+b.total,0);
+const TV_TOTAL = BRANDS.filter(b=>['Sharp','Polytron'].includes(b.brand)).reduce((s,b)=>s+b.total,0);
+const ACC_TOTAL= BRANDS.find(b=>b.brand==='Aksesoris')?.total||0;
+
+/* ===== RANK BADGE HTML ===== */
+function rankBadge(n) {
+  const cls = n===1?'r1':n===2?'r2':n===3?'r3':'';
+  return `<span class="rank-num ${cls}">${n}</span>`;
+}
+
+/* ===== REPORT BUILDERS ===== */
+
+function buildExecutive() {
+  const top3brands = BRANDS.slice(0,3);
+  const topOutlet  = TOP_OUTLET_GROWTH[0];
+  const topMar     = TOP_OUTLET_MAR[0];
+  const fastBrand  = [...BRANDS].filter(b=>b.jan>0).sort((a,b)=>b.growth-a.growth)[0];
+  const impactRate = ((STRONG.length+MODERATE.length)/flyerData.length*100).toFixed(0);
+
+  return `
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">📊</span>
+      <span class="r-section-title">Ringkasan Eksekutif</span>
+      <span class="r-section-badge">Q1 2026</span>
+    </div>
+    <div class="r-stat-grid">
+      <div class="r-stat g"><div class="r-stat-label">Total Unit Q1</div><div class="r-stat-val">${fmt(GRAND)}</div><div class="r-stat-sub">Jan–Mar 2026</div></div>
+      <div class="r-stat b"><div class="r-stat-label">Unit Maret</div><div class="r-stat-val">${fmt(TOTAL_MAR)}</div><div class="r-stat-sub">Rekor tertinggi</div></div>
+      <div class="r-stat gold"><div class="r-stat-label">Growth Jan→Mar</div><div class="r-stat-val">${pct(GROWTH_JAN_MAR)}</div><div class="r-stat-sub">Keseluruhan</div></div>
+      <div class="r-stat g"><div class="r-stat-label">Growth Feb→Mar</div><div class="r-stat-val">${pct(GROWTH_FEB_MAR)}</div><div class="r-stat-sub">Akselerasi Maret</div></div>
+      <div class="r-stat p"><div class="r-stat-label">Impact Rate</div><div class="r-stat-val">${impactRate}%</div><div class="r-stat-sub">Strong + Moderate</div></div>
+      <div class="r-stat g"><div class="r-stat-label">Tier Excellent</div><div class="r-stat-val">${EXCELLENT.length}</div><div class="r-stat-sub">dari ${flyerData.length} outlet</div></div>
+    </div>
+    <p class="narrative">
+      Campaign Flyer Promo February mencatat <b>performa solid sepanjang Q1 2026</b> dengan total <b>${fmt(GRAND)} unit</b> tersebar di <b>131 outlet</b> Region 5 (Jabodetabek + Banten). Tren penjualan menunjukkan akselerasi signifikan: Januari sebesar <b class="blue">${fmt(TOTAL_JAN)} unit</b>, Februari <b class="blue">${fmt(TOTAL_FEB)} unit</b> (<span class="up">${pct(GROWTH_JAN_FEB)}</span>), dan Maret melonjak ke <b class="blue">${fmt(TOTAL_MAR)} unit</b> (<span class="up">${pct(GROWTH_FEB_MAR)}</span>) — menjadikan Maret sebagai bulan <b>terkuat dalam Q1 2026</b> dengan growth kumulatif Jan→Mar sebesar <span class="up">${pct(GROWTH_JAN_MAR)}</span>.
+    </p>
+    <p class="narrative">
+      Dari sisi brand, <b>${top3brands.map(b=>b.brand).join(', ')}</b> mendominasi penjualan unit dengan kombinasi market share <b>${(top3brands.reduce((s,b)=>s+b.total,0)/GRAND*100).toFixed(0)}%</b> dari total unit. Brand dengan momentum pertumbuhan tertinggi adalah <b>${fastBrand.brand}</b> yang membukukan growth Jan→Mar sebesar <span class="up">${pct(fastBrand.growth)}</span>. Dari sisi outlet, <b>${STRONG.length} outlet (${(STRONG.length/flyerData.length*100).toFixed(0)}%)</b> mencapai status <em>Strong Impact</em> dan <b>${EXCELLENT.length} outlet</b> masuk tier <em>Excellent</em> — indikator bahwa campaign berhasil menggerakkan mayoritas jaringan retail.
+    </p>
+    <p class="narrative">
+      Campaign Spanduk Fasad "BEBAS TUKAR" di <b>13 outlet pilihan</b> menunjukkan hasil luar biasa dengan tingkat keberhasilan <b>${SPANDUK_BERHASIL.length}/13 outlet</b> dan total profit increment <b class="gold">${fmtRp(TOTAL_PROFIT)}</b>. ROI tertinggi diraih oleh <b>${TOP_ROI_OUTLET.outlet}</b> dengan ROI <b class="up">${TOP_ROI_OUTLET.roi}x</b> — jauh melampaui benchmark kampanye media konvensional.
+    </p>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">⭐</span>
+      <span class="r-section-title">Pencapaian Utama</span>
+    </div>
+    <div class="findings">
+      <div class="finding-item positive"><span class="finding-icon">🚀</span><div class="finding-text"><b>Akselerasi Maret yang Kuat:</b> Penjualan Maret mencapai ${fmt(TOTAL_MAR)} unit — naik <b>${pct(GROWTH_FEB_MAR)}</b> dari Februari, mengindikasikan efektivitas campaign meningkat signifikan di bulan ketiga.</div></div>
+      <div class="finding-item positive"><span class="finding-icon">🏆</span><div class="finding-text"><b>Dominasi OPPO A6X:</b> Produk tunggal terlaris dengan ${fmt(PRODUCTS[0].total)} unit Q1, jauh melampaui produk lain. OPPO secara keseluruhan menguasai <b>${(BRANDS.find(b=>b.brand==='OPPO')?.total/GRAND*100||0).toFixed(1)}% market share</b> unit di outlet Erajaya Region 5.</div></div>
+      <div class="finding-item positive"><span class="finding-icon">📈</span><div class="finding-text"><b>${STRONG.length} Outlet Strong Impact (${(STRONG.length/flyerData.length*100).toFixed(0)}%):</b> Lebih dari separuh outlet mencapai dampak kuat, dengan ${EXCELLENT.length} outlet tier Excellent — menunjukkan eksekusi campaign di lapangan berjalan baik.</div></div>
+      <div class="finding-item positive"><span class="finding-icon">💰</span><div class="finding-text"><b>Spanduk ROI Luar Biasa:</b> ${SPANDUK_BERHASIL.length} dari 13 outlet spanduk berhasil dengan rata-rata ROI <b>${AVG_ROI.toFixed(0)}x</b>. ${TOP_ROI_OUTLET.outlet} meraih ROI tertinggi <b>${TOP_ROI_OUTLET.roi}x</b> — setiap Rp 1 biaya media menghasilkan Rp ${TOP_ROI_OUTLET.roi} profit.</div></div>
+      <div class="finding-item neutral"><span class="finding-icon">📍</span><div class="finding-text"><b>Outlet Bintang: ${topMar.nama}:</b> Outlet dengan penjualan Maret tertinggi (${fmtRp(topMar.mar)}), berkontribusi signifikan terhadap total revenue Q1 campaign.</div></div>
+    </div>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">⚡</span>
+      <span class="r-section-title">Perhatian Manajemen</span>
+    </div>
+    <div class="findings">
+      <div class="finding-item negative"><span class="finding-icon">🔴</span><div class="finding-text"><b>${NO_IMPACT.length} Outlet Tanpa Dampak (${(NO_IMPACT.length/flyerData.length*100).toFixed(0)}%):</b> Sejumlah outlet tidak menunjukkan respon terhadap campaign. Perlu investigasi faktor lokal — kompetitor, eksekusi display, atau kesesuaian produk.</div></div>
+      <div class="finding-item negative"><span class="finding-icon">📉</span><div class="finding-text"><b>${DECLINE.length} Outlet Tier Decline:</b> Beberapa outlet justru mengalami penurunan penjualan. ${CRITICAL.length} outlet masuk kategori kritis (No Impact + Decline) — butuh intervensi segera.</div></div>
+      <div class="finding-item risk"><span class="finding-icon">⚠️</span><div class="finding-text"><b>Fluktuasi Feb yang Perlu Dipantau:</b> Bulan Februari mencatat pertumbuhan minimal (${pct(GROWTH_JAN_FEB)}) vs Januari. Meski Maret rebound kuat, volatilitas mid-period perlu diantisipasi di Q2.</div></div>
+    </div>
+  </div>`;
+}
+
+function buildBrand() {
+  const top5  = BRANDS.slice(0,5);
+  const rising = [...BRANDS].filter(b=>b.jan>50&&b.growth>0.15).sort((a,b)=>b.growth-a.growth).slice(0,3);
+  const atrisk = [...BRANDS].filter(b=>b.growth<0&&b.total>0).sort((a,b)=>a.growth-b.growth);
+  const top3prod = PRODUCTS.slice(0,5);
+
+  return `
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">🏷️</span>
+      <span class="r-section-title">Brand Landscape Overview</span>
+      <span class="r-section-badge">${BRANDS.filter(b=>b.total>0).length} Brand Aktif</span>
+    </div>
+    <div class="r-stat-grid">
+      <div class="r-stat g"><div class="r-stat-label">Brand #1</div><div class="r-stat-val">${BRANDS[0].brand}</div><div class="r-stat-sub">${fmt(BRANDS[0].total)} unit · ${(BRANDS[0].total/GRAND*100).toFixed(1)}% share</div></div>
+      <div class="r-stat b"><div class="r-stat-label">Smartphone Share</div><div class="r-stat-val">${(SM_TOTAL/GRAND*100).toFixed(0)}%</div><div class="r-stat-sub">${fmt(SM_TOTAL)} unit</div></div>
+      <div class="r-stat gold"><div class="r-stat-label">Fastest Growth</div><div class="r-stat-val">${rising[0]?.brand||'—'}</div><div class="r-stat-sub">${rising[0]?pct(rising[0].growth):''} Jan→Mar</div></div>
+      <div class="r-stat r"><div class="r-stat-label">Brand Declining</div><div class="r-stat-val">${atrisk.length}</div><div class="r-stat-sub">growth negatif Jan→Mar</div></div>
+    </div>
+    <p class="narrative">
+      Dari <b>${BRANDS.filter(b=>b.total>0).length} brand aktif</b> dalam campaign, segmen <b>Smartphone mendominasi</b> dengan ${(SM_TOTAL/GRAND*100).toFixed(0)}% total unit (${fmt(SM_TOTAL)} unit). <b>${BRANDS[0].brand}</b> memimpin dengan margin signifikan — menguasai <b>${(BRANDS[0].total/GRAND*100).toFixed(1)}%</b> market share unit. Top 3 brand (<b>${BRANDS.slice(0,3).map(b=>b.brand).join(', ')}</b>) secara kolektif mengontrol <b>${(BRANDS.slice(0,3).reduce((s,b)=>s+b.total,0)/GRAND*100).toFixed(0)}%</b> dari total unit yang terjual.
+    </p>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">🥇</span>
+      <span class="r-section-title">Top 5 Brand — Pemimpin Pasar</span>
+    </div>
+    <table class="r-table">
+      <thead><tr><th>#</th><th>Brand</th><th>Total Unit</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Market Share</th><th>Growth Jan→Mar</th></tr></thead>
+      <tbody>
+        ${top5.map((b,i)=>`<tr>
+          <td>${rankBadge(i+1)}</td>
+          <td><b>${b.brand}</b></td>
+          <td><b>${fmt(b.total)}</b></td>
+          <td>${fmt(b.jan)}</td><td>${fmt(b.feb)}</td><td>${fmt(b.mar)}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span>${(b.total/GRAND*100).toFixed(1)}%</span>
+              <div class="prog-bar" style="width:60px"><div class="prog-fill" style="width:${(b.total/BRANDS[0].total*100).toFixed(0)}%;background:#3a86ff"></div></div>
+            </div>
+          </td>
+          <td><span class="${b.growth>=0?'badge-up':'badge-dn'}">${b.growth>=0?'▲':'▼'} ${pct(b.growth)}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">🚀</span>
+      <span class="r-section-title">Rising Stars — Brand dengan Momentum Positif</span>
+    </div>
+    ${rising.length ? `
+    <div class="findings">
+      ${rising.map(b=>`
+      <div class="finding-item positive">
+        <span class="finding-icon">📈</span>
+        <div class="finding-text">
+          <b>${b.brand}</b> — Growth Jan→Mar: <b class="up">${pct(b.growth)}</b> · Total: ${fmt(b.total)} unit (${(b.total/GRAND*100).toFixed(1)}% share)<br>
+          <span style="color:var(--muted);font-size:11px">Jan: ${fmt(b.jan)} → Feb: ${fmt(b.feb)} → Mar: ${fmt(b.mar)} unit · Potensi untuk diperkuat di Q2.</span>
+        </div>
+      </div>`).join('')}
+    </div>` : '<p class="narrative">Tidak ada brand dengan momentum naik signifikan yang memenuhi threshold.</p>'}
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">⚠️</span>
+      <span class="r-section-title">Brands at Risk — Perlu Perhatian</span>
+    </div>
+    ${atrisk.length ? `
+    <div class="findings">
+      ${atrisk.slice(0,4).map(b=>`
+      <div class="finding-item negative">
+        <span class="finding-icon">📉</span>
+        <div class="finding-text">
+          <b>${b.brand}</b> — Growth Jan→Mar: <b class="dn">${pct(b.growth)}</b> · Total: ${fmt(b.total)} unit<br>
+          <span style="color:var(--muted);font-size:11px">Jan: ${fmt(b.jan)} → Feb: ${fmt(b.feb)} → Mar: ${fmt(b.mar)} · Evaluasi strategi display dan pricing.</span>
+        </div>
+      </div>`).join('')}
+    </div>` : '<p class="narrative" style="color:var(--green)">Semua brand menunjukkan pertumbuhan positif. Tidak ada brand at-risk saat ini.</p>'}
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">📦</span>
+      <span class="r-section-title">Top 5 SKU Terlaris</span>
+    </div>
+    <table class="r-table">
+      <thead><tr><th>#</th><th>Produk</th><th>Total Unit</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Growth</th></tr></thead>
+      <tbody>
+        ${top3prod.map((p,i)=>`<tr>
+          <td>${rankBadge(i+1)}</td>
+          <td><b>${p.product}</b></td>
+          <td><b>${fmt(p.total)}</b></td>
+          <td>${fmt(p.jan)}</td><td>${fmt(p.feb)}</td><td>${fmt(p.mar)}</td>
+          <td><span class="${p.growth>=0?'badge-up':'badge-dn'}">${p.growth>=0?'▲':'▼'} ${pct(p.growth)}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function buildOutlet() {
+  const top5growth = TOP_OUTLET_GROWTH.slice(0,5);
+  const worst5     = WORST_OUTLET.slice(0,5);
+  const top5sales  = TOP_OUTLET_MAR.slice(0,5);
+
+  // Area analysis from kode prefix
+  const areaMap = { E:'Erafone (Regular)', M:'Megastore/E&More', F:'Erafone 2.5' };
+  const areaStats = {};
+  for (const o of flyerData) {
+    const key = o.kode[0];
+    const area = areaMap[key] || 'Lainnya';
+    if (!areaStats[area]) areaStats[area] = { label:area, count:0, strong:0, excellent:0, totalGrowth:0 };
+    areaStats[area].count++;
+    if (o.status_impact==='Strong') areaStats[area].strong++;
+    if (o.tier==='Excellent') areaStats[area].excellent++;
+    areaStats[area].totalGrowth += o.growth_feb_mar;
+  }
+  const areaArr = Object.values(areaStats).map(a=>({...a, avgGrowth: a.totalGrowth/a.count})).sort((a,b)=>b.count-a.count);
+
+  return `
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">🏪</span>
+      <span class="r-section-title">Overview Distribusi Outlet</span>
+      <span class="r-section-badge">${flyerData.length} Outlet</span>
+    </div>
+    <div class="r-stat-grid">
+      <div class="r-stat g"><div class="r-stat-label">Strong Impact</div><div class="r-stat-val">${STRONG.length}</div><div class="r-stat-sub">${(STRONG.length/flyerData.length*100).toFixed(0)}% outlet</div></div>
+      <div class="r-stat b"><div class="r-stat-label">Moderate Impact</div><div class="r-stat-val">${MODERATE.length}</div><div class="r-stat-sub">${(MODERATE.length/flyerData.length*100).toFixed(0)}% outlet</div></div>
+      <div class="r-stat gold"><div class="r-stat-label">Weak Impact</div><div class="r-stat-val">${WEAK.length}</div><div class="r-stat-sub">${(WEAK.length/flyerData.length*100).toFixed(0)}% outlet</div></div>
+      <div class="r-stat r"><div class="r-stat-label">No Impact</div><div class="r-stat-val">${NO_IMPACT.length}</div><div class="r-stat-sub">${(NO_IMPACT.length/flyerData.length*100).toFixed(0)}% outlet</div></div>
+      <div class="r-stat g"><div class="r-stat-label">Tier Excellent</div><div class="r-stat-val">${EXCELLENT.length}</div><div class="r-stat-sub">outlet</div></div>
+      <div class="r-stat r"><div class="r-stat-label">Tier Decline</div><div class="r-stat-val">${DECLINE.length}</div><div class="r-stat-sub">outlet</div></div>
+    </div>
+    <p class="narrative">
+      Dari total <b>${flyerData.length} outlet</b> campaign, <b class="up">${STRONG.length} outlet (${(STRONG.length/flyerData.length*100).toFixed(0)}%)</b> mencapai Strong Impact dan <b>${EXCELLENT.length} outlet</b> masuk tier Excellent — menandakan lebih dari separuh jaringan retail merespons campaign dengan positif. Di sisi lain, <b class="dn">${NO_IMPACT.length} outlet (${(NO_IMPACT.length/flyerData.length*100).toFixed(0)}%)</b> tidak menunjukkan dampak yang terukur dan perlu evaluasi mendalam.
+    </p>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">📐</span>
+      <span class="r-section-title">Analisis per Format Toko</span>
+    </div>
+    <table class="r-table">
+      <thead><tr><th>Format Toko</th><th>Jumlah</th><th>Strong Impact</th><th>Tier Excellent</th><th>Avg Growth Feb→Mar</th></tr></thead>
+      <tbody>
+        ${areaArr.map(a=>`<tr>
+          <td><b>${a.label}</b></td>
+          <td>${a.count}</td>
+          <td>${a.strong} <span style="color:var(--muted);font-size:10.5px">(${(a.strong/a.count*100).toFixed(0)}%)</span></td>
+          <td>${a.excellent} <span style="color:var(--muted);font-size:10.5px">(${(a.excellent/a.count*100).toFixed(0)}%)</span></td>
+          <td><span class="${a.avgGrowth>=0?'badge-up':'badge-dn'}">${a.avgGrowth>=0?'▲':'▼'} ${pct(a.avgGrowth)}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">🥇</span>
+      <span class="r-section-title">Top 5 Outlet — Growth Tertinggi (Feb→Mar)</span>
+    </div>
+    <table class="r-table">
+      <thead><tr><th>#</th><th>Kode</th><th>Nama Outlet</th><th>Growth Feb→Mar</th><th>Growth Jan→Mar</th><th>Impact</th><th>Tier</th></tr></thead>
+      <tbody>
+        ${top5growth.map((o,i)=>`<tr>
+          <td>${rankBadge(i+1)}</td><td>${o.kode}</td>
+          <td><b>${o.nama}</b></td>
+          <td><span class="badge-up">▲ ${pct(o.growth_feb_mar)}</span></td>
+          <td><span class="${o.growth_jan_mar>=0?'badge-up':'badge-dn'}">${o.growth_jan_mar>=0?'▲':'▼'} ${pct(o.growth_jan_mar)}</span></td>
+          <td>${o.status_impact}</td><td>${o.tier}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">📉</span>
+      <span class="r-section-title">Bottom 5 Outlet — Growth Terendah</span>
+    </div>
+    <table class="r-table">
+      <thead><tr><th>#</th><th>Kode</th><th>Nama Outlet</th><th>Growth Feb→Mar</th><th>Impact</th><th>Tier</th></tr></thead>
+      <tbody>
+        ${worst5.map((o,i)=>`<tr>
+          <td><span class="rank-num">${i+1}</span></td><td>${o.kode}</td>
+          <td><b>${o.nama}</b></td>
+          <td><span class="${o.growth_feb_mar>=0?'badge-up':'badge-dn'}">${o.growth_feb_mar>=0?'▲':'▼'} ${pct(o.growth_feb_mar)}</span></td>
+          <td>${o.status_impact}</td><td>${o.tier}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function buildRisk() {
+  return `
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">⚠️</span>
+      <span class="r-section-title">Risk Summary</span>
+      <span class="r-section-badge" style="background:#fff0f0;color:var(--red)">${ANOMALY_DOWN.length + CRITICAL.length} Red Flag</span>
+    </div>
+    <div class="r-stat-grid">
+      <div class="r-stat r"><div class="r-stat-label">Outlet Kritis</div><div class="r-stat-val">${CRITICAL.length}</div><div class="r-stat-sub">No Impact + Decline</div></div>
+      <div class="r-stat r"><div class="r-stat-label">Anomali Turun</div><div class="r-stat-val">${ANOMALY_DOWN.length}</div><div class="r-stat-sub">Penurunan ekstrem</div></div>
+      <div class="r-stat gold"><div class="r-stat-label">Anomali Naik</div><div class="r-stat-val">${ANOMALY_UP.length}</div><div class="r-stat-sub">Growth outlier (positif)</div></div>
+      <div class="r-stat r"><div class="r-stat-label">Spanduk Gagal</div><div class="r-stat-val">${SPANDUK_GAGAL.length}</div><div class="r-stat-sub">dari 13 outlet</div></div>
+      <div class="r-stat gold"><div class="r-stat-label">Brand Declining</div><div class="r-stat-val">${BRANDS.filter(b=>b.growth<0&&b.total>0).length}</div><div class="r-stat-sub">growth negatif</div></div>
+      <div class="r-stat r"><div class="r-stat-label">Tier Decline</div><div class="r-stat-val">${DECLINE.length}</div><div class="r-stat-sub">outlet bermasalah</div></div>
+    </div>
+    <p class="narrative">
+      Dari analisis statistik (rata-rata growth: <b>${pct(AVG_GROWTH_FEB_MAR)}</b>, std dev: <b>${pct(STD_GROWTH)}</b>), terdapat <b class="dn">${ANOMALY_DOWN.length} outlet dengan penurunan anomali</b> yang berada di bawah threshold normal. Secara khusus, <b class="dn">${CRITICAL.length} outlet masuk kategori kritis</b> — kombinasi No Impact dan Tier Decline — yang membutuhkan tindakan intervensi segera dari tim marketing dan operasional.
+    </p>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">🔴</span>
+      <span class="r-section-title">Outlet Kritis (No Impact + Decline)</span>
+    </div>
+    ${CRITICAL.length ? `
+    <div class="findings">
+      ${CRITICAL.map(o=>`
+      <div class="finding-item negative">
+        <span class="finding-icon">🚨</span>
+        <div class="finding-text">
+          <b>[${o.kode}] ${o.nama}</b> — Impact: No Impact · Tier: Decline<br>
+          Growth Feb→Mar: <b class="dn">${pct(o.growth_feb_mar)}</b> · Growth Jan→Mar: <b class="dn">${pct(o.growth_jan_mar)}</b><br>
+          <span style="color:var(--muted);font-size:11px">Sales: Jan ${fmtRp(o.jan)} → Mar ${fmtRp(o.mar)} · Rekomendasi: visit lapangan + analisis kompetitor lokal</span>
+        </div>
+      </div>`).join('')}
+    </div>` : `<div class="finding-item positive"><span class="finding-icon">✅</span><div class="finding-text">Tidak ada outlet dalam kategori kritis (No Impact + Decline).</div></div>`}
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">📉</span>
+      <span class="r-section-title">Anomali Penurunan Ekstrem</span>
+    </div>
+    ${ANOMALY_DOWN.length ? `
+    <div class="findings">
+      ${ANOMALY_DOWN.slice(0,5).map(o=>`
+      <div class="finding-item risk">
+        <span class="finding-icon">⚠️</span>
+        <div class="finding-text">
+          <b>[${o.kode}] ${o.nama}</b><br>
+          Growth Feb→Mar: <b class="dn">${pct(o.growth_feb_mar)}</b> (rata-rata: ${pct(AVG_GROWTH_FEB_MAR)}) · Tier: ${o.tier}<br>
+          <span style="color:var(--muted);font-size:11px">Penyimpangan signifikan dari rata-rata campaign. Cek stok, aktivasi promosi, dan kondisi lapangan.</span>
+        </div>
+      </div>`).join('')}
+    </div>` : `<div class="finding-item positive"><span class="finding-icon">✅</span><div class="finding-text">Tidak terdeteksi anomali penurunan ekstrem di luar threshold statistik.</div></div>`}
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">🪧</span>
+      <span class="r-section-title">Spanduk Campaign — Outlet Bermasalah</span>
+    </div>
+    ${SPANDUK_GAGAL.length ? `
+    <div class="findings">
+      ${SPANDUK_GAGAL.map(o=>`
+      <div class="finding-item negative">
+        <span class="finding-icon">📉</span>
+        <div class="finding-text">
+          <b>${o.outlet}</b> (${o.kota}) — ROI: <b class="dn">${o.roi}x</b><br>
+          Walk-In Growth: <b class="${o.walkin_growth>=0?'up':'dn'}">${pct(o.walkin_growth)}</b> · Sales Growth: <b class="${o.sales_growth>=0?'up':'dn'}">${pct(o.sales_growth)}</b><br>
+          Profit Increment: <b class="dn">${fmtRp(o.profit_increment)}</b> · Biaya Media: ${fmtRp(o.biaya_media)}<br>
+          <span style="color:var(--muted);font-size:11px">Evaluasi: lokasi, visibilitas spanduk, dan faktor kompetitor di area tersebut.</span>
+        </div>
+      </div>`).join('')}
+    </div>` : `<div class="finding-item positive"><span class="finding-icon">✅</span><div class="finding-text">Semua outlet spanduk berhasil mencapai ROI positif.</div></div>`}
+  </div>`;
+}
+
+function buildAction() {
+  const fastBrand = [...BRANDS].filter(b=>b.jan>50&&b.growth>0.1).sort((a,b)=>b.growth-a.growth);
+  const targetMar = Math.round(TOTAL_MAR * 1.15);
+  const targetGrowth = ((GROWTH_FEB_MAR + 0.05) * 100).toFixed(0);
+
+  return `
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">🎯</span>
+      <span class="r-section-title">Quick Wins — 0–30 Hari</span>
+      <span class="r-section-badge" style="background:#fff0f0;color:var(--red)">Prioritas Tinggi</span>
+    </div>
+    <div class="rec-grid">
+      <div class="rec-card priority-high">
+        <div class="rec-header"><span class="rec-icon">🚨</span><span class="rec-title">Intervensi ${CRITICAL.length} Outlet Kritis</span><span class="rec-priority high">High</span></div>
+        <div class="rec-body">Lakukan kunjungan lapangan ke ${CRITICAL.length} outlet No Impact + Decline dalam 2 minggu. Identifikasi penyebab: display tidak aktif, stok kosong, kompetitor. Target: minimal pindah ke tier Good dalam 30 hari.</div>
+      </div>
+      <div class="rec-card priority-high">
+        <div class="rec-header"><span class="rec-icon">📦</span><span class="rec-title">Perkuat Stok OPPO A6X</span><span class="rec-priority high">High</span></div>
+        <div class="rec-body">OPPO A6X adalah produk terlaris dengan ${fmt(PRODUCTS[0].total)} unit Q1. Pastikan stok memadai di ${STRONG.length} outlet Strong untuk mempertahankan momentum. Target: zero stockout di outlet Excellent.</div>
+      </div>
+      <div class="rec-card priority-medium">
+        <div class="rec-header"><span class="rec-icon">🪧</span><span class="rec-title">Optimasi Spanduk ${SPANDUK_GAGAL.length} Outlet</span><span class="rec-priority medium">Medium</span></div>
+        <div class="rec-body">${SPANDUK_GAGAL.length > 0 ? `Evaluasi ${SPANDUK_GAGAL.map(o=>o.outlet).join(', ')} — pertimbangkan relokasi spanduk atau penggantian creative untuk meningkatkan visibilitas dan walk-in.` : 'Semua outlet spanduk berhasil. Pertahankan momentum dan perpanjang masa tayang di top-performing outlets.'}</div>
+      </div>
+    </div>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">🏷️</span>
+      <span class="r-section-title">Brand Strategy Q2 2026</span>
+    </div>
+    <div class="findings">
+      <div class="finding-item positive"><span class="finding-icon">📈</span>
+        <div class="finding-text"><b>Pertahankan Momentum OPPO & ${BRANDS[1].brand}:</b> Keduanya mendominasi Q1 dengan total ${fmt(BRANDS[0].total+BRANDS[1].total)} unit. Sediakan prime shelf space, bundle promo, dan prioritas display flyer di semua outlet Excellent.</div>
+      </div>
+      ${fastBrand.slice(0,2).map(b=>`
+      <div class="finding-item info"><span class="finding-icon">🚀</span>
+        <div class="finding-text"><b>Dorong ${b.brand} (Growth ${pct(b.growth)}):</b> Brand ini menunjukkan momentum kuat di Q1. Alokasikan spot display tambahan dan sertakan dalam materi flyer Q2 untuk memaksimalkan potensi growth.</div>
+      </div>`).join('')}
+      ${BRANDS.filter(b=>b.growth<0&&b.total>0).slice(0,2).map(b=>`
+      <div class="finding-item negative"><span class="finding-icon">⚠️</span>
+        <div class="finding-text"><b>Evaluasi ${b.brand} (Growth ${pct(b.growth)}):</b> Tren negatif perlu dicermati. Review harga kompetitor, ketersediaan stok, dan relevansi produk di Region 5 sebelum memperpanjang kampanye.</div>
+      </div>`).join('')}
+    </div>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">📊</span>
+      <span class="r-section-title">KPI Target Q2 2026</span>
+    </div>
+    <div class="r-stat-grid">
+      <div class="r-stat g"><div class="r-stat-label">Target Unit Apr</div><div class="r-stat-val">${fmt(targetMar)}</div><div class="r-stat-sub">+15% dari Maret</div></div>
+      <div class="r-stat b"><div class="r-stat-label">Target Impact Rate</div><div class="r-stat-val">${Math.min(95,(STRONG.length+MODERATE.length)/flyerData.length*100+10).toFixed(0)}%</div><div class="r-stat-sub">Strong + Moderate</div></div>
+      <div class="r-stat gold"><div class="r-stat-label">Target Tier Excellent</div><div class="r-stat-val">${Math.min(flyerData.length, EXCELLENT.length+5)}</div><div class="r-stat-sub">outlet (dari ${EXCELLENT.length} Q1)</div></div>
+      <div class="r-stat p"><div class="r-stat-label">Outlet Kritis → Recover</div><div class="r-stat-val">${CRITICAL.length}</div><div class="r-stat-sub">outlet harus dipulihkan</div></div>
+      <div class="r-stat g"><div class="r-stat-label">Target Spanduk ROI</div><div class="r-stat-val">>${Math.round(AVG_ROI*0.9).toFixed(0)}x</div><div class="r-stat-sub">rata-rata semua outlet</div></div>
+      <div class="r-stat b"><div class="r-stat-label">Target Growth Q2</div><div class="r-stat-val">+${targetGrowth}%</div><div class="r-stat-sub">vs Q1 2026</div></div>
+    </div>
+    <p class="narrative">
+      Berdasarkan tren akselerasi Q1, target Q2 2026 difokuskan pada <b>pemeliharaan momentum Maret</b> (${fmt(TOTAL_MAR)} unit) sebagai baseline, dengan target pertumbuhan <b>+15% per bulan</b>. Prioritas utama adalah <b>konversi ${CRITICAL.length} outlet kritis</b> menjadi minimal Good tier, peningkatan impact rate, dan perluasan outlet Excellent dari ${EXCELLENT.length} menjadi ${Math.min(flyerData.length, EXCELLENT.length+5)}.
+    </p>
+  </div>
+  <div class="r-divider"></div>
+
+  <div class="r-section">
+    <div class="r-section-header">
+      <span class="r-section-icon">✅</span>
+      <span class="r-section-title">Success Metrics</span>
+    </div>
+    <div class="findings">
+      <div class="finding-item info"><span class="finding-icon">📏</span><div class="finding-text"><b>Weekly Monitoring:</b> Pantau unit penjualan per outlet setiap minggu. Flag jika ada outlet yang turun >15% dari baseline Maret dalam 2 minggu berturut-turut.</div></div>
+      <div class="finding-item info"><span class="finding-icon">🗓️</span><div class="finding-text"><b>Monthly Review:</b> Evaluasi distribusi tier dan impact rate setiap akhir bulan. Target: tidak ada penambahan outlet tier Decline baru di Q2.</div></div>
+      <div class="finding-item info"><span class="finding-icon">📍</span><div class="finding-text"><b>Field Visit:</b> ${CRITICAL.length} outlet kritis wajib mendapat kunjungan fisik dalam 14 hari. Dokumentasikan temuan dan buat action plan individual per outlet.</div></div>
+      <div class="finding-item info"><span class="finding-icon">📦</span><div class="finding-text"><b>Inventory Tracker:</b> Pantau stok OPPO A6X dan ${BRANDS[1].brand} di ${STRONG.length} outlet Strong. Alert jika stok tersisa &lt;5 hari penjualan.</div></div>
+    </div>
+  </div>`;
+}
+
+/* ===== MAIN GENERATE ===== */
+const REPORT_BUILDERS = {
+  executive: { title:'📋 Executive Overview — Q1 2026', fn: buildExecutive },
+  brand:     { title:'🏷️ Brand Intelligence Report — Q1 2026', fn: buildBrand },
+  outlet:    { title:'🏪 Outlet & Area Report — Q1 2026', fn: buildOutlet },
+  risk:      { title:'⚠️ Risk & Anomaly Report — Q1 2026', fn: buildRisk },
+  action:    { title:'🎯 Action Plan Q2 2026', fn: buildAction },
+};
+
+function generateReport() {
+  const cfg = REPORT_BUILDERS[selectedReport];
+  const now  = nowStr();
+
+  document.getElementById('reportTitle').textContent = cfg.title;
+  document.getElementById('reportMeta').textContent  = `Dibuat otomatis · ${now} · Data Q1 2026 · 131 Outlet · Region 5`;
+  document.getElementById('reportBody').innerHTML    = cfg.fn();
+  document.getElementById('genTimestamp').textContent = `✓ Dibuat: ${now}`;
+  document.getElementById('reportWrap').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function copyReport() {
+  const text = document.getElementById('reportBody').innerText;
+  if (!text || text.includes('Pilih jenis laporan')) { alert('Generate laporan terlebih dahulu.'); return; }
+  navigator.clipboard.writeText(document.getElementById('reportTitle').textContent + '\n\n' + text)
+    .then(() => alert('✅ Teks laporan berhasil disalin ke clipboard!'));
+}
+
+function printReport() {
+  const title = document.getElementById('reportTitle').textContent;
+  if (!title || title === '—') { alert('Generate laporan terlebih dahulu.'); return; }
+  window.print();
+}
+</script>
+</body>
+</html>

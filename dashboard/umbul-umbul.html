@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERA-CAM — Umbul-Umbul Campaign</title>
+<style>
+  :root {
+    --primary:#1a2e5a; --accent:#e63946; --gold:#f4a11d; --green:#2dc653;
+    --red:#e63946; --blue:#3a86ff; --purple:#7c3aed; --bg:#f0f2f7; --card:#ffffff;
+    --text:#1a1a2e; --muted:#6b7280; --border:#e5e7eb;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); color:var(--text); }
+
+  .hero { background:linear-gradient(135deg,#1a3a6b 0%,#4a1f6b 100%); padding:30px 32px 24px; color:#fff; }
+  .hero h1 { font-size:24px; font-weight:800; }
+  .hero p { color:#c8b8e8; font-size:13px; margin-top:4px; }
+  .hero-meta { display:flex; gap:12px; margin-top:14px; flex-wrap:wrap; }
+  .hero-meta span { background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.15); border-radius:20px; padding:4px 12px; font-size:12px; color:#d8c8f0; }
+  .hero-meta span b { color:var(--gold); }
+  .hero-badge { display:inline-block; background:var(--purple); color:#fff; font-size:11px; font-weight:700; padding:3px 10px; border-radius:12px; margin-left:10px; vertical-align:middle; }
+
+  .section { padding:20px 32px; }
+  .section-title { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
+
+  .alert-box { background:#fffbeb; border:1.5px solid var(--gold); border-radius:10px; padding:12px 16px; font-size:12.5px; color:#92400e; margin-bottom:18px; }
+  .alert-box b { color:#b45309; }
+
+  /* KPI */
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; }
+  .kpi-card { background:var(--card); border-radius:12px; padding:18px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.07); border-left:4px solid var(--primary); }
+  .kpi-card.green  { border-left-color:var(--green); }
+  .kpi-card.gold   { border-left-color:var(--gold); }
+  .kpi-card.red    { border-left-color:var(--red); }
+  .kpi-card.blue   { border-left-color:var(--blue); }
+  .kpi-card.purple { border-left-color:var(--purple); }
+  .kpi-label { font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+  .kpi-value { font-size:24px; font-weight:800; margin-top:5px; line-height:1.1; }
+  .kpi-sub   { font-size:11px; color:var(--muted); margin-top:3px; }
+  .kpi-trend { font-size:11.5px; font-weight:600; margin-top:4px; }
+  .kpi-trend.up { color:var(--green); }
+  .kpi-trend.dn  { color:var(--red); }
+
+  /* Compare 2-period */
+  .period-compare { display:grid; grid-template-columns:1fr auto 1fr; gap:0; background:var(--card); border-radius:14px; box-shadow:0 1px 4px rgba(0,0,0,0.07); overflow:hidden; }
+  .period-col { padding:22px 24px; }
+  .period-col.before { border-right:1px solid var(--border); }
+  .period-col.arrow-col { display:flex; align-items:center; justify-content:center; background:#f8f9fb; padding:0 16px; font-size:22px; color:var(--muted); }
+  .period-title { font-size:11px; font-weight:700; text-transform:uppercase; color:var(--muted); letter-spacing:1px; margin-bottom:14px; }
+  .period-metric { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid #f3f4f6; font-size:13px; }
+  .period-metric:last-child { border-bottom:none; }
+  .pm-label { color:var(--muted); font-weight:500; }
+  .pm-val   { font-weight:700; font-size:14px; }
+  .pm-val.up { color:var(--green); }
+  .pm-val.dn { color:var(--red); }
+
+  /* MoM pill */
+  .mom-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-top:0; }
+  .mom-card { background:var(--card); border-radius:12px; padding:16px 18px; box-shadow:0 1px 4px rgba(0,0,0,0.07); display:flex; justify-content:space-between; align-items:center; }
+  .mom-label { font-size:12px; color:var(--muted); font-weight:600; }
+  .mom-val   { font-size:20px; font-weight:800; }
+  .mom-sub   { font-size:11px; color:var(--muted); margin-top:2px; }
+
+  /* Brand table */
+  .table-wrap { background:var(--card); border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,0.07); overflow:hidden; }
+  .table-header { padding:16px 20px 12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+  .table-header h3 { font-size:14px; font-weight:700; }
+  .table-header p  { font-size:11.5px; color:var(--muted); margin-top:2px; }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th { background:#f8f9fb; padding:10px 14px; text-align:left; font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--border); white-space:nowrap; cursor:pointer; }
+  th:hover { background:#f0f2f7; }
+  td { padding:10px 14px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#f8f9fb; }
+  tr.total-row td { background:#f0f2f7; font-weight:700; border-top:2px solid var(--border); }
+  .up { color:var(--green); font-weight:700; }
+  .dn { color:var(--red);   font-weight:700; }
+  .na { color:var(--muted); }
+
+  /* Chart */
+  .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:900px) { .chart-grid { grid-template-columns:1fr; } }
+  .chart-card { background:var(--card); border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,0.07); padding:18px 20px; }
+  .chart-card h4 { font-size:13px; font-weight:700; margin-bottom:14px; }
+  canvas { max-height:280px; }
+
+  /* Bar rank */
+  .bar-item { margin-bottom:10px; }
+  .bar-label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; }
+  .bar-label .nm { font-weight:600; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bar-track { height:10px; background:#e5e7eb; border-radius:5px; overflow:hidden; }
+  .bar-fill  { height:100%; border-radius:5px; transition:width 0.6s ease; }
+
+  /* Note badge */
+  .badge-tbd { background:#fef3c7; color:#92400e; font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; }
+  .badge-new { background:#dcfce7; color:#166534; font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; }
+
+  footer { background:var(--primary); color:#a8b8d8; text-align:center; padding:14px; font-size:12px; margin-top:28px; }
+  footer b { color:var(--gold); }
+  @media (max-width:768px) { .section { padding:14px; } .hero { padding:20px 14px; } .topnav { padding:0 14px; } .chart-grid { grid-template-columns:1fr; } .period-compare { grid-template-columns:1fr; } .period-col.arrow-col { padding:10px; font-size:16px; } }
+</style>
+<link rel="stylesheet" href="nav.css?v=2">
+</head>
+<body>
+
+<div class="topnav">
+  <a class="logo" href="index.html">
+    <div class="logo-icon">EC</div>
+    <div><div class="logo-text">ERA-CAM</div><div class="logo-sub">Erajaya Campaign Monitoring</div></div>
+  </a>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
+  <nav>
+    <div class="nav-item"><a href="index.html" class="nav-link">Overview</a></div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Flyer <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Flyer Campaign</div>
+        <a href="flyer.html"><span class="icon">📊</span><span class="lbl">Flyer Promo Feb By Sales</span><span class="dbadge">135</span></a>
+        <a href="flyer-february.html"><span class="icon">📦</span><span class="lbl">Flyer Promo Feb By Qty</span><span class="dbadge">131</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Spanduk <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Spanduk Campaign</div>
+        <a href="spanduk.html"><span class="icon">🪧</span><span class="lbl">Spanduk Fasad</span><span class="dbadge">13</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link active">Umbul-Umbul <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Umbul-Umbul Campaign</div>
+        <a href="umbul-umbul.html" class="active"><span class="icon">🏮</span><span class="lbl">Umbul-Umbul SEP Serpong</span><span class="dbadge">1</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">AI Analysis <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">AI-Powered Analysis</div>
+        <a href="brand.html"><span class="icon">🏷️</span><span class="lbl">Per Brand Scorecard</span><span class="dbadge">15</span></a>
+        <a href="ai-summary.html"><span class="icon">🤖</span><span class="lbl">AI Executive Summary</span><span class="dbadge" style="background:#7c3aed;color:#fff">AI</span></a>
+      </div>
+    </div>
+    <div class="nav-item"><a href="admin.html" class="nav-link nav-admin">⚙ Admin</a></div>
+  </nav>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Umbul-Umbul Campaign <span class="hero-badge">NEW</span></h1>
+  <p>Walk-In, Transaksi &amp; Sales Measurement · Samsung Experience Partner · Serpong Paradise</p>
+  <div class="hero-meta">
+    <span>Outlet: <b>SAMSUNG (SEP) Serpong Paradise</b></span>
+    <span>Baseline: <b>Mar '26</b></span>
+    <span>Campaign: <b>Apr '26</b></span>
+    <span>Tipe: <b>Umbul-Umbul</b></span>
+    <span>Lokasi: <b>Serpong Walk, Tangerang Selatan</b></span>
+  </div>
+</div>
+
+<!-- ALERT BIAYA -->
+<div class="section" style="padding-bottom:0">
+  <div class="alert-box">
+    ⚠️ <b>Data biaya media umbul-umbul belum diisi.</b> Isi field <code>biaya_media</code> di <code>data.js</code> untuk menghitung ROI secara otomatis. Parameter lain (WIC, Sales, Per-Brand) sudah lengkap.
+  </div>
+</div>
+
+<!-- KPI SUMMARY -->
+<div class="section" style="padding-bottom:0">
+  <div class="section-title">Summary KPIs — Mar vs Apr '26</div>
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-label">WIC Total (Baseline)</div>
+      <div class="kpi-value" style="color:var(--blue)" id="kpiWicBefore">—</div>
+      <div class="kpi-sub">Walk-in customer Mar '26</div>
+      <div class="kpi-trend" id="kpiWicBeforeSub">—</div>
+    </div>
+    <div class="kpi-card" id="kpiWicDuringCard">
+      <div class="kpi-label">WIC Total (Campaign)</div>
+      <div class="kpi-value" id="kpiWicDuring">—</div>
+      <div class="kpi-sub">Walk-in customer Apr '26</div>
+      <div class="kpi-trend" id="kpiWicDuringMom">—</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-label">Konversi Transaksi (Before)</div>
+      <div class="kpi-value" style="color:var(--blue)" id="kpiConvBefore">—</div>
+      <div class="kpi-sub">Transaksi / Total WIC — Mar</div>
+    </div>
+    <div class="kpi-card" id="kpiConvDuringCard">
+      <div class="kpi-label">Konversi Transaksi (Campaign)</div>
+      <div class="kpi-value" id="kpiConvDuring">—</div>
+      <div class="kpi-sub">Transaksi / Total WIC — Apr</div>
+      <div class="kpi-trend" id="kpiConvChange">—</div>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-label">Revenue Baseline</div>
+      <div class="kpi-value" style="color:var(--gold)" id="kpiRevBefore">—</div>
+      <div class="kpi-sub">Nett exc. tax Mar '26</div>
+    </div>
+    <div class="kpi-card" id="kpiRevDuringCard">
+      <div class="kpi-label">Revenue Campaign</div>
+      <div class="kpi-value" id="kpiRevDuring">—</div>
+      <div class="kpi-sub">Nett exc. tax Apr '26</div>
+      <div class="kpi-trend" id="kpiRevMom">—</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-label">Biaya Media</div>
+      <div class="kpi-value" style="color:var(--muted)" id="kpiBiaya">TBD</div>
+      <div class="kpi-sub">Biaya umbul-umbul</div>
+      <div class="kpi-trend" id="kpiRoi">—</div>
+    </div>
+    <div class="kpi-card" id="kpiQtyCard">
+      <div class="kpi-label">Qty Terjual</div>
+      <div class="kpi-value" id="kpiQty">—</div>
+      <div class="kpi-sub" id="kpiQtySub">—</div>
+      <div class="kpi-trend" id="kpiQtyMom">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- MOM QUICK STATS -->
+<div class="section" style="padding-bottom:0">
+  <div class="section-title">MoM Change — Apr vs Mar '26</div>
+  <div class="mom-grid">
+    <div class="mom-card">
+      <div>
+        <div class="mom-label">WIC Total</div>
+        <div class="mom-val" id="momWic">—</div>
+        <div class="mom-sub">79 → 66 orang</div>
+      </div>
+      <div style="font-size:32px">👣</div>
+    </div>
+    <div class="mom-card">
+      <div>
+        <div class="mom-label">Transaksi</div>
+        <div class="mom-val" id="momTrx">—</div>
+        <div class="mom-sub">76 → 42 transaksi</div>
+      </div>
+      <div style="font-size:32px">🧾</div>
+    </div>
+    <div class="mom-card">
+      <div>
+        <div class="mom-label">Qty Terjual</div>
+        <div class="mom-val" id="momQty">—</div>
+        <div class="mom-sub">166 → 115 unit</div>
+      </div>
+      <div style="font-size:32px">📦</div>
+    </div>
+    <div class="mom-card">
+      <div>
+        <div class="mom-label">Revenue</div>
+        <div class="mom-val" id="momRev">—</div>
+        <div class="mom-sub" id="momRevSub">—</div>
+      </div>
+      <div style="font-size:32px">💰</div>
+    </div>
+  </div>
+</div>
+
+<!-- PERIOD COMPARISON DETAIL -->
+<div class="section" style="padding-bottom:0">
+  <div class="section-title">Perbandingan Detail WIC — Baseline vs Campaign</div>
+  <div class="period-compare">
+    <div class="period-col before">
+      <div class="period-title">📅 Baseline — Mar '26</div>
+      <div class="period-metric"><span class="pm-label">Total WIC</span><span class="pm-val">79 orang</span></div>
+      <div class="period-metric"><span class="pm-label">Transaksi</span><span class="pm-val up">76</span></div>
+      <div class="period-metric"><span class="pm-label">Lihat &amp; Tanya / Stock Kosong</span><span class="pm-val">3</span></div>
+      <div class="period-metric"><span class="pm-label">Conversion Rate</span><span class="pm-val up">96,2%</span></div>
+      <div class="period-metric"><span class="pm-label">Revenue Total</span><span class="pm-val">Rp 527,7 jt</span></div>
+      <div class="period-metric"><span class="pm-label">Qty Terjual</span><span class="pm-val">166 unit</span></div>
+      <div class="period-metric"><span class="pm-label">Revenue/Transaksi</span><span class="pm-val">Rp 6,9 jt</span></div>
+    </div>
+    <div class="period-col arrow-col">→</div>
+    <div class="period-col during">
+      <div class="period-title">🏮 Campaign — Apr '26</div>
+      <div class="period-metric"><span class="pm-label">Total WIC</span><span class="pm-val dn">66 orang (−16,5%)</span></div>
+      <div class="period-metric"><span class="pm-label">Transaksi</span><span class="pm-val dn">42 (−44,7%)</span></div>
+      <div class="period-metric"><span class="pm-label">Lihat &amp; Tanya / Stock Kosong</span><span class="pm-val dn">24 (+700%)</span></div>
+      <div class="period-metric"><span class="pm-label">Conversion Rate</span><span class="pm-val dn">63,6% (−32,6pp)</span></div>
+      <div class="period-metric"><span class="pm-label">Revenue Total</span><span class="pm-val dn">Rp 291,4 jt (−44,8%)</span></div>
+      <div class="period-metric"><span class="pm-label">Qty Terjual</span><span class="pm-val dn">115 unit (−30,7%)</span></div>
+      <div class="period-metric"><span class="pm-label">Revenue/Transaksi</span><span class="pm-val dn">Rp 6,9 jt (0%)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- INSIGHT BOX -->
+<div class="section" style="padding-bottom:0">
+  <div style="background:#fff7ed; border:1.5px solid #fb923c; border-radius:10px; padding:14px 18px; font-size:12.5px; color:#7c2d12;">
+    <b>💡 Insight:</b> WIC looker melonjak dari 3 → 24 orang (+700%), mengindikasikan umbul-umbul berhasil menarik perhatian pengunjung. Namun conversion rate turun dari 96,2% → 63,6% karena traffic dari looker/non-buyer meningkat signifikan. Transaksi aktual (42 vs 76) dan revenue (Rp 291 jt vs Rp 527 jt) mengalami penurunan — perlu dikonfirmasi apakah ada faktor eksternal (seasonality, kompetitor, stok) yang memengaruhi periode April.
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="section" style="padding-bottom:0">
+  <div class="section-title">Visualisasi Data</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h4>Revenue per Brand — Mar vs Apr '26</h4>
+      <canvas id="cRevBrand"></canvas>
+    </div>
+    <div class="chart-card">
+      <h4>Qty Terjual per Brand — Mar vs Apr '26</h4>
+      <canvas id="cQtyBrand"></canvas>
+    </div>
+    <div class="chart-card">
+      <h4>WIC — Komposisi Walk-In</h4>
+      <canvas id="cWic"></canvas>
+    </div>
+    <div class="chart-card">
+      <h4>MoM Revenue Change per Brand (%)</h4>
+      <canvas id="cBrandMom"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- BRAND RANKING BARS -->
+<div class="section" style="padding-bottom:0">
+  <div class="section-title">Ranking Brand — Revenue Apr '26</div>
+  <div style="background:var(--card); border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,0.07); padding:18px 20px;">
+    <div id="brandBars"></div>
+  </div>
+</div>
+
+<!-- BRAND TABLE -->
+<div class="section" style="padding-bottom:0">
+  <div class="section-title">Per-Brand Breakdown — Data Lengkap</div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <div>
+        <h3>Sales Per Brand — SAMSUNG (SEP) Serpong Paradise</h3>
+        <p>Baseline: Mar '26 · Campaign: Apr '26 · Klik header untuk sort</p>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th onclick="sortBrand('brand')">Brand ↕</th>
+          <th onclick="sortBrand('qty_b')">Qty Mar ↕</th>
+          <th onclick="sortBrand('rev_b')">Rev Mar ↕</th>
+          <th onclick="sortBrand('qty_d')">Qty Apr ↕</th>
+          <th onclick="sortBrand('rev_d')">Rev Apr ↕</th>
+          <th onclick="sortBrand('mom_qty')">MoM Qty ↕</th>
+          <th onclick="sortBrand('mom_rev')">MoM Rev ↕</th>
+          <th onclick="sortBrand('pct_rev')">% MoM Rev ↕</th>
+        </tr>
+      </thead>
+      <tbody id="brandTbody"></tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- PARAMETERS INFO -->
+<div class="section" style="padding-bottom:0">
+  <div class="section-title">Parameter Input — Panduan Pengisian Data</div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <div>
+        <h3>Parameter yang Dibutuhkan untuk Campaign Umbul-Umbul</h3>
+        <p>Referensi pengisian Excel Template · Lihat kolom Required</p>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Keterangan</th>
+          <th>Contoh Nilai</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><b>outlet</b></td><td>Nama toko/outlet Samsung SEP</td><td>SAMSUNG (SEP) Serpong Paradise</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>lokasi</b></td><td>Kota atau lokasi outlet</td><td>Serpong, Tangerang Selatan</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>biaya_media</b></td><td>Biaya pemasangan umbul-umbul (IDR)</td><td>1.500.000</td><td><span class="badge-tbd">⚠ TBD</span></td></tr>
+        <tr><td><b>periode_baseline</b></td><td>Periode sebelum campaign</td><td>Mar '26</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>periode_campaign</b></td><td>Periode selama campaign aktif</td><td>Apr '26</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>wic_before_transaksi</b></td><td>Jumlah transaksi periode baseline</td><td>76</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>wic_before_looker</b></td><td>Jumlah Lihat &amp; Tanya/Stock Kosong baseline</td><td>3</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>wic_before_total</b></td><td>Total WIC periode baseline</td><td>79</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>wic_during_transaksi</b></td><td>Jumlah transaksi periode campaign</td><td>42</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>wic_during_looker</b></td><td>Jumlah Lihat &amp; Tanya/Stock Kosong campaign</td><td>24</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>wic_during_total</b></td><td>Total WIC periode campaign</td><td>66</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>sales_before_qty</b></td><td>Total unit terjual periode baseline</td><td>166</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>sales_before_rev</b></td><td>Total revenue nett exc. tax baseline (IDR)</td><td>527.684.072</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>sales_during_qty</b></td><td>Total unit terjual periode campaign</td><td>115</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>sales_during_rev</b></td><td>Total revenue nett exc. tax campaign (IDR)</td><td>291.379.016</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+        <tr><td><b>brands[ ]</b></td><td>Per-brand qty &amp; revenue untuk kedua periode</td><td>12 brand (SAMSUNG, XL AXIATA, dll)</td><td><span class="badge-new">✓ Terisi</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<footer><b>ERA-CAM</b> — Erajaya Campaign Monitoring · Umbul-Umbul Samsung SEP Serpong Paradise · Apr '26 · © 2026 Erajaya Group</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<script>
+function fmtRp(v) {
+  if (!v && v !== 0) return '-';
+  const a = Math.abs(v);
+  let s;
+  if (a >= 1e9)       s = (v/1e9).toFixed(2) + ' M';
+  else if (a >= 1e6)  s = (v/1e6).toFixed(1) + ' jt';
+  else                s = v.toLocaleString('id-ID');
+  return 'Rp ' + s;
+}
+function fmtPct(v, d=1) {
+  if (v === null || isNaN(v) || !isFinite(v)) return '—';
+  return (v >= 0 ? '+' : '') + (v*100).toFixed(d) + '%';
+}
+function cls(v) { return v >= 0 ? 'up' : 'dn'; }
+
+const d = umbulData[0];
+
+// ── KPIs ──
+document.getElementById('kpiWicBefore').textContent     = d.wic_before_total + ' orang';
+document.getElementById('kpiWicBeforeSub').innerHTML    = `<span class="kpi-trend">Transaksi: ${d.wic_before_transaksi} | Looker: ${d.wic_before_looker}</span>`;
+
+const wicColor = d.walkin_growth >= 0 ? '#2dc653' : '#e63946';
+document.getElementById('kpiWicDuring').textContent     = d.wic_during_total + ' orang';
+document.getElementById('kpiWicDuring').style.color     = wicColor;
+document.getElementById('kpiWicDuringMom').className    = 'kpi-trend ' + (d.walkin_growth >= 0 ? 'up' : 'dn');
+document.getElementById('kpiWicDuringMom').textContent  = (d.walkin_growth >= 0 ? '▲ ' : '▼ ') + fmtPct(d.walkin_growth) + ' vs Mar';
+
+const convBefore = d.conversion_before;
+const convDuring = d.conversion_during;
+const convDelta  = convDuring - convBefore;
+document.getElementById('kpiConvBefore').textContent    = (convBefore*100).toFixed(1) + '%';
+document.getElementById('kpiConvDuring').textContent    = (convDuring*100).toFixed(1) + '%';
+document.getElementById('kpiConvDuring').style.color    = convDelta >= 0 ? 'var(--green)' : 'var(--red)';
+document.getElementById('kpiConvChange').className      = 'kpi-trend ' + (convDelta >= 0 ? 'up' : 'dn');
+document.getElementById('kpiConvChange').textContent    = (convDelta >= 0 ? '▲ +' : '▼ ') + (convDelta*100).toFixed(1) + 'pp vs Mar';
+
+document.getElementById('kpiRevBefore').textContent     = fmtRp(d.sales_before_rev);
+
+const revColor = d.sales_growth_rev >= 0 ? '#2dc653' : '#e63946';
+document.getElementById('kpiRevDuring').textContent     = fmtRp(d.sales_during_rev);
+document.getElementById('kpiRevDuring').style.color     = revColor;
+document.getElementById('kpiRevMom').className          = 'kpi-trend ' + cls(d.sales_growth_rev);
+document.getElementById('kpiRevMom').textContent        = (d.sales_growth_rev >= 0 ? '▲ ' : '▼ ') + fmtPct(d.sales_growth_rev) + ' vs Mar';
+
+if (d.biaya_media > 0) {
+  document.getElementById('kpiBiaya').textContent = fmtRp(d.biaya_media);
+  const roi = d.mom_rev / d.biaya_media;
+  document.getElementById('kpiRoi').textContent   = 'ROI: ' + roi.toFixed(1) + 'x';
+  document.getElementById('kpiRoi').className     = 'kpi-trend ' + cls(roi);
+}
+
+document.getElementById('kpiQty').textContent     = d.sales_during_qty + ' unit';
+document.getElementById('kpiQty').style.color     = d.sales_growth_qty >= 0 ? 'var(--green)' : 'var(--red)';
+document.getElementById('kpiQtySub').textContent  = 'Baseline: ' + d.sales_before_qty + ' unit';
+document.getElementById('kpiQtyMom').className    = 'kpi-trend ' + cls(d.sales_growth_qty);
+document.getElementById('kpiQtyMom').textContent  = (d.sales_growth_qty >= 0 ? '▲ ' : '▼ ') + fmtPct(d.sales_growth_qty) + ' vs Mar';
+
+// ── MoM Quick Stats ──
+const momWicPct  = (d.wic_during_total - d.wic_before_total) / d.wic_before_total;
+const momTrxPct  = d.transaksi_growth;
+const momQtyPct  = d.sales_growth_qty;
+const momRevPct  = d.sales_growth_rev;
+
+function setMom(id, val) {
+  const el = document.getElementById(id);
+  el.textContent = fmtPct(val);
+  el.style.color = val >= 0 ? 'var(--green)' : 'var(--red)';
+}
+setMom('momWic', momWicPct);
+setMom('momTrx', momTrxPct);
+setMom('momQty', momQtyPct);
+setMom('momRev', momRevPct);
+document.getElementById('momRevSub').textContent = fmtRp(d.mom_rev);
+
+// ── Brand Table ──
+let sortKeyB = 'rev_b', sortDirB = -1;
+function renderBrandTable() {
+  const enriched = d.brands.map(b => ({
+    ...b,
+    mom_qty: b.qty_d - b.qty_b,
+    mom_rev: b.rev_d - b.rev_b,
+    pct_rev: b.rev_b > 0 ? (b.rev_d - b.rev_b) / b.rev_b : (b.rev_d > 0 ? Infinity : 0),
+  }));
+  const sorted = [...enriched].sort((a, b) => {
+    if (sortKeyB === 'brand') return sortDirB * a.brand.localeCompare(b.brand);
+    const av = isFinite(a[sortKeyB]) ? a[sortKeyB] : 0;
+    const bv = isFinite(b[sortKeyB]) ? b[sortKeyB] : 0;
+    return sortDirB * (av - bv);
+  });
+  const totalQtyB = d.sales_before_qty, totalRevB = d.sales_before_rev;
+  const totalQtyD = d.sales_during_qty, totalRevD = d.sales_during_rev;
+
+  const tbody = document.getElementById('brandTbody');
+  tbody.innerHTML = '';
+  sorted.forEach((b, i) => {
+    const pctStr = !isFinite(b.pct_rev) ? '<span class="na">NEW</span>' :
+                   b.pct_rev === 0 && b.rev_b === 0 ? '<span class="na">—</span>' :
+                   `<span class="${cls(b.pct_rev)}">${fmtPct(b.pct_rev)}</span>`;
+    tbody.innerHTML += `<tr>
+      <td><b>${i+1}</b></td>
+      <td style="font-weight:700">${b.brand}</td>
+      <td>${b.qty_b || '—'}</td>
+      <td>${b.rev_b ? fmtRp(b.rev_b) : '—'}</td>
+      <td>${b.qty_d || '—'}</td>
+      <td>${b.rev_d ? fmtRp(b.rev_d) : '—'}</td>
+      <td class="${cls(b.mom_qty)}">${b.mom_qty > 0 ? '+' : ''}${b.mom_qty}</td>
+      <td class="${cls(b.mom_rev)}">${b.mom_rev > 0 ? '+' : ''}${fmtRp(b.mom_rev)}</td>
+      <td>${pctStr}</td>
+    </tr>`;
+  });
+  // Total row
+  const totPct = (totalRevD - totalRevB) / totalRevB;
+  tbody.innerHTML += `<tr class="total-row">
+    <td colspan="2">Grand Total</td>
+    <td>${totalQtyB}</td>
+    <td>${fmtRp(totalRevB)}</td>
+    <td>${totalQtyD}</td>
+    <td>${fmtRp(totalRevD)}</td>
+    <td class="${cls(totalQtyD-totalQtyB)}">${totalQtyD-totalQtyB > 0 ? '+' : ''}${totalQtyD-totalQtyB}</td>
+    <td class="${cls(totalRevD-totalRevB)}">${fmtRp(totalRevD-totalRevB)}</td>
+    <td class="${cls(totPct)}">${fmtPct(totPct)}</td>
+  </tr>`;
+}
+function sortBrand(key) {
+  if (sortKeyB === key) sortDirB *= -1; else { sortKeyB = key; sortDirB = -1; }
+  renderBrandTable();
+}
+renderBrandTable();
+
+// ── Brand Bars ──
+const byRevD = [...d.brands].sort((a,b) => b.rev_d - a.rev_d);
+const maxRev = byRevD[0].rev_d || 1;
+const barEl  = document.getElementById('brandBars');
+byRevD.forEach(b => {
+  const pct = (b.rev_d / maxRev * 100).toFixed(1);
+  const mom = b.rev_b > 0 ? (b.rev_d - b.rev_b)/b.rev_b : null;
+  const momStr = mom === null ? '(NEW)' : (mom >= 0 ? '+' : '') + (mom*100).toFixed(0)+'%';
+  const col = mom === null ? '#7c3aed' : mom >= 0 ? '#2dc653' : '#e63946';
+  barEl.innerHTML += `<div class="bar-item">
+    <div class="bar-label">
+      <span class="nm">${b.brand}</span>
+      <span style="font-weight:700;color:${col}">${fmtRp(b.rev_d)} <small>${momStr}</small></span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div>
+  </div>`;
+});
+
+// ── Charts ──
+const topBrands = [...d.brands].sort((a,b) => (b.rev_b+b.rev_d)-(a.rev_b+a.rev_d)).slice(0, 8);
+const topLabels  = topBrands.map(b => b.brand);
+
+new Chart(document.getElementById('cRevBrand'), {
+  type:'bar',
+  data:{
+    labels: topLabels,
+    datasets:[
+      { label:'Mar \'26', data: topBrands.map(b=>b.rev_b), backgroundColor:'rgba(58,134,255,0.7)', borderRadius:3 },
+      { label:'Apr \'26', data: topBrands.map(b=>b.rev_d), backgroundColor:'rgba(244,161,29,0.7)', borderRadius:3 },
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:true,
+    plugins:{ legend:{position:'top'} },
+    scales:{ x:{ticks:{font:{size:9},maxRotation:45}}, y:{title:{display:true,text:'Revenue (IDR)'}} }
+  }
+});
+
+new Chart(document.getElementById('cQtyBrand'), {
+  type:'bar',
+  data:{
+    labels: topLabels,
+    datasets:[
+      { label:'Mar \'26', data: topBrands.map(b=>b.qty_b), backgroundColor:'rgba(45,198,83,0.7)', borderRadius:3 },
+      { label:'Apr \'26', data: topBrands.map(b=>b.qty_d), backgroundColor:'rgba(230,57,70,0.7)',  borderRadius:3 },
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:true,
+    plugins:{ legend:{position:'top'} },
+    scales:{ x:{ticks:{font:{size:9},maxRotation:45}}, y:{title:{display:true,text:'Qty Unit'}} }
+  }
+});
+
+new Chart(document.getElementById('cWic'), {
+  type:'bar',
+  data:{
+    labels:['Mar \'26', 'Apr \'26'],
+    datasets:[
+      { label:'Transaksi',                  data:[76, 42], backgroundColor:'rgba(45,198,83,0.8)',  borderRadius:4 },
+      { label:'Lihat & Tanya / Stok Kosong',data:[3,  24], backgroundColor:'rgba(230,57,70,0.7)',  borderRadius:4 },
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:true,
+    plugins:{ legend:{position:'top'} },
+    scales:{ x:{stacked:true}, y:{stacked:true, title:{display:true,text:'Jumlah WIC'}} }
+  }
+});
+
+const momBrands = d.brands.filter(b => b.rev_b > 0 && b.rev_d > 0);
+const momPcts   = momBrands.map(b => +((b.rev_d - b.rev_b)/b.rev_b*100).toFixed(1));
+new Chart(document.getElementById('cBrandMom'), {
+  type:'bar',
+  data:{
+    labels: momBrands.map(b=>b.brand),
+    datasets:[{ label:'MoM Rev %', data:momPcts, backgroundColor: momPcts.map(v=>v>=0?'rgba(45,198,83,0.8)':'rgba(230,57,70,0.8)'), borderRadius:4 }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:true,
+    plugins:{ legend:{display:false} },
+    scales:{ x:{ticks:{font:{size:9},maxRotation:45}}, y:{title:{display:true,text:'% Change'}} }
+  }
+});
+
+// Mobile nav toggle
+function toggleMobileNav() {
+  document.querySelector('nav').classList.toggle('open');
+}
+</script>
+</body>
+</html>

@@ -170,3 +170,59 @@ const flyerData = [
   {kode:"F080",nama:"ERAFONE MENARA JAKARTA",jan:1041700000,feb:643400000,mar:1130600000,growth_feb_mar:0.7572,growth_jan_mar:0.0853,status_impact:"Moderate",tier:"Excellent"},
   {kode:"E620",nama:"ERAFONE 2.5 PADJAJARAN PAMULANG",jan:252200000,feb:638200000,mar:1180400000,growth_feb_mar:0.8496,growth_jan_mar:3.6804,status_impact:"Strong",tier:"Excellent"},
 ];
+
+// ── UMBUL-UMBUL CAMPAIGN ──────────────────────────────────────────────────────
+// Source: Data Sales & WIC SAMSUNG (SEP) Serpong Paradise Mar–Apr 2026
+// Baseline = Mar '26, Campaign Period = Apr '26
+
+const umbulData = [
+  {
+    outlet:           "SAMSUNG (SEP) Serpong Paradise",
+    tipe:             "Samsung Experience Partner",
+    lokasi:           "Serpong, Tangerang Selatan",
+    campaign_name:    "Umbul-Umbul Samsung Serpong Paradise Walk",
+    periode_baseline: "Mar '26",
+    periode_campaign: "Apr '26",
+    biaya_media:      0,          // ← isi biaya media umbul-umbul (IDR)
+
+    // WIC (Walk-In Customer)
+    wic_before_transaksi: 76,
+    wic_before_looker:     3,
+    wic_before_total:     79,
+    wic_during_transaksi: 42,
+    wic_during_looker:    24,
+    wic_during_total:     66,
+
+    // Aggregate Sales
+    sales_before_qty:  166,
+    sales_before_rev:  527684072,
+    sales_during_qty:  115,
+    sales_during_rev:  291379016,
+
+    // Per-brand breakdown
+    brands: [
+      { brand:"ACMIC",            qty_b:0,   rev_b:0,          qty_d:1,  rev_d:404505    },
+      { brand:"Indosat",          qty_b:1,   rev_b:743243,     qty_d:0,  rev_d:0         },
+      { brand:"IT",               qty_b:12,  rev_b:879278,     qty_d:6,  rev_d:358558    },
+      { brand:"Lamina",           qty_b:13,  rev_b:2060357,    qty_d:5,  rev_d:860359    },
+      { brand:"Loops",            qty_b:1,   rev_b:296396,     qty_d:0,  rev_d:0         },
+      { brand:"MEDPOIN",          qty_b:4,   rev_b:445946,     qty_d:0,  rev_d:0         },
+      { brand:"NILLKIN",          qty_b:0,   rev_b:0,          qty_d:1,  rev_d:422523    },
+      { brand:"SAMSUNG",          qty_b:115, rev_b:510272861,  qty_d:82, rev_d:277521673 },
+      { brand:"Samsung Care Plus",qty_b:13,  rev_b:8174189,    qty_d:11, rev_d:3878875   },
+      { brand:"Sandisk",          qty_b:1,   rev_b:269369,     qty_d:0,  rev_d:0         },
+      { brand:"Telkomsel",        qty_b:2,   rev_b:211802,     qty_d:4,  rev_d:2211802   },
+      { brand:"XL AXIATA",        qty_b:4,   rev_b:4330631,    qty_d:5,  rev_d:5720721   },
+    ],
+
+    // Calculated metrics
+    get walkin_growth()      { return (this.wic_during_total - this.wic_before_total) / this.wic_before_total; },
+    get transaksi_growth()   { return (this.wic_during_transaksi - this.wic_before_transaksi) / this.wic_before_transaksi; },
+    get conversion_before()  { return this.wic_before_transaksi / this.wic_before_total; },
+    get conversion_during()  { return this.wic_during_transaksi / this.wic_during_total; },
+    get sales_growth_qty()   { return (this.sales_during_qty - this.sales_before_qty) / this.sales_before_qty; },
+    get sales_growth_rev()   { return (this.sales_during_rev - this.sales_before_rev) / this.sales_before_rev; },
+    get mom_rev()            { return this.sales_during_rev - this.sales_before_rev; },
+    get mom_qty()            { return this.sales_during_qty - this.sales_before_qty; },
+  }
+];

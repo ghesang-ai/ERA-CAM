@@ -98,6 +98,16 @@
   .btn-upload:hover { background:#243b6e; }
   .btn-upload:disabled { background:#94a3b8; cursor:not-allowed; }
 
+  .btn-template {
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    width:100%; margin-top:8px; padding:8px;
+    background:#f0f4ff; color:var(--primary);
+    border:1.5px solid #c7d7f5; border-radius:10px;
+    font-size:12.5px; font-weight:700; cursor:pointer;
+    text-decoration:none; transition:background 0.15s;
+  }
+  .btn-template:hover { background:#dbeafe; border-color:var(--primary); }
+
   /* FILE PREVIEW */
   .file-preview {
     display:none; align-items:center; gap:10px;
@@ -294,6 +304,9 @@
         <button class="btn-upload" id="btn-flyer" onclick="uploadFile('flyer')" disabled>
           ⬆ Upload Flyer Data
         </button>
+        <a class="btn-template" href="templates/ERACAM_Template_Flyer.xlsx" download>
+          ⬇ Download Template Excel — Flyer
+        </a>
       </div>
     </div>
 
@@ -344,6 +357,9 @@
         <button class="btn-upload" id="btn-spanduk" onclick="uploadFile('spanduk')" disabled>
           ⬆ Upload Spanduk Data
         </button>
+        <a class="btn-template" href="templates/ERACAM_Template_Spanduk.xlsx" download>
+          ⬇ Download Template Excel — Spanduk Fasad
+        </a>
       </div>
     </div>
 
@@ -362,17 +378,17 @@
             <span class="tab-icon">📊</span>
             <div class="tab-info">
               <div class="tab-name">Umbul-Umbul — Sales</div>
-              <div class="tab-desc">Data revenue per outlet per bulan</div>
+              <div class="tab-desc">Data revenue per brand per periode · Sheet: Sales</div>
             </div>
-            <span class="tab-badge soon">Soon</span>
+            <span class="tab-badge">1</span>
           </div>
           <div class="upload-tab" onclick="selectUploadTab('banner','walkin',this)">
             <span class="tab-icon">👥</span>
             <div class="tab-info">
               <div class="tab-name">Umbul-Umbul — Walk-In</div>
-              <div class="tab-desc">Data traffic &amp; konversi per outlet</div>
+              <div class="tab-desc">Data WIC &amp; konversi per outlet · Sheet: Walk-In</div>
             </div>
-            <span class="tab-badge soon">Soon</span>
+            <span class="tab-badge">1</span>
           </div>
         </div>
 
@@ -392,8 +408,11 @@
         </div>
         <div class="status-log" id="log-banner"></div>
         <button class="btn-upload" id="btn-banner" onclick="uploadFile('banner')" disabled>
-          ⬆ Upload Banner Data
+          ⬆ Upload Umbul-Umbul Data
         </button>
+        <a class="btn-template" href="templates/ERACAM_Template_UmbulUmbul.xlsx" download>
+          ⬇ Download Template Excel — Umbul-Umbul
+        </a>
       </div>
     </div>
 

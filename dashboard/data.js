@@ -183,7 +183,7 @@ const umbulData = [
     campaign_name:    "Umbul-Umbul Samsung Serpong Paradise Walk",
     periode_baseline: "Mar '26",
     periode_campaign: "Apr '26",
-    biaya_media:      0,          // ← isi biaya media umbul-umbul (IDR)
+    biaya_media:      2250000,     // Biaya pemasangan umbul-umbul (IDR)
 
     // WIC (Walk-In Customer)
     wic_before_transaksi: 76,

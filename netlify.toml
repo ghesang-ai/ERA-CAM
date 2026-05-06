@@ -3,6 +3,16 @@
   publish   = "dashboard"
   functions = "netlify/functions"
 
+# ── Function timeouts (max 26s free plan, 26s for deepseek karena lebih lambat)
+[functions]
+  node_bundler = "esbuild"
+
+[functions."deepseek"]
+  timeout = 26
+
+[functions."claude"]
+  timeout = 26
+
 # ── API redirects: /api/* → Netlify Functions ──────────────────────────────
 [[redirects]]
   from   = "/api/claude"

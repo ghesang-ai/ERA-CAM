@@ -3,6 +3,9 @@
   publish   = "dashboard"
   functions = "netlify/functions"
 
+[build.environment]
+  NODE_VERSION = "18"
+
 # ── Function timeouts (max 26s free plan, 26s for deepseek karena lebih lambat)
 [functions]
   node_bundler = "esbuild"

@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERA-CAM — Input Campaign Baru</title>
+<link rel="stylesheet" href="nav.css?v=2">
+<style>
+:root {
+  --primary:#1a2e5a; --gold:#f4a11d; --green:#2dc653; --red:#e63946;
+  --blue:#3a86ff; --purple:#7c3aed; --orange:#ea580c; --teal:#0ea5e9;
+  --amber:#d97706; --emerald:#059669;
+  --bg:#eef1f8; --card:#fff; --text:#1a1a2e; --muted:#6b7280; --border:#e5e7eb;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);}
+
+/* ─── PAGE HEADER ─── */
+.page-header{
+  background:linear-gradient(135deg,#1a2e5a,#2d4a8a);
+  padding:20px 28px 18px; color:#fff;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
+.ph-left h1{font-size:20px;font-weight:900;display:flex;align-items:center;gap:10px;}
+.ph-left p{font-size:12px;color:#a8b8d8;margin-top:4px;}
+.ph-breadcrumb{
+  font-size:11.5px;color:#a8b8d8;display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+}
+.ph-breadcrumb a{color:#a8b8d8;text-decoration:none;}
+.ph-breadcrumb a:hover{color:#fff;}
+
+/* ─── LAYOUT ─── */
+.body{padding:22px 28px;max-width:1400px;margin:0 auto;}
+.layout{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start;}
+@media(max-width:1024px){.layout{grid-template-columns:1fr;}}
+@media(max-width:600px){.body{padding:14px 14px;}}
+
+/* ─── FORM CARD ─── */
+.form-card{
+  background:var(--card);border-radius:16px;
+  box-shadow:0 2px 16px rgba(0,0,0,0.08);overflow:hidden;
+}
+.form-card-header{
+  background:linear-gradient(90deg,#1a2e5a,#243b6e);
+  padding:16px 22px;color:#fff;
+  display:flex;align-items:center;gap:10px;
+}
+.form-card-header h2{font-size:14px;font-weight:800;}
+.form-card-header p{font-size:11.5px;color:#a8b8d8;margin-top:2px;}
+.form-card-body{padding:22px;}
+
+/* ─── FORM SECTIONS ─── */
+.form-section{margin-bottom:22px;}
+.form-section-title{
+  font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:12px;padding-bottom:8px;
+  border-bottom:1.5px solid var(--border);display:flex;align-items:center;gap:7px;
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-row.full{grid-template-columns:1fr;}
+.form-row.tri{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:600px){.form-row,.form-row.tri{grid-template-columns:1fr;}}
+
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-label{font-size:11.5px;font-weight:700;color:var(--text);}
+.form-label span{font-size:10px;color:var(--muted);font-weight:400;margin-left:4px;}
+.form-input,.form-select,.form-textarea{
+  padding:9px 13px;border-radius:9px;border:1.5px solid var(--border);
+  font-size:13px;color:var(--text);background:#fff;outline:none;
+  transition:border-color 0.15s,box-shadow 0.15s;font-family:inherit;width:100%;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  border-color:var(--blue);box-shadow:0 0 0 3px rgba(58,134,255,0.12);
+}
+.form-input.readonly{background:#f8f9fb;color:var(--muted);cursor:default;}
+.form-input.auto{background:#f0f7ff;border-color:#bfdbfe;color:var(--primary);font-weight:600;}
+.form-textarea{resize:vertical;min-height:72px;}
+.form-hint{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.4;}
+
+/* amount input wrapper */
+.amount-wrap{position:relative;}
+.amount-wrap .form-input{padding-left:38px;}
+.amount-prefix{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  font-size:12px;font-weight:700;color:var(--muted);pointer-events:none;
+}
+.amount-display{
+  font-size:11px;font-weight:700;color:var(--emerald);margin-top:3px;min-height:16px;
+}
+.amount-display.negative{color:var(--red);}
+
+/* icon selector */
+.icon-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+.icon-opt{
+  width:36px;height:36px;border-radius:8px;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+  cursor:pointer;transition:all 0.15s;background:#fafbfc;
+}
+.icon-opt:hover{border-color:var(--blue);background:#eff6ff;}
+.icon-opt.selected{border-color:var(--blue);background:#eff6ff;box-shadow:0 0 0 3px rgba(58,134,255,0.18);}
+
+/* ─── ACTIONS ─── */
+.form-actions{
+  display:flex;gap:10px;flex-wrap:wrap;padding:16px 22px;
+  border-top:1.5px solid var(--border);background:#f8f9fb;
+}
+.btn{
+  padding:10px 22px;border-radius:9px;font-size:13px;font-weight:700;
+  border:none;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:7px;
+  text-decoration:none;
+}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:#243b6e;}
+.btn-secondary{background:#fff;color:var(--primary);border:2px solid var(--primary);}
+.btn-secondary:hover{background:#eff6ff;}
+.btn-danger{background:#fff;color:var(--red);border:2px solid #fecaca;}
+.btn-danger:hover{background:#fff5f5;border-color:var(--red);}
+.btn:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-loading{position:relative;}
+.btn-loading::after{
+  content:'';width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);
+  border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ─── TOAST ─── */
+.toast{
+  position:fixed;top:76px;right:20px;z-index:9999;
+  padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;
+  box-shadow:0 4px 20px rgba(0,0,0,0.15);max-width:340px;line-height:1.4;
+  display:none;align-items:center;gap:10px;
+}
+.toast.show{display:flex;animation:slideIn 0.25s ease;}
+.toast.success{background:#dcfce7;color:#166534;border:1.5px solid #86efac;}
+.toast.error{background:#fee2e2;color:#991b1b;border:1.5px solid #fca5a5;}
+.toast.info{background:#dbeafe;color:#1e40af;border:1.5px solid #93c5fd;}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+
+/* ─── RIGHT PANEL ─── */
+.right-panel{display:flex;flex-direction:column;gap:16px;}
+
+/* Preview card */
+.preview-card{
+  background:var(--card);border-radius:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.08);overflow:hidden;
+}
+.preview-header{
+  padding:12px 18px;background:#f8f9fb;border-bottom:1px solid var(--border);
+  font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;
+  display:flex;align-items:center;gap:7px;
+}
+.preview-body{padding:18px;}
+.preview-id{font-size:10px;color:var(--muted);font-family:monospace;margin-bottom:6px;}
+.preview-name{font-size:18px;font-weight:900;margin-bottom:3px;}
+.preview-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.preview-badge{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:8px;}
+.preview-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.preview-kpi{background:#f8f9fb;border-radius:8px;padding:10px 12px;}
+.preview-kpi-label{font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.preview-kpi-value{font-size:15px;font-weight:900;}
+.preview-roi{
+  margin-top:12px;padding:10px 14px;border-radius:8px;
+  background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+  border:1px solid #86efac;display:flex;align-items:center;justify-content:space-between;
+}
+.preview-roi.negative{background:linear-gradient(135deg,#fff5f5,#fee2e2);border-color:#fca5a5;}
+.preview-roi-label{font-size:11px;font-weight:600;color:var(--muted);}
+.preview-roi-value{font-size:20px;font-weight:900;color:var(--emerald);}
+.preview-roi.negative .preview-roi-value{color:var(--red);}
+
+/* Registry list */
+.registry-card{
+  background:var(--card);border-radius:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.08);overflow:hidden;
+}
+.registry-header{
+  padding:13px 18px;background:#f8f9fb;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.registry-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.registry-count{font-size:11px;font-weight:700;color:var(--primary);}
+.registry-list{max-height:400px;overflow-y:auto;}
+.registry-item{
+  padding:12px 18px;border-bottom:1px solid #f3f4f6;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.registry-item:last-child{border-bottom:none;}
+.registry-item:hover{background:#f8f9ff;}
+.reg-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+.reg-info{flex:1;min-width:0;}
+.reg-id{font-size:10px;color:var(--muted);font-family:monospace;}
+.reg-name{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.reg-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.reg-biaya{font-size:11.5px;font-weight:700;color:var(--amber);white-space:nowrap;}
+.reg-del{
+  width:26px;height:26px;border-radius:6px;border:none;background:#fff;
+  color:#fca5a5;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;transition:all 0.15s;
+}
+.reg-del:hover{background:#fee2e2;color:var(--red);}
+
+/* ─── CODE PANEL ─── */
+.code-panel{
+  background:#1e293b;border-radius:14px;overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,0.12);
+}
+.code-header{
+  padding:10px 16px;background:#0f172a;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.code-title{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;}
+.code-copy{
+  font-size:11px;font-weight:700;padding:4px 12px;border-radius:6px;
+  background:#334155;color:#e2e8f0;border:none;cursor:pointer;transition:all 0.15s;
+}
+.code-copy:hover{background:#475569;}
+.code-body{padding:14px 16px;overflow-x:auto;}
+.code-body pre{font-family:'SF Mono',Consolas,monospace;font-size:11.5px;color:#e2e8f0;line-height:1.6;white-space:pre;}
+.code-key{color:#7dd3fc;}
+.code-str{color:#86efac;}
+.code-num{color:#fbbf24;}
+
+/* ─── EMPTY STATE ─── */
+.empty-registry{
+  padding:28px 18px;text-align:center;
+  color:var(--muted);font-size:12.5px;
+}
+
+/* ─── STATUS DOTS ─── */
+.status-dot{
+  width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;
+}
+.dot-selesai{background:var(--green);}
+.dot-berjalan{background:var(--blue);}
+.dot-planned{background:var(--gold);}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <a class="logo" href="index.html">
+    <div class="logo-icon">EC</div>
+    <div><div class="logo-text">ERA-CAM</div><div class="logo-sub">Erajaya Campaign Monitoring</div></div>
+  </a>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
+  <nav>
+    <div class="nav-item"><a href="index.html" class="nav-link">Overview</a></div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Flyer <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Flyer Campaign</div>
+        <a href="flyer.html"><span class="icon">📊</span><span class="lbl">Flyer Promo Feb By Sales</span></a>
+        <a href="flyer-february.html"><span class="icon">📦</span><span class="lbl">Flyer Promo Feb By Qty</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Spanduk <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Spanduk Campaign</div>
+        <a href="spanduk.html"><span class="icon">🪧</span><span class="lbl">Spanduk Fasad</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Umbul-Umbul <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Umbul-Umbul Campaign</div>
+        <a href="umbul-umbul.html"><span class="icon">🏮</span><span class="lbl">Umbul-Umbul SEP Serpong</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">AI Analysis <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">AI-Powered Analysis</div>
+        <a href="brand.html"><span class="icon">🏷️</span><span class="lbl">Per Brand Scorecard</span></a>
+        <a href="ai-summary.html"><span class="icon">🤖</span><span class="lbl">AI Executive Summary</span></a>
+        <a href="annual-report.html"><span class="icon">📅</span><span class="lbl">Laporan Tahunan 2026</span></a>
+        <a href="year-end-report.html"><span class="icon">🏆</span><span class="lbl">Year-End Impact Report</span><span class="dbadge" style="background:#7c3aed;color:#fff">Phase 5</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link nav-admin">⚙ Admin <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Admin Tools</div>
+        <a href="campaign-input.html" style="background:#fff7ed"><span class="icon">➕</span><span class="lbl">Input Campaign Baru</span><span class="dbadge" style="background:#ea580c;color:#fff">Phase 4</span></a>
+        <a href="settings.html" style="background:#f0fdf4"><span class="icon">🔑</span><span class="lbl">API Keys Settings</span><span class="dbadge" style="background:#059669;color:#fff">Baru</span></a>
+        <a href="admin.html"><span class="icon">⚙</span><span class="lbl">Admin Panel</span></a>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="ph-left">
+    <h1>➕ Input Campaign Baru</h1>
+    <p>Tambah entry campaign ke <code>campaignRegistry</code> — data langsung masuk ke Laporan Tahunan 2026</p>
+  </div>
+  <div class="ph-breadcrumb">
+    <a href="index.html">Overview</a> › <a href="annual-report.html">Laporan Tahunan</a> › <span style="color:#fff">Input Campaign</span>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body">
+
+<!-- Netlify mode banner — hanya muncul saat bukan localhost -->
+<div id="netlifyBanner" style="display:none;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;">
+  <span style="font-size:20px;flex-shrink:0;">☁️</span>
+  <div>
+    <div style="font-size:13px;font-weight:800;color:#9a3412;margin-bottom:4px;">Mode Netlify (Read-Only)</div>
+    <div style="font-size:12.5px;color:#9a3412;line-height:1.6;">
+      Tombol <b>Simpan</b> dan <b>Hapus</b> tidak tersedia di Netlify karena data.js tidak bisa ditulis di server statis.<br>
+      Gunakan <b>📋 Copy JS Snippet</b> → tambahkan manual ke <code>data.js</code> di komputer lokal → push ke GitHub.
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- ═══ LEFT: FORM ═══ -->
+  <div class="form-card">
+    <div class="form-card-header">
+      <div>
+        <h2>📋 Data Campaign</h2>
+        <p>Isi semua field di bawah — Campaign ID akan ter-generate otomatis</p>
+      </div>
+    </div>
+    <div class="form-card-body">
+
+      <!-- IDENTITAS -->
+      <div class="form-section">
+        <div class="form-section-title">🏷️ Identitas Campaign</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Tipe Media <span>*</span></label>
+            <select class="form-select" id="fTipe" onchange="onTipeChange()">
+              <option value="">— Pilih tipe —</option>
+              <option value="flyer">📄 Flyer</option>
+              <option value="spanduk">🪧 Spanduk</option>
+              <option value="umbul-umbul">🚩 Umbul-Umbul</option>
+              <option value="baliho">🖼️ Baliho</option>
+              <option value="videotron">📺 Videotron</option>
+              <option value="poster">🗺️ Poster</option>
+              <option value="x-banner">🎌 X-Banner</option>
+              <option value="lainnya">📌 Lainnya</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Icon <span>klik untuk ganti</span></label>
+            <div class="icon-row" id="iconRow">
+              <div class="icon-opt selected" data-icon="📄" onclick="setIcon(this)">📄</div>
+              <div class="icon-opt" data-icon="🪧" onclick="setIcon(this)">🪧</div>
+              <div class="icon-opt" data-icon="🚩" onclick="setIcon(this)">🚩</div>
+              <div class="icon-opt" data-icon="🖼️" onclick="setIcon(this)">🖼️</div>
+              <div class="icon-opt" data-icon="📺" onclick="setIcon(this)">📺</div>
+              <div class="icon-opt" data-icon="🗺️" onclick="setIcon(this)">🗺️</div>
+              <div class="icon-opt" data-icon="🎌" onclick="setIcon(this)">🎌</div>
+              <div class="icon-opt" data-icon="📌" onclick="setIcon(this)">📌</div>
+            </div>
+          </div>
+        </div>
+        <div class="form-row full" style="margin-top:12px">
+          <div class="form-group">
+            <label class="form-label">Nama Campaign <span>*</span></label>
+            <input class="form-input" id="fNama" type="text" placeholder="contoh: Flyer Promo Mei 2026" oninput="updatePreview();updateId()">
+          </div>
+        </div>
+        <div class="form-row" style="margin-top:12px">
+          <div class="form-group">
+            <label class="form-label">Campaign ID <span>auto-generated, bisa diedit</span></label>
+            <input class="form-input auto" id="fId" type="text" placeholder="FLY-2026-05" oninput="updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status <span>*</span></label>
+            <select class="form-select" id="fStatus" onchange="updatePreview()">
+              <option value="Planned">🗓️ Planned</option>
+              <option value="Berjalan">🔄 Berjalan</option>
+              <option value="Selesai" selected>✅ Selesai</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- WAKTU -->
+      <div class="form-section">
+        <div class="form-section-title">📅 Waktu Campaign</div>
+        <div class="form-row tri">
+          <div class="form-group">
+            <label class="form-label">Bulan Campaign <span>*</span></label>
+            <select class="form-select" id="fBulan" onchange="onBulanChange()">
+              <option value="">— Pilih —</option>
+              <option value="1">Januari</option>
+              <option value="2">Februari</option>
+              <option value="3">Maret</option>
+              <option value="4">April</option>
+              <option value="5">Mei</option>
+              <option value="6">Juni</option>
+              <option value="7">Juli</option>
+              <option value="8">Agustus</option>
+              <option value="9">September</option>
+              <option value="10">Oktober</option>
+              <option value="11">November</option>
+              <option value="12">Desember</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tahun</label>
+            <input class="form-input" id="fTahun" type="number" value="2026" min="2025" max="2030" oninput="updateId();updatePreview()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Quarter</label>
+            <input class="form-input auto" id="fQuarter" type="text" placeholder="Q1" readonly>
+            <div class="form-hint">Otomatis dari bulan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COVERAGE -->
+      <div class="form-section">
+        <div class="form-section-title">🏪 Coverage & Catatan</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Jumlah Toko / Outlet <span>*</span></label>
+            <input class="form-input" id="fJumlahToko" type="number" min="0" value="0" oninput="updatePreview()">
+            <div class="form-hint">Jumlah toko yang ikut campaign ini</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Catatan</label>
+            <input class="form-input" id="fCatatan" type="text" placeholder="contoh: 50 toko area Tangerang · promo Lebaran" oninput="updatePreview()">
+          </div>
+        </div>
+      </div>
+
+      <!-- BIAYA & REVENUE -->
+      <div class="form-section">
+        <div class="form-section-title">💰 Biaya & Revenue</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Biaya Cetak (Rp) <span>*</span></label>
+            <div class="amount-wrap">
+              <span class="amount-prefix">Rp</span>
+              <input class="form-input" id="fBiayaCetak" type="number" min="0" value="0" oninput="updatePreview()">
+            </div>
+            <div class="amount-display" id="dispBiayaCetak">Rp 0</div>
+            <div class="form-hint">Total biaya produksi cetak untuk campaign ini</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Biaya Media / Pemasangan (Rp)</label>
+            <div class="amount-wrap">
+              <span class="amount-prefix">Rp</span>
+              <input class="form-input" id="fBiayaMedia" type="number" min="0" value="0" oninput="updatePreview()">
+            </div>
+            <div class="amount-display" id="dispBiayaMedia">Rp 0</div>
+            <div class="form-hint">Biaya sewa lokasi / pemasangan. Isi 0 jika tidak ada.</div>
+          </div>
+        </div>
+        <div class="form-row" style="margin-top:12px">
+          <div class="form-group">
+            <label class="form-label">Revenue Increment (Rp) <span>bisa negatif</span></label>
+            <div class="amount-wrap">
+              <span class="amount-prefix">Rp</span>
+              <input class="form-input" id="fRevInc" type="number" value="0" oninput="updatePreview()">
+            </div>
+            <div class="amount-display" id="dispRevInc">Rp 0</div>
+            <div class="form-hint">Selisih revenue vs baseline. Isi 0 jika belum ada data. Bisa minus.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ROI Cetak</label>
+            <input class="form-input readonly" id="fRoiDisplay" type="text" value="—" readonly>
+            <div class="form-hint">Otomatis: Revenue Inc ÷ Biaya Cetak</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /form-card-body -->
+
+    <!-- ACTIONS -->
+    <div class="form-actions">
+      <button class="btn btn-primary" id="btnSave" onclick="saveCampaign()">
+        💾 Simpan ke data.js
+      </button>
+      <button class="btn btn-secondary" onclick="copyCode()">
+        📋 Copy JS Snippet
+      </button>
+      <button class="btn btn-secondary" onclick="resetForm()" style="margin-left:auto;">
+        🔄 Reset Form
+      </button>
+    </div>
+  </div><!-- /form-card -->
+
+  <!-- ═══ RIGHT PANEL ═══ -->
+  <div class="right-panel">
+
+    <!-- Live Preview -->
+    <div class="preview-card">
+      <div class="preview-header">👁 Live Preview Entry</div>
+      <div class="preview-body" id="previewBody">
+        <div class="preview-id" id="prevId">ID: —</div>
+        <div class="preview-name" id="prevName">Nama Campaign</div>
+        <div class="preview-badges" id="prevBadges"></div>
+        <div class="preview-kpis">
+          <div class="preview-kpi">
+            <div class="preview-kpi-label">Biaya Cetak</div>
+            <div class="preview-kpi-value" style="color:var(--amber)" id="prevCetak">Rp 0</div>
+          </div>
+          <div class="preview-kpi">
+            <div class="preview-kpi-label">Total Outlet</div>
+            <div class="preview-kpi-value" style="color:var(--blue)" id="prevOutlet">0</div>
+          </div>
+          <div class="preview-kpi">
+            <div class="preview-kpi-label">Revenue Inc.</div>
+            <div class="preview-kpi-value" id="prevRev">Rp 0</div>
+          </div>
+          <div class="preview-kpi">
+            <div class="preview-kpi-label">Bulan / Quarter</div>
+            <div class="preview-kpi-value" style="color:var(--muted)" id="prevPeriod">— / —</div>
+          </div>
+        </div>
+        <div class="preview-roi" id="prevRoiBox">
+          <div>
+            <div class="preview-roi-label">ROI Cetak (Revenue ÷ Biaya)</div>
+            <div style="font-size:10.5px;color:var(--muted)" id="prevRoiSub">Isi biaya cetak & revenue inc.</div>
+          </div>
+          <div class="preview-roi-value" id="prevRoi">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Snippet -->
+    <div class="code-panel">
+      <div class="code-header">
+        <span class="code-title">📄 JS Snippet (data.js)</span>
+        <button class="code-copy" onclick="copyCode()">Copy</button>
+      </div>
+      <div class="code-body">
+        <pre id="codeSnippet"><span style="color:#94a3b8">// Isi form di kiri untuk
+// generate JS snippet</span></pre>
+      </div>
+    </div>
+
+    <!-- Current Registry -->
+    <div class="registry-card">
+      <div class="registry-header">
+        <span class="registry-title">📋 Campaign Registry Saat Ini</span>
+        <span class="registry-count" id="regCount">0 campaign</span>
+      </div>
+      <div class="registry-list" id="registryList">
+        <div class="empty-registry">Memuat data...</div>
+      </div>
+    </div>
+
+  </div><!-- /right-panel -->
+
+</div><!-- /layout -->
+</div><!-- /body -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<footer style="background:var(--primary);color:#a8b8d8;text-align:center;padding:14px;font-size:12px;margin-top:28px;">
+  <b style="color:var(--gold)">ERA-CAM</b> · Admin · Campaign Input Phase 4 ·
+  Data disimpan langsung ke <code style="color:#f4a11d">dashboard/data.js</code> · Refresh halaman setelah simpan
+</footer>
+
+<script src="data.js"></script>
+<script src="chatbot.js?v=3"></script>
+<script>
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+const TIPE_PREFIX  = { 'flyer':'FLY','spanduk':'SPD','umbul-umbul':'UMB','baliho':'BAL','videotron':'VID','poster':'PST','x-banner':'XBN','lainnya':'OTH' };
+const TIPE_ICON    = { 'flyer':'📄','spanduk':'🪧','umbul-umbul':'🚩','baliho':'🖼️','videotron':'📺','poster':'🗺️','x-banner':'🎌','lainnya':'📌' };
+const TIPE_COLORS  = { 'flyer':'#3a86ff','spanduk':'#d97706','umbul-umbul':'#7c3aed','baliho':'#059669','videotron':'#ea580c','poster':'#0ea5e9','x-banner':'#db2777','lainnya':'#6b7280' };
+
+let selectedIcon = '📄';
+
+function fmtRp(v) {
+  const a = Math.abs(v);
+  let s = a >= 1e9 ? (a/1e9).toFixed(2)+' M' : a >= 1e6 ? (a/1e6).toFixed(1)+' jt' : a.toLocaleString('id-ID');
+  return (v < 0 ? '-' : '') + 'Rp ' + s;
+}
+function getQ(bulan) {
+  return bulan <= 3 ? 'Q1' : bulan <= 6 ? 'Q2' : bulan <= 9 ? 'Q3' : 'Q4';
+}
+function getVal(id) { return document.getElementById(id)?.value?.trim() || ''; }
+function getNum(id) { return parseFloat(document.getElementById(id)?.value || 0) || 0; }
+
+// ─── TIPE CHANGE ──────────────────────────────────────────────────────────────
+function onTipeChange() {
+  const tipe = getVal('fTipe');
+  if (tipe && TIPE_ICON[tipe]) {
+    selectedIcon = TIPE_ICON[tipe];
+    document.querySelectorAll('.icon-opt').forEach(el => {
+      el.classList.toggle('selected', el.dataset.icon === selectedIcon);
+    });
+  }
+  updateId();
+  updatePreview();
+}
+
+function setIcon(el) {
+  document.querySelectorAll('.icon-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedIcon = el.dataset.icon;
+  updatePreview();
+}
+
+// ─── BULAN CHANGE ─────────────────────────────────────────────────────────────
+function onBulanChange() {
+  const b = parseInt(getVal('fBulan'));
+  if (b) {
+    document.getElementById('fQuarter').value = getQ(b);
+  } else {
+    document.getElementById('fQuarter').value = '';
+  }
+  updateId();
+  updatePreview();
+}
+
+// ─── AUTO ID ──────────────────────────────────────────────────────────────────
+function updateId() {
+  const tipe  = getVal('fTipe');
+  const bulan = getVal('fBulan');
+  const tahun = getVal('fTahun') || '2026';
+  if (!tipe || !bulan) return;
+  const prefix = TIPE_PREFIX[tipe] || 'OTH';
+  const m = String(bulan).padStart(2, '0');
+  document.getElementById('fId').value = `${prefix}-${tahun}-${m}`;
+}
+
+// ─── PREVIEW ──────────────────────────────────────────────────────────────────
+function updatePreview() {
+  const tipe    = getVal('fTipe');
+  const nama    = getVal('fNama') || 'Nama Campaign';
+  const id      = getVal('fId')   || '—';
+  const bulan   = parseInt(getVal('fBulan')) || 0;
+  const tahun   = getVal('fTahun') || '2026';
+  const quarter = bulan ? getQ(bulan) : '—';
+  const outlet  = getNum('fJumlahToko');
+  const cetak   = getNum('fBiayaCetak');
+  const media   = getNum('fBiayaMedia');
+  const rev     = getNum('fRevInc');
+  const status  = getVal('fStatus') || 'Selesai';
+
+  // Amount displays
+  document.getElementById('dispBiayaCetak').textContent = fmtRp(cetak);
+  document.getElementById('dispBiayaMedia').textContent = fmtRp(media);
+  const revDisp = document.getElementById('dispRevInc');
+  revDisp.textContent  = fmtRp(rev);
+  revDisp.className    = 'amount-display' + (rev < 0 ? ' negative' : '');
+
+  // ROI
+  const roi = cetak > 0 ? (rev / cetak) : null;
+  document.getElementById('fRoiDisplay').value = roi !== null ? roi.toFixed(1) + 'x' : '—';
+
+  // Preview panel
+  document.getElementById('prevId').textContent   = `ID: ${id}`;
+  document.getElementById('prevName').textContent  = `${selectedIcon} ${nama}`;
+  document.getElementById('prevOutlet').textContent = outlet.toLocaleString('id-ID');
+  document.getElementById('prevCetak').textContent  = fmtRp(cetak);
+  const revEl = document.getElementById('prevRev');
+  revEl.textContent = fmtRp(rev);
+  revEl.style.color = rev >= 0 ? 'var(--green)' : 'var(--red)';
+  const periodStr = bulan ? `${MONTHS_SHORT[bulan-1]} '${tahun.slice(2)} / ${quarter}` : '— / —';
+  document.getElementById('prevPeriod').textContent = periodStr;
+
+  // Badges
+  const color = TIPE_COLORS[tipe] || '#6b7280';
+  const STATUS_DOT = { Selesai:'dot-selesai', Berjalan:'dot-berjalan', Planned:'dot-planned' };
+  document.getElementById('prevBadges').innerHTML = tipe
+    ? `<span class="preview-badge" style="background:${color}20;color:${color}">${tipe}</span>
+       <span class="preview-badge" style="background:#f0f2f7;color:var(--muted)"><span class="status-dot ${STATUS_DOT[status]||''}"></span>${status}</span>
+       ${quarter !== '—' ? `<span class="preview-badge" style="background:#eff6ff;color:var(--blue)">${quarter}</span>` : ''}`
+    : '';
+
+  // ROI box
+  const roiBox = document.getElementById('prevRoiBox');
+  const roiVal = document.getElementById('prevRoi');
+  const roiSub = document.getElementById('prevRoiSub');
+  if (roi !== null) {
+    roiBox.className  = 'preview-roi' + (roi < 0 ? ' negative' : '');
+    roiVal.textContent = roi.toFixed(1) + 'x';
+    roiSub.textContent = `${fmtRp(rev)} ÷ ${fmtRp(cetak)}`;
+  } else {
+    roiBox.className  = 'preview-roi';
+    roiVal.textContent = '—';
+    roiSub.textContent = 'Isi biaya cetak & revenue inc.';
+  }
+
+  updateCodeSnippet();
+}
+
+// ─── CODE SNIPPET ─────────────────────────────────────────────────────────────
+function buildEntry() {
+  const b = {
+    id:                getVal('fId') || 'XXX-2026-00',
+    nama:              getVal('fNama') || 'Nama Campaign',
+    bulan:             parseInt(getVal('fBulan')) || 1,
+    tahun:             parseInt(getVal('fTahun')) || 2026,
+    quarter:           document.getElementById('fQuarter').value || 'Q1',
+    tipe:              getVal('fTipe') || 'flyer',
+    icon:              selectedIcon,
+    jumlah_toko:       parseInt(getNum('fJumlahToko')) || 0,
+    biaya_cetak:       parseInt(getNum('fBiayaCetak')) || 0,
+    biaya_media:       parseInt(getNum('fBiayaMedia')) || 0,
+    revenue_increment: parseInt(getNum('fRevInc')) || 0,
+    status:            getVal('fStatus') || 'Selesai',
+    catatan:           getVal('fCatatan') || '',
+  };
+  return b;
+}
+
+function hl(type, val) {
+  const cls = { key:'code-key', str:'code-str', num:'code-num' }[type];
+  return `<span class="${cls}">${val}</span>`;
+}
+
+function updateCodeSnippet() {
+  const b = buildEntry();
+  const lines = [
+    `  {`,
+    `    ${hl('key','id')}:                 ${hl('str',`"${b.id}"`)},`,
+    `    ${hl('key','nama')}:               ${hl('str',`"${b.nama}"`)},`,
+    `    ${hl('key','bulan')}:              ${hl('num', b.bulan)},`,
+    `    ${hl('key','tahun')}:              ${hl('num', b.tahun)},`,
+    `    ${hl('key','quarter')}:            ${hl('str',`"${b.quarter}"`)},`,
+    `    ${hl('key','tipe')}:               ${hl('str',`"${b.tipe}"`)},`,
+    `    ${hl('key','icon')}:               ${hl('str',`"${b.icon}"`)},`,
+    `    ${hl('key','jumlah_toko')}:        ${hl('num', b.jumlah_toko)},`,
+    `    ${hl('key','biaya_cetak')}:        ${hl('num', b.biaya_cetak)},`,
+    `    ${hl('key','biaya_media')}:        ${hl('num', b.biaya_media)},`,
+    `    ${hl('key','revenue_increment')}:  ${hl('num', b.revenue_increment)},`,
+    `    ${hl('key','status')}:             ${hl('str',`"${b.status}"`)},`,
+    `    ${hl('key','catatan')}:            ${hl('str',`"${b.catatan}"`)},`,
+    `  },`,
+  ];
+  document.getElementById('codeSnippet').innerHTML = lines.join('\n');
+}
+
+function copyCode() {
+  const b = buildEntry();
+  const plain = [
+    `  {`,
+    `    id:                 "${b.id}",`,
+    `    nama:               "${b.nama}",`,
+    `    bulan:              ${b.bulan},`,
+    `    tahun:              ${b.tahun},`,
+    `    quarter:            "${b.quarter}",`,
+    `    tipe:               "${b.tipe}",`,
+    `    icon:               "${b.icon}",`,
+    `    jumlah_toko:        ${b.jumlah_toko},`,
+    `    biaya_cetak:        ${b.biaya_cetak},`,
+    `    biaya_media:        ${b.biaya_media},`,
+    `    revenue_increment:  ${b.revenue_increment},`,
+    `    status:             "${b.status}",`,
+    `    catatan:            "${b.catatan}",`,
+    `  },`,
+  ].join('\n');
+  navigator.clipboard.writeText(plain).then(() => {
+    showToast('📋 JS snippet tersalin ke clipboard!', 'info');
+  }).catch(() => {
+    showToast('Gagal copy — coba manual dari panel kanan', 'error');
+  });
+}
+
+// ─── SAVE ─────────────────────────────────────────────────────────────────────
+function isNetlify() {
+  return window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+}
+
+async function saveCampaign() {
+  if (isNetlify()) {
+    return showToast('⚠️ Fitur simpan tidak tersedia di Netlify. Gunakan 📋 Copy JS Snippet lalu tambahkan manual ke data.js di lokal.', 'error', 7000);
+  }
+  const b = buildEntry();
+
+  // Basic validation
+  if (!getVal('fTipe'))  return showToast('⚠️ Pilih Tipe Media dahulu', 'error');
+  if (!getVal('fNama'))  return showToast('⚠️ Nama Campaign wajib diisi', 'error');
+  if (!getVal('fBulan')) return showToast('⚠️ Pilih Bulan dahulu', 'error');
+  if (!getVal('fId'))    return showToast('⚠️ Campaign ID wajib diisi', 'error');
+
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="btn-loading"></span> Menyimpan...';
+
+  try {
+    const res = await fetch('/api/save-campaign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(b),
+    });
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      showToast(`✅ Campaign "${data.nama}" berhasil disimpan ke data.js! Refresh annual-report.html untuk melihat perubahan.`, 'success', 5000);
+      resetForm();
+      setTimeout(() => loadRegistry(), 800);
+    } else {
+      showToast(`❌ Gagal: ${data.error}`, 'error', 5000);
+    }
+  } catch (e) {
+    showToast(`❌ Error koneksi ke server: ${e.message}`, 'error', 5000);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '💾 Simpan ke data.js';
+  }
+}
+
+// ─── DELETE ───────────────────────────────────────────────────────────────────
+async function deleteCampaign(id, nama) {
+  if (isNetlify()) {
+    return showToast('⚠️ Fitur hapus tidak tersedia di Netlify. Hapus manual di data.js via lokal.', 'error', 6000);
+  }
+  if (!confirm(`Yakin hapus campaign "${nama}" (${id})?\n\nTindakan ini akan menghapus entry dari data.js.`)) return;
+  try {
+    const res  = await fetch('/api/delete-campaign', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showToast(`🗑️ Campaign "${id}" berhasil dihapus dari data.js`, 'success', 4000);
+      setTimeout(() => location.reload(), 900);
+    } else {
+      showToast(`❌ Gagal hapus: ${data.error}`, 'error', 5000);
+    }
+  } catch (e) {
+    showToast(`❌ Error: ${e.message}`, 'error');
+  }
+}
+
+// ─── RESET ────────────────────────────────────────────────────────────────────
+function resetForm() {
+  ['fTipe','fNama','fId','fBulan','fStatus','fCatatan'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el.tagName === 'SELECT') el.value = el.id === 'fStatus' ? 'Selesai' : '';
+    else el.value = '';
+  });
+  document.getElementById('fTahun').value         = '2026';
+  document.getElementById('fQuarter').value       = '';
+  document.getElementById('fJumlahToko').value    = '0';
+  document.getElementById('fBiayaCetak').value    = '0';
+  document.getElementById('fBiayaMedia').value    = '0';
+  document.getElementById('fRevInc').value        = '0';
+  selectedIcon = '📄';
+  document.querySelectorAll('.icon-opt').forEach(e => e.classList.toggle('selected', e.dataset.icon === '📄'));
+  updatePreview();
+}
+
+// ─── REGISTRY LIST ────────────────────────────────────────────────────────────
+function loadRegistry() {
+  const list = document.getElementById('registryList');
+  const countEl = document.getElementById('regCount');
+
+  if (typeof campaignRegistry === 'undefined' || campaignRegistry.length === 0) {
+    list.innerHTML = '<div class="empty-registry">Belum ada campaign di registry</div>';
+    countEl.textContent = '0 campaign';
+    return;
+  }
+
+  countEl.textContent = `${campaignRegistry.length} campaign`;
+
+  const TIPE_CLASS = { 'flyer':'type-flyer','spanduk':'type-spanduk','umbul-umbul':'type-umbul' };
+  const STS_DOT = { Selesai:'dot-selesai', Berjalan:'dot-berjalan', Planned:'dot-planned' };
+
+  // Don't allow delete for built-in campaigns (Feb 2026 entries) to prevent accidents
+  const BUILT_IN = ['FLY-2026-02','SPD-2026-02','UMB-2026-04'];
+
+  list.innerHTML = [...campaignRegistry].reverse().map(c => {
+    const isBuiltIn = BUILT_IN.includes(c.id);
+    return `<div class="registry-item">
+      <span class="reg-icon">${c.icon}</span>
+      <div class="reg-info">
+        <div class="reg-id">${c.id}</div>
+        <div class="reg-name">${c.nama}</div>
+        <div class="reg-meta">
+          <span class="status-dot ${STS_DOT[c.status]||''}"></span>${c.status} ·
+          ${MONTHS_SHORT[c.bulan-1]} ${c.tahun} · ${c.quarter} · ${c.jumlah_toko} outlet
+        </div>
+      </div>
+      <div class="reg-biaya">${fmtRp(c.biaya_cetak)}</div>
+      ${isBuiltIn
+        ? `<button class="reg-del" disabled title="Data awal — hapus manual di data.js" style="opacity:0.3;cursor:not-allowed">🔒</button>`
+        : `<button class="reg-del" onclick="deleteCampaign('${c.id}','${c.nama.replace(/'/g,"\\'")}') " title="Hapus campaign ini">🗑</button>`
+      }
+    </div>`;
+  }).join('');
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+let _toastTimer;
+function showToast(msg, type = 'info', duration = 3500) {
+  const t = document.getElementById('toast');
+  t.textContent  = msg;
+  t.className    = `toast show ${type}`;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { t.className = 'toast'; }, duration);
+}
+
+// ─── MOBILE NAV ───────────────────────────────────────────────────────────────
+function toggleMobileNav() {
+  document.querySelector('.topnav nav').classList.toggle('open');
+  document.getElementById('navHamburger').classList.toggle('open');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  // Show Netlify banner + disable save button if not on localhost
+  if (isNetlify()) {
+    document.getElementById('netlifyBanner').style.display = 'flex';
+    const btn = document.getElementById('btnSave');
+    if (btn) { btn.style.opacity = '0.45'; btn.title = 'Tidak tersedia di Netlify'; }
+  }
+  loadRegistry();
+  updatePreview();
+  document.querySelectorAll('.nav-item > button.nav-link').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      if (window.innerWidth > 768) return;
+      e.stopPropagation();
+      const item = this.closest('.nav-item');
+      const isOpen = item.classList.contains('mobile-open');
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('mobile-open'));
+      if (!isOpen) item.classList.add('mobile-open');
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+# ERA-CAM — Netlify Configuration
+[build]
+  publish   = "dashboard"
+  functions = "netlify/functions"
+
+# ── API redirects: /api/* → Netlify Functions ──────────────────────────────
+[[redirects]]
+  from   = "/api/claude"
+  to     = "/.netlify/functions/claude"
+  status = 200
+
+[[redirects]]
+  from   = "/api/deepseek"
+  to     = "/.netlify/functions/deepseek"
+  status = 200
+
+[[redirects]]
+  from   = "/api/config"
+  to     = "/.netlify/functions/config"
+  status = 200
+
+# Campaign save/delete — kembalikan 503 dengan pesan informatif
+[[redirects]]
+  from   = "/api/save-campaign"
+  to     = "/.netlify/functions/not-available"
+  status = 200
+
+[[redirects]]
+  from   = "/api/delete-campaign"
+  to     = "/.netlify/functions/not-available"
+  status = 200
+
+# ── Security headers ────────────────────────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options        = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"

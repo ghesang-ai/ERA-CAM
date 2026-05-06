@@ -17,6 +17,26 @@ function fmtPct(val, decimals=1) {
   return sign + (val*100).toFixed(decimals) + '%';
 }
 
+// ── BIAYA PRODUKSI CETAK — Input manual per project ──────────────────────────
+// Sumber: Data aktual biaya cetak dari manajemen ERA-CAM
+const biayaProduksiCetak = {
+  flyer: {
+    total:        7276000,   // Rp 7.276.000 total 136 toko
+    jumlah_toko:  136,
+    get per_toko() { return Math.round(this.total / this.jumlah_toko); }, // ~53.500
+  },
+  spanduk: {
+    total:        22300000,  // Rp 22.300.000 total 13 toko
+    jumlah_toko:  13,
+    get per_toko() { return Math.round(this.total / this.jumlah_toko); }, // ~1.715.385
+  },
+  umbulUmbul: {
+    total:        2250000,   // Rp 2.250.000 untuk 1 lokasi Serpong Paradise
+    jumlah_toko:  1,
+    per_toko:     2250000,
+  },
+};
+
 const spandukData = [
   { outlet:"ERAFONE 2.5 SEPATAN",           kota:"Tangerang Kabupaten", biaya_media:1630000,  walkin_before:3.6,  walkin_during:5.0,  walkin_growth:0.3889, sales_before:16524396,  sales_during:21709577,  sales_growth:0.3138, total_sales:651287297,   baseline_sales:495731891,  profit_increment:153925406,  roi:94.43,   status:"BERHASIL" },
   { outlet:"ERAFONE 2.5 GRAND BATAVIA",      kota:"Tangerang Kabupaten", biaya_media:1700000,  walkin_before:3.6,  walkin_during:5.0,  walkin_growth:0.3889, sales_before:15978475,  sales_during:32968429,  sales_growth:1.0633, total_sales:989052865,   baseline_sales:479354253,  profit_increment:507998612,  roi:298.82,  status:"BERHASIL" },
@@ -32,6 +52,44 @@ const spandukData = [
   { outlet:"ERAFONE 2.5 MENCENG",           kota:"Jakarta Barat",       biaya_media:1705000,  walkin_before:18.0, walkin_during:14.0, walkin_growth:-0.2222,sales_before:18965467,  sales_during:16541300,  sales_growth:-0.1278,total_sales:496239000,   baseline_sales:568964000,  profit_increment:-74430000,  roi:-43.65,  status:"BELUM BERHASIL" },
   { outlet:"ERAFONE 2.5 CIPARE",            kota:"Banten",              biaya_media:2300000,  walkin_before:26.0, walkin_during:27.0, walkin_growth:0.0385, sales_before:31146205,  sales_during:41739286,  sales_growth:0.3401, total_sales:1252178571,  baseline_sales:934386144,  profit_increment:315492427,  roi:137.17,  status:"BERHASIL" },
 ];
+
+// Extend spandukData: tambah biaya_produksi, biaya_total, dan roi_full (biaya media + cetak)
+spandukData.forEach(d => {
+  d.biaya_produksi = biayaProduksiCetak.spanduk.per_toko;          // ~Rp 1.715.385 per outlet
+  d.biaya_total    = d.biaya_media + d.biaya_produksi;             // Pemasangan + Cetak
+  d.roi_full       = parseFloat((d.profit_increment / d.biaya_total).toFixed(2)); // ROI real
+});
+
+// Spanduk summary (computed)
+const spandukSummary = {
+  biaya_media_total:    spandukData.reduce((s,d) => s + d.biaya_media, 0),    // Rp 23.890.000
+  biaya_produksi_total: biayaProduksiCetak.spanduk.total,                     // Rp 22.300.000
+  get biaya_total_all() { return this.biaya_media_total + this.biaya_produksi_total; }, // Rp 46.190.000
+  roi_full_avg: parseFloat((spandukData.filter(d=>d.status==='BERHASIL')
+    .reduce((s,d)=>s+d.roi_full,0) / spandukData.filter(d=>d.status==='BERHASIL').length).toFixed(1)),
+};
+
+// Flyer investment metrics
+const flyerInvestment = {
+  biaya_produksi:   biayaProduksiCetak.flyer.total,          // Rp 7.276.000
+  biaya_per_toko:   biayaProduksiCetak.flyer.per_toko,       // ~Rp 53.500
+  incremental_rev:  82000000,                                 // Rp 82.000.000
+  get roi() { return parseFloat((this.incremental_rev / this.biaya_produksi).toFixed(1)); }, // 11,3x
+};
+
+// Total investasi semua campaign
+const totalInvestasiCampaign = {
+  flyer_cetak:    biayaProduksiCetak.flyer.total,
+  spanduk_cetak:  biayaProduksiCetak.spanduk.total,
+  spanduk_media:  spandukData.reduce((s,d) => s + d.biaya_media, 0),
+  umbul_cetak:    biayaProduksiCetak.umbulUmbul.total,
+  get total() {
+    return this.flyer_cetak + this.spanduk_cetak + this.spanduk_media + this.umbul_cetak;
+  },
+  get cetak_only() {
+    return this.flyer_cetak + this.spanduk_cetak + this.umbul_cetak;
+  },
+};
 
 const flyerData = [
   {kode:"E043",nama:"ERAFONE PLAZA BINTARO JAYA",jan:1772000000,feb:1477600000,mar:2421900000,growth_feb_mar:0.6391,growth_jan_mar:0.3668,status_impact:"Strong",tier:"Excellent"},
@@ -183,7 +241,8 @@ const umbulData = [
     campaign_name:    "Umbul-Umbul Samsung Serpong Paradise Walk",
     periode_baseline: "Mar '26",
     periode_campaign: "Apr '26",
-    biaya_media:      2250000,     // Biaya pemasangan umbul-umbul (IDR)
+    biaya_produksi_cetak: 2250000, // Biaya produksi cetak umbul-umbul (IDR)
+    biaya_media:          0,       // Biaya pemasangan (tidak ada biaya sewa lokasi tambahan)
 
     // WIC (Walk-In Customer)
     wic_before_transaksi: 76,
@@ -226,3 +285,194 @@ const umbulData = [
     get mom_qty()            { return this.sales_during_qty - this.sales_before_qty; },
   }
 ];
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CAMPAIGN REGISTRY 2026 — Master log semua campaign materi promosi cetak
+// ══════════════════════════════════════════════════════════════════════════════
+// Format tiap entry:
+//   id               — kode unik campaign (TIPE-TAHUN-BULAN)
+//   nama             — nama campaign
+//   bulan            — 1–12
+//   tahun            — 4-digit year
+//   quarter          — "Q1" / "Q2" / "Q3" / "Q4"
+//   tipe             — "flyer" | "spanduk" | "umbul-umbul" | "baliho" | ...
+//   icon             — emoji representasi
+//   jumlah_toko      — total outlet yang ikut campaign
+//   biaya_cetak      — total biaya produksi cetak (IDR)
+//   biaya_media      — total biaya media / pemasangan (IDR), 0 jika tidak ada
+//   revenue_increment — total perubahan revenue (bisa negatif), IDR
+//   status           — "Selesai" | "Berjalan" | "Planned"
+//   catatan          — keterangan singkat
+// ──────────────────────────────────────────────────────────────────────────────
+// ★ CARA TAMBAH CAMPAIGN BARU: copy template di bawah, ganti nilai, save file ★
+// ──────────────────────────────────────────────────────────────────────────────
+
+const campaignRegistry = [
+
+  // ── Q1 2026 ─────────────────────────────────────────────────────────────────
+  {
+    id:                 "FLY-2026-02",
+    nama:               "Flyer Promo Februari",
+    bulan:              2,
+    tahun:              2026,
+    quarter:            "Q1",
+    tipe:               "flyer",
+    icon:               "📄",
+    jumlah_toko:        136,
+    biaya_cetak:        biayaProduksiCetak.flyer.total,          // 7.276.000
+    biaya_media:        0,
+    revenue_increment:  flyerInvestment.incremental_rev,         // 82.000.000
+    status:             "Selesai",
+    catatan:            "136 toko area Jabodetabek–Banten · Promo Samsung Feb 2026",
+  },
+  {
+    id:                 "SPD-2026-02",
+    nama:               "Spanduk Fasad Februari",
+    bulan:              2,
+    tahun:              2026,
+    quarter:            "Q1",
+    tipe:               "spanduk",
+    icon:               "🪧",
+    jumlah_toko:        13,
+    biaya_cetak:        biayaProduksiCetak.spanduk.total,        // 22.300.000
+    biaya_media:        spandukSummary.biaya_media_total,        // 23.890.000
+    revenue_increment:  spandukData.reduce((s,d) => s + d.profit_increment, 0), // ~1,77M
+    status:             "Selesai",
+    catatan:            "13 outlet spanduk fasad premium · BEBAS TUKAR",
+  },
+
+  // ── Q2 2026 ─────────────────────────────────────────────────────────────────
+  {
+    id:                 "UMB-2026-04",
+    nama:               "Umbul-Umbul Samsung Serpong Paradise",
+    bulan:              4,
+    tahun:              2026,
+    quarter:            "Q2",
+    tipe:               "umbul-umbul",
+    icon:               "🚩",
+    jumlah_toko:        1,
+    biaya_cetak:        biayaProduksiCetak.umbulUmbul.total,     // 2.250.000
+    biaya_media:        0,
+    revenue_increment:  umbulData[0].sales_during_rev - umbulData[0].sales_before_rev, // -236.305.056
+    status:             "Selesai",
+    catatan:            "Samsung SEP Serpong Paradise Walk · brand awareness campaign",
+  },
+
+  {
+    id:                 "FLY-2026-05",
+    nama:               "Flyer Promo Mei 2026",
+    bulan:              5,
+    tahun:              2026,
+    quarter:            "Q2",
+    tipe:               "flyer",
+    icon:               "📄",
+    jumlah_toko:        80,
+    biaya_cetak:        5000000,
+    biaya_media:        0,
+    revenue_increment:  55000000,
+    status:             "Planned",
+    catatan:            "Test entry — hapus setelah cek",
+  },
+
+  // ── TEMPLATE — Uncomment & isi untuk campaign berikutnya ────────────────────
+  // {
+  //   id:                 "FLY-2026-05",
+  //   nama:               "Flyer Promo Mei",
+  //   bulan:              5,
+  //   tahun:              2026,
+  //   quarter:            "Q2",
+  //   tipe:               "flyer",
+  //   icon:               "📄",
+  //   jumlah_toko:        0,
+  //   biaya_cetak:        0,
+  //   biaya_media:        0,
+  //   revenue_increment:  0,
+  //   status:             "Planned",
+  //   catatan:            "",
+  // },
+
+];
+
+// ── REGISTRY AGGREGATES — computed otomatis dari campaignRegistry ─────────────
+const registryAggregates = {
+
+  // ── Totals ─────────────────────────────────────────────────────────────────
+  get total_biaya_cetak()   { return campaignRegistry.reduce((s,c) => s + c.biaya_cetak, 0); },
+  get total_biaya_media()   { return campaignRegistry.reduce((s,c) => s + c.biaya_media, 0); },
+  get total_biaya_semua()   { return this.total_biaya_cetak + this.total_biaya_media; },
+  get total_revenue_inc()   { return campaignRegistry.reduce((s,c) => s + c.revenue_increment, 0); },
+  get jumlah_campaign()     { return campaignRegistry.length; },
+  get jumlah_outlet_total() { return campaignRegistry.reduce((s,c) => s + c.jumlah_toko, 0); },
+
+  // ── ROI ────────────────────────────────────────────────────────────────────
+  get blended_roi_cetak()   {
+    const c = this.total_biaya_cetak;
+    return c > 0 ? parseFloat((this.total_revenue_inc / c).toFixed(1)) : 0;
+  },
+  get blended_roi_semua()   {
+    const t = this.total_biaya_semua;
+    return t > 0 ? parseFloat((this.total_revenue_inc / t).toFixed(1)) : 0;
+  },
+
+  // ── Filter helpers ─────────────────────────────────────────────────────────
+  byTipe(tipe)    { return campaignRegistry.filter(c => c.tipe === tipe); },
+  byBulan(bulan)  { return campaignRegistry.filter(c => c.bulan === bulan); },
+  byQuarter(q)    { return campaignRegistry.filter(c => c.quarter === q); },
+  byStatus(s)     { return campaignRegistry.filter(c => c.status === s); },
+
+  // ── Per-bulan breakdown (1–12) ─────────────────────────────────────────────
+  get biaya_cetak_by_bulan() {
+    const m = {};
+    for (let i = 1; i <= 12; i++) {
+      m[i] = campaignRegistry
+        .filter(c => c.bulan === i)
+        .reduce((s,c) => s + c.biaya_cetak, 0);
+    }
+    return m;
+  },
+  get revenue_inc_by_bulan() {
+    const m = {};
+    for (let i = 1; i <= 12; i++) {
+      m[i] = campaignRegistry
+        .filter(c => c.bulan === i)
+        .reduce((s,c) => s + c.revenue_increment, 0);
+    }
+    return m;
+  },
+
+  // ── Cumulative YTD per bulan ───────────────────────────────────────────────
+  get cumulative_cetak_by_bulan() {
+    const monthly = this.biaya_cetak_by_bulan;
+    const cum = {}; let run = 0;
+    for (let i = 1; i <= 12; i++) { run += (monthly[i]||0); cum[i] = run; }
+    return cum;
+  },
+
+  // ── Per-tipe breakdown ─────────────────────────────────────────────────────
+  get biaya_cetak_by_tipe() {
+    const tipes = [...new Set(campaignRegistry.map(c=>c.tipe))];
+    const out = {};
+    tipes.forEach(t => {
+      out[t] = campaignRegistry.filter(c=>c.tipe===t).reduce((s,c)=>s+c.biaya_cetak,0);
+    });
+    return out;
+  },
+  get revenue_inc_by_tipe() {
+    const tipes = [...new Set(campaignRegistry.map(c=>c.tipe))];
+    const out = {};
+    tipes.forEach(t => {
+      out[t] = campaignRegistry.filter(c=>c.tipe===t).reduce((s,c)=>s+c.revenue_increment,0);
+    });
+    return out;
+  },
+
+  // ── Per-quarter breakdown ──────────────────────────────────────────────────
+  get biaya_cetak_by_quarter() {
+    const qs = ['Q1','Q2','Q3','Q4'];
+    const out = {};
+    qs.forEach(q => {
+      out[q] = campaignRegistry.filter(c=>c.quarter===q).reduce((s,c)=>s+c.biaya_cetak,0);
+    });
+    return out;
+  },
+};

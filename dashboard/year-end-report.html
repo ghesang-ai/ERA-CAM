@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERA-CAM — Year-End Business Impact Report 2026</title>
+<link rel="stylesheet" href="nav.css?v=2">
+<style>
+:root {
+  --primary:#1a2e5a; --gold:#f4a11d; --green:#2dc653; --red:#e63946;
+  --blue:#3a86ff; --purple:#7c3aed; --orange:#ea580c;
+  --bg:#eef1f8; --card:#fff; --text:#1a1a2e; --muted:#6b7280; --border:#e5e7eb;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);}
+
+/* ─── HERO ─── */
+.hero{
+  background:linear-gradient(135deg,#0f172a 0%,#1a2e5a 50%,#1e3a6e 100%);
+  padding:36px 28px 32px;color:#fff;text-align:center;
+  border-bottom:3px solid var(--gold);
+}
+.hero-eyebrow{
+  font-size:10.5px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:12px;
+}
+.hero-title{font-size:28px;font-weight:900;line-height:1.2;margin-bottom:6px;}
+.hero-title span{color:var(--gold);}
+.hero-sub{font-size:13.5px;color:#94a3b8;margin-bottom:20px;line-height:1.6;}
+.hero-meta{
+  display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
+}
+.hero-chip{
+  font-size:11.5px;font-weight:700;padding:5px 16px;border-radius:20px;
+  background:rgba(255,255,255,0.1);color:#e2e8f0;border:1px solid rgba(255,255,255,0.2);
+  display:flex;align-items:center;gap:6px;
+}
+.hero-chip.gold{background:rgba(244,161,29,0.15);color:var(--gold);border-color:rgba(244,161,29,0.3);}
+.hero-chip.green{background:rgba(45,198,83,0.15);color:#6ee7a0;border-color:rgba(45,198,83,0.3);}
+
+/* ─── BODY ─── */
+.body{padding:24px 28px;max-width:1100px;margin:0 auto;}
+@media(max-width:600px){.body{padding:14px 14px;}}
+
+/* ─── CONFIG CARD ─── */
+.config-card{
+  background:var(--card);border-radius:16px;padding:24px 26px;
+  box-shadow:0 2px 16px rgba(0,0,0,0.08);margin-bottom:24px;
+}
+.config-title{font-size:13px;font-weight:800;color:var(--primary);margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;}
+.config-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:640px){.config-grid{grid-template-columns:1fr;}}
+.config-group{display:flex;flex-direction:column;gap:5px;}
+.config-label{font-size:11.5px;font-weight:700;color:var(--text);}
+.config-select,.config-input{
+  padding:9px 13px;border-radius:9px;border:1.5px solid var(--border);
+  font-size:13px;color:var(--text);background:#fff;outline:none;
+  transition:border-color 0.15s;font-family:inherit;
+}
+.config-select:focus,.config-input:focus{border-color:var(--blue);}
+
+/* Sections checkboxes */
+.sections-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;}
+@media(max-width:640px){.sections-grid{grid-template-columns:1fr 1fr;}}
+.section-check{
+  display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;
+  border:1.5px solid var(--border);cursor:pointer;transition:all 0.15s;
+  font-size:12px;font-weight:600;color:var(--text);background:#fafbfc;
+  user-select:none;
+}
+.section-check:hover{border-color:var(--blue);background:#eff6ff;}
+.section-check.checked{border-color:var(--primary);background:#eff6ff;color:var(--primary);}
+.section-check input{display:none;}
+.section-check-icon{font-size:14px;}
+
+/* ─── GENERATE BUTTON ─── */
+.gen-bar{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  padding:16px 26px;background:#f8f9fb;border-top:1px solid var(--border);border-radius:0 0 16px 16px;
+  margin:-24px -26px -24px;margin-top:20px;
+}
+.btn-generate{
+  padding:12px 28px;border-radius:10px;font-size:14px;font-weight:800;
+  background:linear-gradient(135deg,var(--primary),#3a86ff);color:#fff;
+  border:none;cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;gap:9px;box-shadow:0 4px 14px rgba(26,46,90,0.3);
+}
+.btn-generate:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,46,90,0.4);}
+.btn-generate:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.btn-print{
+  padding:10px 20px;border-radius:9px;font-size:12.5px;font-weight:700;
+  background:#fff;color:var(--primary);border:2px solid var(--primary);cursor:pointer;
+  display:flex;align-items:center;gap:7px;transition:all 0.15s;
+}
+.btn-print:hover{background:#eff6ff;}
+.btn-print:disabled{opacity:0.4;cursor:not-allowed;}
+
+/* ─── PROGRESS ─── */
+.progress-bar{
+  background:#e5e7eb;border-radius:6px;height:6px;overflow:hidden;margin-bottom:6px;
+}
+.progress-fill{
+  height:100%;border-radius:6px;
+  background:linear-gradient(90deg,var(--primary),var(--blue));
+  transition:width 0.5s ease;width:0%;
+}
+.progress-label{font-size:11.5px;color:var(--muted);font-weight:600;}
+.progress-wrap{flex:1;min-width:200px;}
+
+/* ─── REPORT OUTPUT ─── */
+.report-output{display:flex;flex-direction:column;gap:0;}
+
+/* Report header (visible in report) */
+.report-doc-header{
+  background:linear-gradient(135deg,#0f172a,#1a2e5a);
+  border-radius:16px 16px 0 0;padding:28px 32px;color:#fff;
+  display:none; /* shown after generation */
+}
+.report-doc-header.visible{display:block;}
+.rdh-eyebrow{font-size:10px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.rdh-title{font-size:22px;font-weight:900;margin-bottom:4px;}
+.rdh-meta{font-size:12px;color:#94a3b8;display:flex;gap:16px;flex-wrap:wrap;}
+
+/* Section cards */
+.report-section{
+  background:var(--card);border-left:4px solid transparent;
+  padding:0;overflow:hidden;
+  box-shadow:0 1px 6px rgba(0,0,0,0.06);
+}
+.report-section + .report-section{border-top:1px solid #f3f4f6;}
+.report-section:last-child{border-radius:0 0 16px 16px;}
+.report-section-hdr{
+  padding:16px 24px;display:flex;align-items:center;gap:10px;cursor:pointer;
+  background:#fafbfc;border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+.report-section-hdr:hover{background:#f0f2f7;}
+.rsh-icon{font-size:18px;flex-shrink:0;}
+.rsh-info{flex:1;}
+.rsh-title{font-size:13.5px;font-weight:800;color:var(--text);}
+.rsh-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+.rsh-status{
+  font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:8px;
+  flex-shrink:0;
+}
+.rsh-pending{background:#f1f5f9;color:var(--muted);}
+.rsh-loading{background:#dbeafe;color:#1e40af;animation:pulse 1.5s ease-in-out infinite;}
+.rsh-done{background:#dcfce7;color:#166534;}
+.rsh-error{background:#fee2e2;color:#991b1b;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+.rsh-arrow{font-size:11px;color:var(--muted);transition:transform 0.2s;}
+.rsh-arrow.open{transform:rotate(180deg);}
+
+.section-content{
+  padding:20px 24px;display:none;
+  border-top:1px solid var(--border);
+}
+.section-content.visible{display:block;}
+
+/* AI Text Rendering */
+.ai-text h2{font-size:15px;font-weight:800;color:var(--primary);margin:16px 0 8px;display:flex;align-items:center;gap:8px;}
+.ai-text h2:first-child{margin-top:0;}
+.ai-text h3{font-size:13.5px;font-weight:700;color:var(--text);margin:12px 0 6px;}
+.ai-text p{font-size:13px;line-height:1.7;color:var(--text);margin-bottom:8px;}
+.ai-text ul,.ai-text ol{padding-left:20px;margin-bottom:10px;}
+.ai-text li{font-size:13px;line-height:1.7;color:var(--text);margin-bottom:3px;}
+.ai-text strong{font-weight:700;color:var(--primary);}
+.ai-text em{color:var(--muted);font-style:italic;}
+.ai-text code{
+  font-family:'SF Mono',Consolas,monospace;font-size:11.5px;
+  background:#f1f5f9;color:#0f172a;padding:1px 5px;border-radius:4px;
+}
+.ai-text blockquote{
+  border-left:3px solid var(--blue);padding:8px 16px;background:#f0f7ff;
+  border-radius:0 8px 8px 0;margin:8px 0;font-size:13px;color:var(--primary);font-weight:600;
+}
+.ai-text hr{border:none;border-top:1.5px solid var(--border);margin:14px 0;}
+/* KPI highlight in AI text */
+.ai-text .kpi-inline{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#eff6ff;color:var(--primary);font-weight:700;font-size:12px;
+  padding:2px 8px;border-radius:6px;border:1px solid #bfdbfe;
+}
+
+/* Loading shimmer */
+.shimmer{
+  background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);
+  background-size:200% 100%;animation:shimmer 1.5s infinite;
+  border-radius:6px;height:14px;margin-bottom:8px;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.shimmer-wrap{padding:16px 0;}
+
+/* ─── SUMMARY BAR ─── */
+.summary-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+  background:linear-gradient(135deg,#0f172a,#1a2e5a);
+  padding:18px 24px;margin-bottom:0;
+}
+@media(max-width:768px){.summary-bar{grid-template-columns:repeat(2,1fr);}}
+.sb-item{text-align:center;}
+.sb-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#64748b;margin-bottom:4px;}
+.sb-value{font-size:18px;font-weight:900;color:#fff;}
+.sb-value.gold{color:var(--gold);}
+.sb-value.green{color:#6ee7a0;}
+.sb-value.red{color:#fca5a5;}
+
+/* ─── PRINT ─── */
+@media print{
+  .topnav,.config-card,.btn-generate,.btn-print,.progress-wrap,
+  .rsh-arrow,.report-section-hdr{display:none!important;}
+  .body{padding:0!important;max-width:100%!important;}
+  .hero{padding:20px!important;border-radius:0!important;}
+  .report-doc-header{border-radius:0!important;}
+  .section-content{display:block!important;padding:16px 20px!important;}
+  .report-section-hdr .rsh-info,.report-section-hdr .rsh-icon,.rsh-status{display:flex!important;}
+  .report-section-hdr{display:flex!important;cursor:default!important;}
+  .report-section{break-inside:avoid;}
+  footer{display:none!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <a class="logo" href="index.html">
+    <div class="logo-icon">EC</div>
+    <div><div class="logo-text">ERA-CAM</div><div class="logo-sub">Erajaya Campaign Monitoring</div></div>
+  </a>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
+  <nav>
+    <div class="nav-item"><a href="index.html" class="nav-link">Overview</a></div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Flyer <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Flyer Campaign</div>
+        <a href="flyer.html"><span class="icon">📊</span><span class="lbl">Flyer Promo Feb By Sales</span></a>
+        <a href="flyer-february.html"><span class="icon">📦</span><span class="lbl">Flyer Promo Feb By Qty</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Spanduk <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Spanduk Campaign</div>
+        <a href="spanduk.html"><span class="icon">🪧</span><span class="lbl">Spanduk Fasad</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Umbul-Umbul <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Umbul-Umbul Campaign</div>
+        <a href="umbul-umbul.html"><span class="icon">🏮</span><span class="lbl">Umbul-Umbul SEP Serpong</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">AI Analysis <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">AI-Powered Analysis</div>
+        <a href="brand.html"><span class="icon">🏷️</span><span class="lbl">Per Brand Scorecard</span></a>
+        <a href="ai-summary.html"><span class="icon">🤖</span><span class="lbl">AI Executive Summary</span></a>
+        <a href="annual-report.html"><span class="icon">📅</span><span class="lbl">Laporan Tahunan 2026</span></a>
+        <a href="year-end-report.html" style="background:#fff7ed"><span class="icon">🏆</span><span class="lbl">Year-End Business Impact</span><span class="dbadge" style="background:#7c3aed;color:#fff">Phase 5</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link nav-admin">⚙ Admin <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Admin Tools</div>
+        <a href="campaign-input.html"><span class="icon">➕</span><span class="lbl">Input Campaign Baru</span></a>
+        <a href="admin.html"><span class="icon">⚙</span><span class="lbl">Admin Panel</span></a>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">ERA-CAM · AI Business Intelligence</div>
+  <div class="hero-title">Year-End Business Impact Report <span id="heroYear">2026</span></div>
+  <div class="hero-sub">
+    Laporan komprehensif dampak bisnis kampanye promosi cetak — analisis ROI, efisiensi biaya,<br>
+    dan rekomendasi strategis berbasis data aktual, dianalisis oleh Claude AI.
+  </div>
+  <div class="hero-meta">
+    <span class="hero-chip" id="heroChipCampaign">⏳ Memuat data...</span>
+    <span class="hero-chip gold" id="heroChipCetak">🖨️ —</span>
+    <span class="hero-chip green" id="heroChipRoi">💹 ROI: —</span>
+    <span class="hero-chip" id="heroChipDate">📅 —</span>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- CONFIG CARD -->
+  <div class="config-card">
+    <div class="config-title">⚙️ Konfigurasi Laporan</div>
+    <div class="config-grid">
+      <div class="config-group">
+        <label class="config-label">Tahun Laporan</label>
+        <select class="config-select" id="cfgYear">
+          <option value="2026" selected>2026</option>
+          <option value="2027">2027</option>
+        </select>
+      </div>
+      <div class="config-group">
+        <label class="config-label">Model AI</label>
+        <select class="config-select" id="cfgModel">
+          <optgroup label="🟠 Anthropic — Claude">
+            <option value="sonnet" selected>✨ Claude Sonnet 4 — Terbaik (Rekomendasi)</option>
+            <option value="haiku">⚡ Claude Haiku 4 — Cepat &amp; Hemat</option>
+          </optgroup>
+          <optgroup label="🔵 DeepSeek AI">
+            <option value="deepseek-chat">🚀 DeepSeek-V3 — Cepat &amp; Sangat Murah</option>
+            <option value="deepseek-reasoner">🧠 DeepSeek-R1 Reasoner — Deep Thinking</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="config-group">
+        <label class="config-label">Target Budget Cetak 2027 (Rp) <span style="color:var(--muted);font-weight:400">opsional</span></label>
+        <input class="config-input" id="cfgBudget2027" type="number" placeholder="contoh: 50000000" min="0">
+      </div>
+      <div class="config-group">
+        <label class="config-label">Catatan untuk AI <span style="color:var(--muted);font-weight:400">opsional</span></label>
+        <input class="config-input" id="cfgNotes" type="text" placeholder="contoh: Fokus ke campaign Q2, bandingkan ROI spanduk vs flyer">
+      </div>
+    </div>
+
+    <!-- Sections Selector -->
+    <div style="margin-top:18px;">
+      <div class="config-label" style="margin-bottom:8px;">Pilih Seksi Laporan yang Akan Digenerate:</div>
+      <div class="sections-grid" id="sectionsGrid">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <div class="gen-bar">
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label" id="progressLabel">Pilih seksi dan klik Generate untuk memulai</div>
+      </div>
+      <button class="btn-print" id="btnPrint" onclick="printReport()" disabled>🖨️ Print / PDF</button>
+      <button class="btn-generate" id="btnGenerate" onclick="generateReport()">
+        ✨ Generate Full Report
+      </button>
+    </div>
+  </div>
+
+  <!-- REPORT OUTPUT -->
+  <div class="report-output" id="reportOutput">
+
+    <!-- Document header (appears after generation) -->
+    <div class="report-doc-header" id="reportDocHeader">
+      <div class="rdh-eyebrow">ERA-CAM · Laporan Resmi</div>
+      <div class="rdh-title">Year-End Business Impact Report <span id="rdh-year">2026</span></div>
+      <div class="rdh-meta">
+        <span>📅 Dibuat: <span id="rdh-date">—</span></span>
+        <span>🤖 Dianalisis oleh <span id="rdh-model">Claude AI</span></span>
+        <span>📊 Berdasarkan <span id="rdh-campaigns">—</span> campaign aktual</span>
+        <span>GH Ghesang · Erajaya Campaign Monitoring</span>
+      </div>
+    </div>
+
+    <!-- Summary bar (appears after generation) -->
+    <div class="summary-bar" id="reportSummaryBar" style="display:none;">
+      <div class="sb-item"><div class="sb-label">Total Biaya Cetak</div><div class="sb-value gold" id="sb1">—</div></div>
+      <div class="sb-item"><div class="sb-label">Total Revenue Inc.</div><div class="sb-value green" id="sb2">—</div></div>
+      <div class="sb-item"><div class="sb-label">Blended ROI Cetak</div><div class="sb-value gold" id="sb3">—</div></div>
+      <div class="sb-item"><div class="sb-label">Campaign Terekam</div><div class="sb-value" id="sb4">—</div></div>
+    </div>
+
+    <!-- Section cards (populated by JS) -->
+    <div id="sectionCards"></div>
+
+  </div>
+
+</div>
+
+<footer style="background:var(--primary);color:#a8b8d8;text-align:center;padding:14px;font-size:12px;margin-top:28px;">
+  <b style="color:var(--gold)">ERA-CAM</b> · Year-End Business Impact Report · Phase 5 ·
+  Powered by <b style="color:var(--gold)">Claude AI (Anthropic)</b> &amp; <b style="color:#a78bfa">DeepSeek AI</b> ·
+  Data dari <code style="color:#f4a11d">campaignRegistry</code> ·
+  <a href="settings.html" style="color:#6ee7a0;text-decoration:none;font-weight:700;">⚙ API Keys Settings</a>
+</footer>
+
+<script src="data.js"></script>
+<script src="chatbot.js?v=3"></script>
+<script>
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const MONTHS_S = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+
+const REPORT_SECTIONS = [
+  { id:'exec',    icon:'📋', title:'Executive Summary',          sub:'Ringkasan eksekutif seluruh campaign 2026',              color:'#1a2e5a' },
+  { id:'finance', icon:'💰', title:'Financial Overview',          sub:'Analisis biaya cetak, media & total investasi',          color:'#d97706' },
+  { id:'roi',     icon:'💹', title:'ROI & Investment Analysis',   sub:'Return on Investment per campaign & per tipe media',     color:'#059669' },
+  { id:'impact',  icon:'📈', title:'Business Impact Assessment',  sub:'Dampak nyata ke revenue, traffic & konversi toko',       color:'#7c3aed' },
+  { id:'insight', icon:'🔮', title:'Trend & Predictive Insights', sub:'Pola seasonal, tren kampanye, proyeksi ke depan',        color:'#0ea5e9' },
+  { id:'recom',   icon:'🎯', title:'Rekomendasi Strategis 2027',  sub:'Action plan budget, media mix & prioritas campaign',     color:'#ea580c' },
+];
+
+let checkedSections = new Set(REPORT_SECTIONS.map(s => s.id));
+let generatedSections = new Set();
+let isGenerating = false;
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+const fmtM  = v => { if(!v) return 'Rp 0'; const a=Math.abs(v); let s=a>=1e9?(a/1e9).toFixed(2)+' M':a>=1e6?(a/1e6).toFixed(1)+' jt':a.toLocaleString('id-ID'); return (v<0?'-':'')+'Rp '+s; };
+const fmtRp = v => 'Rp '+Math.abs(v).toLocaleString('id-ID');
+
+function buildDataSummary() {
+  if (typeof campaignRegistry === 'undefined') return 'Data tidak tersedia';
+  const ra = registryAggregates;
+  const lines = campaignRegistry.map(c =>
+    `  • ${c.id} | ${c.nama} | ${MONTHS_S[c.bulan-1]} ${c.tahun} | ${c.tipe} | ${c.jumlah_toko} outlet | Biaya Cetak: ${fmtM(c.biaya_cetak)} | Biaya Media: ${fmtM(c.biaya_media)} | Revenue Inc: ${fmtM(c.revenue_increment)} | ROI Cetak: ${c.biaya_cetak>0?(c.revenue_increment/c.biaya_cetak).toFixed(1)+'x':'—'} | Status: ${c.status}`
+  ).join('\n');
+
+  const budget2027 = document.getElementById('cfgBudget2027').value;
+  const notes      = document.getElementById('cfgNotes').value;
+
+  return `
+CAMPAIGN REGISTRY 2026 (${campaignRegistry.length} kampanye):
+${lines}
+
+RINGKASAN AGREGAT:
+• Total Biaya Cetak YTD  : ${fmtM(ra.total_biaya_cetak)}
+• Total Biaya Media YTD  : ${fmtM(ra.total_biaya_media)}
+• Total Investasi        : ${fmtM(ra.total_biaya_semua)}
+• Net Revenue Increment  : ${fmtM(ra.total_revenue_inc)}
+• Blended ROI Cetak      : ${ra.total_biaya_cetak>0?(ra.total_revenue_inc/ra.total_biaya_cetak).toFixed(1)+'x':'—'}
+• Total Outlet Coverage  : ${ra.jumlah_outlet_total} toko
+• Jumlah Campaign        : ${ra.jumlah_campaign} campaign
+
+DETAIL PER TIPE MEDIA:
+${Object.entries(ra.biaya_cetak_by_tipe).map(([t,v]) => {
+  const rev = (ra.revenue_inc_by_tipe||{})[t] || 0;
+  const roi = v > 0 ? (rev/v).toFixed(1)+'x' : '—';
+  return `  • ${t}: Biaya Cetak ${fmtM(v)}, Revenue Inc ${fmtM(rev)}, ROI ${roi}`;
+}).join('\n')}
+
+BREAKDOWN PER QUARTER:
+${Object.entries(ra.biaya_cetak_by_quarter).filter(([,v])=>v>0).map(([q,v]) => `  • ${q}: ${fmtM(v)}`).join('\n') || '  • Q1-Q2 2026 saja (data belum lengkap)'}
+
+KONTEKS BISNIS ERAJAYA:
+• ERA-CAM = Sistem monitoring kampanye promosi toko Erafone/Erajaya wilayah Jabodetabek-Banten
+• Flyer Promo Feb: campaign terbesar coverage (136 toko), biaya cetak terjangkau (Rp 7,3jt), ROI cetak 11,3x
+• Spanduk Fasad: investasi terbesar (Rp 22,3jt cetak + Rp 23,9jt media), 11/13 outlet BERHASIL (84,6%)
+• Umbul-Umbul: brand awareness Samsung SEP, revenue turun selama campaign (brand activation, bukan direct revenue)
+• Spanduk ROI terbaik per outlet: 317x (Pajajaran Pamulang), 299x (Grand Batavia)
+• Quarter paling aktif: Q1 (Flyer + Spanduk Feb), Q2 (Umbul-Umbul Apr)
+${budget2027 ? `• Target Budget Cetak 2027 yang disediakan: ${fmtM(parseFloat(budget2027))}` : ''}
+${notes ? `• Catatan tambahan dari user: ${notes}` : ''}
+`.trim();
+}
+
+const SECTION_PROMPTS = {
+  exec: (data) => `Anda adalah Senior Business Intelligence Analyst untuk Erajaya/Erafone.
+Buat EXECUTIVE SUMMARY laporan tahunan 2026 untuk kampanye promosi cetak ERA-CAM.
+
+${data}
+
+Tulis Executive Summary yang:
+1. Dimulai dengan 2-3 kalimat opening statement tentang performa keseluruhan 2026
+2. Highlight 3-4 angka kunci terpenting (pakai format bold)
+3. Ringkas performa tiap tipe campaign dalam 1-2 kalimat masing-masing
+4. Tutup dengan overall assessment (positif/negatif/netral) dan tone forward-looking
+
+Format: gunakan heading ## dan bullet points. Panjang: 250-350 kata. Bahasa Indonesia profesional.`,
+
+  finance: (data) => `Anda adalah CFO Analyst untuk Erajaya/Erafone.
+Buat FINANCIAL OVERVIEW section untuk laporan tahunan 2026.
+
+${data}
+
+Analisis finansial yang mencakup:
+1. **Total pengeluaran** — breakdown biaya cetak vs media, proporsi tiap tipe
+2. **Perbandingan efisiensi biaya** — biaya per outlet tiap tipe campaign
+3. **Cost structure analysis** — tipe mana paling cost-efficient vs paling mahal
+4. **Cash flow timing** — distribusi pengeluaran Q1 vs Q2 (kapan uang paling banyak keluar)
+5. **Investment ratio** — berapa % total investasi ke cetak vs media
+6. **Red/Green flags finansial** — apa yang perlu diperhatikan
+
+Format: ## heading, bullet points, angka spesifik dalam **bold**. 300-400 kata. Bahasa Indonesia.`,
+
+  roi: (data) => `Anda adalah ROI Analyst untuk Erajaya/Erafone.
+Buat ROI & INVESTMENT ANALYSIS section untuk laporan tahunan 2026.
+
+${data}
+
+Analisis ROI yang mencakup:
+1. **Blended ROI** keseluruhan vs target industry benchmark retail (biasanya 3-5x untuk promosi)
+2. **ROI per tipe media** — ranking dari tertinggi ke terendah, jelaskan mengapa
+3. **Best performing campaign** — outlet/tipe dengan ROI terbaik
+4. **Worst performing** — apa yang tidak efektif dan kenapa
+5. **ROI breakdown** — media-only ROI vs full-cost ROI untuk Spanduk
+6. **Interpretasi Umbul-Umbul** — ROI negatif bukan berarti gagal (brand awareness), jelaskan
+7. **Investment efficiency score** — kalau ada rating atau ranking
+
+Format: ## heading, tabel sederhana jika perlu, bullet points. 300-400 kata. Bahasa Indonesia.`,
+
+  impact: (data) => `Anda adalah Business Impact Analyst untuk Erajaya/Erafone.
+Buat BUSINESS IMPACT ASSESSMENT section untuk laporan tahunan 2026.
+
+${data}
+
+Analisis dampak bisnis yang mencakup:
+1. **Revenue impact** — total revenue increment yang dihasilkan, berapa % dari total investasi
+2. **Traffic impact** — Spanduk Walk-In Growth +22,5%, Umbul-Umbul looker +700%, Flyer Strong Impact 85 outlet
+3. **Market penetration** — 150 outlet tercover, area Jabodetabek-Banten, market share implications
+4. **Campaign success rate** — Flyer 94,8% impact rate, Spanduk 84,6% success rate
+5. **Qualitative impacts** — brand visibility, toko yang ikut campaign vs tidak
+6. **ROI multiplier effect** — untuk setiap Rp 1 diinvestasikan ke cetak, berapa revenue yang datang
+7. **Overall business value** — assessment keseluruhan apakah investasi cetak ini justified
+
+Format: ## heading, sub-heading ###, angka spesifik bold. 350-450 kata. Bahasa Indonesia.`,
+
+  insight: (data) => `Anda adalah Business Intelligence & Predictive Analytics specialist untuk Erajaya/Erafone.
+Buat TREND & PREDICTIVE INSIGHTS section untuk laporan tahunan 2026.
+
+${data}
+
+Insight dan prediksi yang mencakup:
+1. **Seasonal patterns** — Q1 (Feb) paling aktif karena apa? Pola optimal untuk 2027
+2. **Campaign cadence** — seberapa sering idealnya campaign cetak dijalankan?
+3. **Tipe media trend** — Flyer coverage luas vs Spanduk targeted, mana yang lebih scalable?
+4. **Diminishing returns** — apakah ada tanda saturasi campaign di area tertentu?
+5. **Growth opportunities** — outlet/area mana yang belum tercover tapi berpotensi?
+6. **Risk factors** — apa saja risiko kampanye cetak di 2027? (digital shift, cost increase, dll)
+7. **Projection** — jika trend 2026 berlanjut, estimasi performa 2027
+
+Format: ## heading, bullet points, berani buat prediksi konkret dengan angka estimasi. 350-450 kata. Bahasa Indonesia.`,
+
+  recom: (data) => `Anda adalah Chief Marketing Strategy Officer untuk Erajaya/Erafone.
+Buat STRATEGIC RECOMMENDATIONS 2027 section — ini adalah bagian paling penting dari laporan.
+
+${data}
+
+Rekomendasi strategis yang actionable:
+1. **Budget Allocation 2027** — berapa ideal budget cetak total, split per tipe media (%, berikan angka spesifik)
+2. **Campaign Calendar** — kapan sebaiknya campaign dijalankan? (bulan/quarter optimal)
+3. **Media Mix Optimization** — kombinasi ideal Flyer:Spanduk:Umbul-Umbul berdasarkan ROI data
+4. **Priority outlets** — karakteristik outlet yang harus diprioritaskan berdasarkan data performa
+5. **New media types** — apakah perlu explore tipe cetak lain? (baliho, videotron, dll)
+6. **Metrics to track** — KPI apa yang harus dimonitor lebih ketat di 2027
+7. **Quick wins** — 3 hal yang bisa langsung dilakukan bulan depan
+8. **Long-term strategy** — arah 2-3 tahun ke depan
+
+Format: ## heading, numbered lists, **bold** untuk angka dan action items kunci. 400-500 kata. WAJIB berikan angka/persentase konkret. Bahasa Indonesia profesional tapi action-oriented.`,
+};
+
+// ─── INIT UI ──────────────────────────────────────────────────────────────────
+function initUI() {
+  // Hero chips
+  if (typeof registryAggregates !== 'undefined') {
+    const ra = registryAggregates;
+    document.getElementById('heroChipCampaign').textContent = `📊 ${ra.jumlah_campaign} Campaign · ${ra.jumlah_outlet_total} Outlet`;
+    document.getElementById('heroChipCetak').textContent = `🖨️ Cetak: ${fmtM(ra.total_biaya_cetak)}`;
+    const roi = ra.total_biaya_cetak > 0 ? (ra.total_revenue_inc/ra.total_biaya_cetak).toFixed(1) : '—';
+    document.getElementById('heroChipRoi').textContent = `💹 ROI: ${roi}x`;
+  }
+  document.getElementById('heroChipDate').textContent = `📅 ${new Date().toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'})}`;
+  document.getElementById('heroYear').textContent = document.getElementById('cfgYear').value;
+
+  // Sections grid
+  const grid = document.getElementById('sectionsGrid');
+  grid.innerHTML = REPORT_SECTIONS.map(s => `
+    <label class="section-check checked" id="chk_${s.id}" onclick="toggleSection('${s.id}',this)">
+      <input type="checkbox" checked>
+      <span class="section-check-icon">${s.icon}</span>
+      <span>${s.title}</span>
+    </label>`).join('');
+
+  // Section cards
+  buildSectionCards();
+}
+
+function toggleSection(id, el) {
+  if (checkedSections.has(id)) {
+    checkedSections.delete(id);
+    el.classList.remove('checked');
+  } else {
+    checkedSections.add(id);
+    el.classList.add('checked');
+  }
+}
+
+function buildSectionCards() {
+  const container = document.getElementById('sectionCards');
+  container.innerHTML = REPORT_SECTIONS.map((s,i) => `
+    <div class="report-section" id="sec_${s.id}" style="border-left-color:${s.color}">
+      <div class="report-section-hdr" onclick="toggleCard('${s.id}')">
+        <span class="rsh-icon">${s.icon}</span>
+        <div class="rsh-info">
+          <div class="rsh-title">${s.title}</div>
+          <div class="rsh-sub">${s.sub}</div>
+        </div>
+        <span class="rsh-status rsh-pending" id="sts_${s.id}">Menunggu</span>
+        <span class="rsh-arrow" id="arr_${s.id}">▼</span>
+      </div>
+      <div class="section-content" id="cnt_${s.id}">
+        <div style="color:var(--muted);font-size:13px;font-style:italic;padding:8px 0;">
+          Klik <b>Generate Full Report</b> untuk mengisi seksi ini dengan analisis AI.
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleCard(id) {
+  const cnt = document.getElementById('cnt_'+id);
+  const arr = document.getElementById('arr_'+id);
+  const open = cnt.classList.contains('visible');
+  cnt.classList.toggle('visible', !open);
+  arr.classList.toggle('open', !open);
+}
+
+// ─── GENERATE ─────────────────────────────────────────────────────────────────
+function isDeepSeekModel(model) {
+  return model === 'deepseek-chat' || model === 'deepseek-reasoner' || model.startsWith('deepseek');
+}
+
+async function generateReport() {
+  if (isGenerating) return;
+  if (checkedSections.size === 0) return alert('Pilih minimal 1 seksi laporan');
+
+  const model = document.getElementById('cfgModel').value;
+  const useDeepSeek = isDeepSeekModel(model);
+  const lsKey = useDeepSeek ? 'eracam_deepseek_key' : 'eracam_api_key';
+  const apiKey = localStorage.getItem(lsKey) || '';
+  if (!apiKey) {
+    const provider = useDeepSeek ? 'DeepSeek' : 'Anthropic';
+    return alert(`${provider} API Key belum dikonfigurasi.\n\nMasukkan key di: Admin → API Keys Settings (menu navigasi atas).\n\nAtau langsung buka: /settings.html`);
+  }
+
+  isGenerating = true;
+  generatedSections.clear();
+  const data   = buildDataSummary();
+  const toGen  = REPORT_SECTIONS.filter(s => checkedSections.has(s.id));
+  const btnGen = document.getElementById('btnGenerate');
+  const btnPrt = document.getElementById('btnPrint');
+
+  btnGen.disabled = true;
+  btnGen.innerHTML = '<span style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;display:inline-block;animation:spin 0.7s linear infinite;"></span> Generating...';
+
+  // Show report header & summary bar
+  document.getElementById('reportDocHeader').classList.add('visible');
+  document.getElementById('rdh-year').textContent      = document.getElementById('cfgYear').value;
+  document.getElementById('rdh-date').textContent      = new Date().toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  document.getElementById('rdh-campaigns').textContent = `${campaignRegistry?.length||0}`;
+  // Show which AI model was used
+  const modelLabels = {
+    'sonnet':            'Claude Sonnet 4 (Anthropic)',
+    'haiku':             'Claude Haiku 4 (Anthropic)',
+    'deepseek-chat':     'DeepSeek-V3',
+    'deepseek-reasoner': 'DeepSeek-R1 Reasoner',
+  };
+  document.getElementById('rdh-model').textContent = modelLabels[model] || model;
+
+  const sb = document.getElementById('reportSummaryBar');
+  sb.style.display = 'grid';
+  if (typeof registryAggregates !== 'undefined') {
+    const ra = registryAggregates;
+    document.getElementById('sb1').textContent = fmtM(ra.total_biaya_cetak);
+    document.getElementById('sb2').textContent = fmtM(ra.total_revenue_inc);
+    const roi = ra.total_biaya_cetak>0?(ra.total_revenue_inc/ra.total_biaya_cetak).toFixed(1)+'x':'—';
+    document.getElementById('sb3').textContent = roi;
+    document.getElementById('sb4').textContent = (ra.jumlah_campaign||0)+' campaign';
+  }
+
+  // Generate each section
+  for (let i = 0; i < toGen.length; i++) {
+    const sec = toGen[i];
+    const pct = Math.round(((i) / toGen.length) * 100);
+    setProgress(pct, `Generating ${i+1}/${toGen.length}: ${sec.title}...`);
+    setSectionStatus(sec.id, 'loading', '⏳ Generating...');
+    setSectionContent(sec.id, shimmerHTML());
+    openCard(sec.id);
+
+    try {
+      const prompt   = SECTION_PROMPTS[sec.id](data);
+      const result   = await callClaude(model, prompt, apiKey);
+      setSectionStatus(sec.id, 'done', '✅ Selesai');
+      setSectionContent(sec.id, `<div class="ai-text">${formatAI(result)}</div>`);
+      generatedSections.add(sec.id);
+    } catch (e) {
+      setSectionStatus(sec.id, 'error', '❌ Error');
+      setSectionContent(sec.id, `<div style="color:var(--red);font-size:13px;padding:8px 0">❌ Gagal generate: ${e.message}</div>`);
+    }
+  }
+
+  setProgress(100, `✅ Laporan selesai — ${generatedSections.size}/${toGen.length} seksi berhasil digenerate`);
+  btnGen.disabled = false;
+  btnGen.innerHTML = '🔄 Regenerate Report';
+  btnPrt.disabled  = false;
+  isGenerating     = false;
+}
+
+// ─── AI API — smart routing (Anthropic or DeepSeek) ──────────────────────────
+async function callClaude(model, userPrompt, apiKey) {
+  const useDeepSeek = isDeepSeekModel(model);
+  const endpoint    = useDeepSeek ? '/api/deepseek' : '/api/claude';
+
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model,
+      api_key:    apiKey,
+      max_tokens: useDeepSeek ? 2000 : 1800,
+      messages:   [{ role: 'user', content: userPrompt }],
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || data.message || `HTTP ${res.status}`);
+  return data.content?.[0]?.text || '';
+}
+
+// ─── FORMAT AI TEXT ───────────────────────────────────────────────────────────
+function formatAI(text) {
+  return text
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/^---+$/gm, '<hr>')
+    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, '<ol>$&</ol>')
+    .replace(/^[-•·] (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, m => m.startsWith('<ol>') ? m : '<ul>'+m+'</ul>')
+    .replace(/\n{2,}/g, '</p><p>')
+    .replace(/^(?!<[houbl]|$)(.+)$/gm, '<p>$1</p>')
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>(<[houbl])/g, '$1')
+    .replace(/(<\/[houbl][^>]*>)<\/p>/g, '$1');
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function shimmerHTML() {
+  return `<div class="shimmer-wrap">
+    <div class="shimmer" style="width:90%"></div><div class="shimmer" style="width:75%"></div>
+    <div class="shimmer" style="width:85%"></div><div class="shimmer" style="width:60%"></div>
+    <div class="shimmer" style="width:80%"></div><div class="shimmer" style="width:70%"></div>
+  </div>`;
+}
+
+function setSectionStatus(id, state, label) {
+  const el = document.getElementById('sts_'+id);
+  if (!el) return;
+  el.className = `rsh-status rsh-${state}`;
+  el.textContent = label;
+}
+
+function setSectionContent(id, html) {
+  const el = document.getElementById('cnt_'+id);
+  if (!el) return;
+  el.innerHTML = html;
+  el.classList.add('visible');
+  document.getElementById('arr_'+id)?.classList.add('open');
+}
+
+function openCard(id) {
+  document.getElementById('cnt_'+id)?.classList.add('visible');
+  document.getElementById('arr_'+id)?.classList.add('open');
+}
+
+function setProgress(pct, label) {
+  document.getElementById('progressFill').style.width  = pct + '%';
+  document.getElementById('progressLabel').textContent = label;
+}
+
+function printReport() {
+  window.print();
+}
+
+// ─── MOBILE NAV ───────────────────────────────────────────────────────────────
+function toggleMobileNav() {
+  document.querySelector('.topnav nav').classList.toggle('open');
+  document.getElementById('navHamburger').classList.toggle('open');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initUI();
+  document.querySelectorAll('.nav-item > button.nav-link').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      if (window.innerWidth > 768) return;
+      e.stopPropagation();
+      const item = this.closest('.nav-item');
+      const isOpen = item.classList.contains('mobile-open');
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('mobile-open'));
+      if (!isOpen) item.classList.add('mobile-open');
+    });
+  });
+});
+</script>
+</body>
+</html>

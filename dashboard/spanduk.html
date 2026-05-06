@@ -146,7 +146,15 @@
         <a href="ai-summary.html"><span class="icon">🤖</span><span class="lbl">AI Executive Summary</span><span class="dbadge" style="background:#7c3aed;color:#fff">AI</span></a>
       </div>
     </div>
-    <div class="nav-item"><a href="admin.html" class="nav-link nav-admin">⚙ Admin</a></div>
+    <div class="nav-item">
+      <button type="button" class="nav-link nav-admin">⚙ Admin <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Admin Tools</div>
+        <a href="campaign-input.html" style="background:#fff7ed"><span class="icon">➕</span><span class="lbl">Input Campaign Baru</span><span class="dbadge" style="background:#ea580c;color:#fff">NEW</span></a>
+        <a href="settings.html" style="background:#f0fdf4"><span class="icon">🔑</span><span class="lbl">API Keys Settings</span><span class="dbadge" style="background:#059669;color:#fff">Baru</span></a>
+        <a href="admin.html"><span class="icon">⚙</span><span class="lbl">Admin Panel</span></a>
+      </div>
+    </div>
   </nav>
 </div>
 
@@ -196,15 +204,49 @@
       <div class="kpi-sub">Before vs During campaign</div>
     </div>
     <div class="kpi-card red">
-      <div class="kpi-label">Total Biaya Media</div>
+      <div class="kpi-label">Biaya Media (Pemasangan)</div>
       <div class="kpi-value" style="color:var(--red)" id="kpiBiaya">—</div>
-      <div class="kpi-sub">Total investasi media</div>
+      <div class="kpi-sub">Total biaya sewa/pasang spanduk</div>
     </div>
     <div class="kpi-card green">
       <div class="kpi-label">Best ROI Outlet</div>
       <div class="kpi-value" style="color:var(--green)" id="kpiBestROI">—</div>
       <div class="kpi-sub" id="kpiBestName">—</div>
     </div>
+  </div>
+</div>
+
+<!-- BIAYA PRODUKSI CETAK SPANDUK -->
+<div class="section" style="padding-top:0">
+  <div class="section-title" style="display:flex;align-items:center;gap:8px">
+    🖨️ Biaya Produksi Cetak — Spanduk Fasad BEBAS TUKAR
+    <span style="font-size:10px;background:#1a2e5a;color:#fff;padding:2px 9px;border-radius:8px;font-weight:700;letter-spacing:0.5px">INPUT AKTUAL</span>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="border-left-color:#7c3aed">
+      <div class="kpi-label">Biaya Produksi Cetak</div>
+      <div class="kpi-value" style="color:#7c3aed" id="spBiayaCetak">—</div>
+      <div class="kpi-sub">Total cetak 13 spanduk fasad</div>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-label">Biaya Cetak / Outlet</div>
+      <div class="kpi-value" style="color:var(--gold)" id="spBiayaPerOutlet">—</div>
+      <div class="kpi-sub">Rata-rata per spanduk</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-label">Total Investasi (Media + Cetak)</div>
+      <div class="kpi-value" style="color:var(--red)" id="spTotalInvestasi">—</div>
+      <div class="kpi-sub">Biaya pemasangan + produksi cetak</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-label">ROI Full Cost (Avg Berhasil)</div>
+      <div class="kpi-value" style="color:var(--blue)" id="spRoiFullCost">—</div>
+      <div class="kpi-sub">Profit / (Media + Cetak) · 11 outlet</div>
+    </div>
+  </div>
+  <div style="margin-top:10px; background:#eff6ff; border:1.5px solid #bfdbfe; border-radius:10px; padding:12px 16px; font-size:12.5px; color:#1e40af;">
+    <b>💡 ROI Full Cost vs ROI Media Only:</b> ROI yang ditampilkan di atas sudah memperhitungkan biaya cetak spanduk (<span id="spCetakNote">—</span>) + biaya pemasangan (<span id="spMediaNote">—</span>) = total investasi <span id="spTotalNote">—</span>.
+    ROI individual per outlet di kartu bawah menggunakan <b>Full Cost</b>.
   </div>
 </div>
 
@@ -286,28 +328,89 @@
   </div>
 </div>
 
+<!-- AI ANALYSIS SECTION -->
+<div class="section" style="padding-top:0">
+  <div id="spanduk-ai-panel"></div>
+</div>
+
 <footer><b>ERA-CAM</b> — Erajaya Campaign Monitoring · Spanduk Fasad BEBAS TUKAR Feb–Jun 2026 · © 2026 Erajaya Group</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="data.js"></script>
+<script src="ai-analysis.js"></script>
+<script>
+initAIAnalysis({
+  containerId: 'spanduk-ai-panel',
+  pageTitle: 'Spanduk Fasad Campaign',
+  aspects: '4',
+  systemPrompt: `Kamu adalah analis kampanye Erajaya Group yang ahli dalam marketing analytics dan outdoor media effectiveness.
+
+Data Spanduk Fasad Campaign ERA-CAM — BEBAS TUKAR (13 Februari – 12 Juni 2026):
+- Total outlet: 13 (Jabodetabek + Banten)
+- Total biaya media: Rp 23,9 juta (avg Rp 1,84 jt/outlet)
+- ROI rata-rata: 72,2x
+- Success rate: 84,6% (11 berhasil, 2 belum berhasil)
+- Walk-In Growth rata-rata: +22,5%
+- Sales Growth rata-rata: +23,8%
+
+Detail per outlet (outlet | kota | ROI | status):
+1. ERAFONE 2.5 SEPATAN | Tangerang Kab | 94,4x | BERHASIL
+2. ERAFONE 2.5 GRAND BATAVIA | Tangerang Kab | 298,8x | BERHASIL (top performer)
+3. ERAFONE 2.5 KRESEK BALARAJA | Tangerang Kab | 91,2x | BERHASIL
+4. ERAFONE 2.5 CILEDUG RAYA | Tangerang | 54,3x | BERHASIL
+5. ERAFONE 2.5 MB RAYA SERPONG | Tangerang Kab | 7,6x | BERHASIL
+6. ERAFONE 2.5 KAPUK CENGKARENG | Jakarta Barat | 29,6x | BERHASIL
+7. ERAFONE 2.5 KEMANGGISAN UTAMA | Jakarta Barat | 3,6x | BERHASIL
+8. ERAFONE 2.5 PAJAJARAN PAMULANG | Tangerang Selatan | 317,0x | BERHASIL (BEST ROI)
+9. ERAFONE 2.5 PAMULANG | Tangerang Selatan | 8,0x | BERHASIL
+10. ERAFONE 2.5 SAMANHUDI | Jakarta Pusat | -144,7x | BELUM BERHASIL
+11. ERAFONE 2.5 CIKUPA | Tangerang Kab | 85,7x | BERHASIL
+12. ERAFONE 2.5 MENCENG | Jakarta Barat | -43,6x | BELUM BERHASIL
+13. ERAFONE 2.5 CIPARE | Banten | 137,2x | BERHASIL
+
+Konteks: Spanduk BEBAS TUKAR dipasang di fasad toko sebagai media branding. Pengukuran dilakukan dengan Before-After methodology (Walk-In & Sales sebelum vs. selama kampanye).`
+});
+</script>
 <script>
 // KPIs
-const totalProfit = spandukData.reduce((s,r) => s + r.profit_increment, 0);
-const totalSales  = spandukData.reduce((s,r) => s + r.total_sales, 0);
-const totalBiaya  = spandukData.reduce((s,r) => s + r.biaya_media, 0);
-const avgROI      = spandukData.reduce((s,r) => s + r.roi, 0) / spandukData.length;
-const avgWalkin   = spandukData.reduce((s,r) => s + r.walkin_growth, 0) / spandukData.length;
-const avgSalesG   = spandukData.reduce((s,r) => s + r.sales_growth, 0) / spandukData.length;
-const bestROI     = [...spandukData].sort((a,b) => b.roi - a.roi)[0];
+const totalProfit  = spandukData.reduce((s,r) => s + r.profit_increment, 0);
+const totalSales   = spandukData.reduce((s,r) => s + r.total_sales, 0);
+const totalBiaya   = spandukData.reduce((s,r) => s + r.biaya_media, 0);
+const avgROI       = spandukData.reduce((s,r) => s + r.roi, 0) / spandukData.length;
+const avgWalkin    = spandukData.reduce((s,r) => s + r.walkin_growth, 0) / spandukData.length;
+const avgSalesG    = spandukData.reduce((s,r) => s + r.sales_growth, 0) / spandukData.length;
+// Gunakan roi_full (full cost) untuk Best ROI jika tersedia, fallback ke roi
+const bestROI      = [...spandukData].sort((a,b) => (b.roi_full??b.roi) - (a.roi_full??a.roi))[0];
 
-document.getElementById('kpiAvgROI').textContent    = avgROI.toFixed(1) + 'x';
+document.getElementById('kpiAvgROI').textContent     = (spandukData[0].roi_full !== undefined
+  ? (spandukData.filter(d=>d.status==='BERHASIL').reduce((s,d)=>s+(d.roi_full||0),0) /
+     spandukData.filter(d=>d.status==='BERHASIL').length).toFixed(1)
+  : avgROI.toFixed(1)) + 'x (full cost)';
 document.getElementById('kpiTotalProfit').textContent = formatRp(totalProfit);
 document.getElementById('kpiTotalSales').textContent  = formatRp(totalSales);
 document.getElementById('kpiBiaya').textContent       = formatRp(totalBiaya);
+
+// KPI Biaya Produksi Cetak Spanduk
+if (typeof biayaProduksiCetak !== 'undefined' && spandukData[0].biaya_produksi !== undefined) {
+  const biayaCetak   = biayaProduksiCetak.spanduk.total;
+  const biayaMedia   = totalBiaya;
+  const totalInv     = biayaCetak + biayaMedia;
+  const berhasilData = spandukData.filter(d => d.status === 'BERHASIL');
+  const roiFullAvg   = berhasilData.reduce((s,d) => s + d.roi_full, 0) / berhasilData.length;
+
+  document.getElementById('spBiayaCetak').textContent     = formatRp(biayaCetak);
+  document.getElementById('spBiayaPerOutlet').textContent  = formatRp(biayaProduksiCetak.spanduk.per_toko);
+  document.getElementById('spTotalInvestasi').textContent  = formatRp(totalInv);
+  document.getElementById('spRoiFullCost').textContent     = roiFullAvg.toFixed(1) + 'x';
+  document.getElementById('spCetakNote').textContent       = formatRp(biayaCetak);
+  document.getElementById('spMediaNote').textContent       = formatRp(biayaMedia);
+  document.getElementById('spTotalNote').textContent       = formatRp(totalInv);
+}
 document.getElementById('kpiAvgWalkin').textContent   = (avgWalkin>=0?'+':'') + (avgWalkin*100).toFixed(1) + '%';
 document.getElementById('kpiAvgSales').textContent    = (avgSalesG>=0?'+':'') + (avgSalesG*100).toFixed(1) + '%';
-document.getElementById('kpiBestROI').textContent     = bestROI.roi.toFixed(0) + 'x';
-document.getElementById('kpiBestName').textContent    = bestROI.outlet.replace('ERAFONE 2.5 ','');
+const useFullCost = spandukData[0].roi_full !== undefined;
+document.getElementById('kpiBestROI').textContent = (useFullCost ? bestROI.roi_full : bestROI.roi).toFixed(0) + 'x';
+document.getElementById('kpiBestName').textContent = bestROI.outlet.replace('ERAFONE 2.5 ','') + (useFullCost ? ' (full cost)' : '');
 
 // Outlet Cards
 const cards = document.getElementById('outletCards');
@@ -316,9 +419,19 @@ spandukData.forEach(r => {
   const sg = (r.sales_growth*100).toFixed(1);
   const wc = r.walkin_growth >= 0 ? 'up' : 'dn';
   const sc = r.sales_growth  >= 0 ? 'up' : 'dn';
-  const rc = r.roi >= 0 ? 'up' : 'dn';
+  const roiDisplay = r.roi_full !== undefined ? r.roi_full : r.roi;
+  const rc = roiDisplay >= 0 ? 'up' : 'dn';
   const statusClass = r.status === 'BERHASIL' ? 'berhasil' : 'belum';
   const statusIcon  = r.status === 'BERHASIL' ? '✓' : '✗';
+  const fullCostRow = r.roi_full !== undefined ? `
+      <div class="metric-row" style="background:#f0fdf4;border-radius:6px;margin-top:4px">
+        <span class="metric-label">💰 Total Investasi</span>
+        <span class="metric-val">${formatRp(r.biaya_total)}</span>
+      </div>
+      <div class="metric-row" style="background:#f0fdf4;border-radius:6px">
+        <span class="metric-label">🖨️ Biaya Cetak</span>
+        <span class="metric-val">${formatRp(r.biaya_produksi)}</span>
+      </div>` : '';
   cards.innerHTML += `
   <div class="outlet-card ${statusClass}">
     <div class="outlet-card-head">
@@ -328,8 +441,12 @@ spandukData.forEach(r => {
     </div>
     <div class="outlet-card-body">
       <div class="metric-row">
-        <span class="metric-label">ROI</span>
-        <span class="metric-val roi-big ${rc}">${r.roi.toFixed(1)}x</span>
+        <span class="metric-label">ROI Full Cost</span>
+        <span class="metric-val roi-big ${rc}">${roiDisplay.toFixed(1)}x</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-label">ROI Media Only</span>
+        <span class="metric-val" style="font-size:12px;color:var(--muted)">${r.roi.toFixed(1)}x</span>
       </div>
       <div class="metric-row">
         <span class="metric-label">Profit Increment</span>
@@ -352,9 +469,10 @@ spandukData.forEach(r => {
         <span class="metric-val">${formatRp(r.total_sales)}</span>
       </div>
       <div class="metric-row">
-        <span class="metric-label">Biaya Media</span>
+        <span class="metric-label">Biaya Pemasangan</span>
         <span class="metric-val">${formatRp(r.biaya_media)}</span>
       </div>
+      ${fullCostRow}
     </div>
   </div>`;
 });
@@ -521,5 +639,6 @@ document.querySelectorAll('.dropdown a').forEach(a => {
   });
 });
 </script>
+<script src="chatbot.js?v=3"></script>
 </body>
 </html>

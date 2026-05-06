@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERA-CAM — API Keys Settings</title>
+<link rel="stylesheet" href="nav.css?v=2">
+<style>
+:root {
+  --primary:#1a2e5a; --gold:#f4a11d; --green:#2dc653; --red:#e63946;
+  --blue:#3a86ff; --purple:#7c3aed; --orange:#ea580c;
+  --bg:#eef1f8; --card:#fff; --text:#1a1a2e; --muted:#6b7280; --border:#e5e7eb;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);}
+
+/* ─── PAGE HEADER ─── */
+.page-header{
+  background:linear-gradient(135deg,#0f172a 0%,#1a2e5a 60%,#1e3a6e 100%);
+  padding:28px 32px 24px;color:#fff;
+  border-bottom:3px solid var(--gold);
+}
+.ph-eyebrow{font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.ph-title{font-size:22px;font-weight:900;margin-bottom:4px;}
+.ph-sub{font-size:13px;color:#94a3b8;line-height:1.5;}
+
+/* ─── BODY ─── */
+.body{padding:28px 32px;max-width:820px;margin:0 auto;}
+@media(max-width:600px){.body{padding:14px 16px;}}
+
+/* ─── CARD ─── */
+.settings-card{
+  background:var(--card);border-radius:16px;
+  box-shadow:0 2px 16px rgba(0,0,0,0.08);margin-bottom:20px;overflow:hidden;
+}
+.card-header{
+  padding:18px 24px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border);
+}
+.card-icon{font-size:22px;flex-shrink:0;}
+.card-title{font-size:14px;font-weight:800;color:var(--text);}
+.card-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.card-body{padding:22px 24px;}
+
+/* ─── PROVIDER BADGE ─── */
+.provider-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;
+  margin-left:auto;flex-shrink:0;
+}
+.badge-anthropic{background:#fef3c7;color:#92400e;border:1px solid #fde68a;}
+.badge-deepseek{background:#ede9fe;color:#5b21b6;border:1px solid #ddd6fe;}
+.badge-connected{background:#dcfce7;color:#166534;border:1px solid #bbf7d0;}
+.badge-disconnected{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;}
+
+/* ─── FORM ELEMENTS ─── */
+.field-group{margin-bottom:18px;}
+.field-label{
+  font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px;
+}
+.field-hint{font-size:11px;color:var(--muted);font-weight:400;}
+.key-wrap{position:relative;display:flex;align-items:center;}
+.key-input{
+  width:100%;padding:11px 46px 11px 14px;
+  border-radius:10px;border:1.5px solid var(--border);
+  font-size:13px;color:var(--text);background:#fafbfc;
+  font-family:'SF Mono',Consolas,monospace;letter-spacing:0.5px;
+  outline:none;transition:border-color 0.15s,box-shadow 0.15s;
+}
+.key-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(58,134,255,0.12);background:#fff;}
+.key-input.has-value{border-color:var(--green);}
+.key-input.has-value:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(45,198,83,0.12);}
+.eye-btn{
+  position:absolute;right:12px;background:none;border:none;cursor:pointer;
+  font-size:14px;color:var(--muted);padding:4px;border-radius:5px;
+  transition:color 0.15s;
+}
+.eye-btn:hover{color:var(--text);}
+
+/* ─── STATUS ROW ─── */
+.status-row{
+  display:flex;align-items:center;gap:10px;margin-top:8px;
+  font-size:12px;font-weight:600;
+}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dot-ok{background:var(--green);}
+.dot-err{background:var(--red);}
+.dot-none{background:#d1d5db;}
+
+/* ─── BUTTONS ─── */
+.btn-row{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.btn-save{
+  padding:10px 22px;border-radius:9px;font-size:13px;font-weight:700;
+  background:linear-gradient(135deg,var(--primary),#3a86ff);color:#fff;
+  border:none;cursor:pointer;transition:all 0.18s;
+  display:flex;align-items:center;gap:7px;
+}
+.btn-save:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,46,90,0.3);}
+.btn-save:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-test{
+  padding:10px 18px;border-radius:9px;font-size:12.5px;font-weight:700;
+  background:#fff;color:var(--primary);border:1.5px solid var(--primary);
+  cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:7px;
+}
+.btn-test:hover:not(:disabled){background:#eff6ff;}
+.btn-test:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-clear{
+  padding:10px 14px;border-radius:9px;font-size:12px;font-weight:700;
+  background:#fff;color:var(--red);border:1.5px solid #fecaca;cursor:pointer;
+  transition:all 0.15s;
+}
+.btn-clear:hover{background:#fff1f2;border-color:var(--red);}
+.toast{
+  font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;
+  display:none;align-items:center;gap:6px;
+}
+.toast.ok{background:#dcfce7;color:#166534;border:1px solid #bbf7d0;}
+.toast.err{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;}
+.toast.show{display:inline-flex;}
+
+/* ─── INFO BOX ─── */
+.info-box{
+  background:#f0f7ff;border:1px solid #bfdbfe;border-radius:10px;
+  padding:14px 16px;font-size:12.5px;color:#1e40af;line-height:1.7;margin-bottom:18px;
+}
+.info-box strong{font-weight:700;}
+.info-box a{color:var(--blue);text-decoration:none;font-weight:600;}
+.info-box a:hover{text-decoration:underline;}
+
+/* ─── USAGE TABLE ─── */
+.usage-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px;}
+.usage-table th{
+  text-align:left;padding:8px 12px;font-size:11px;font-weight:800;text-transform:uppercase;
+  letter-spacing:0.5px;color:var(--muted);background:#f8f9fb;
+  border-bottom:1.5px solid var(--border);
+}
+.usage-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.usage-table tr:last-child td{border-bottom:none;}
+.usage-table tr:hover td{background:#f8f9fb;}
+.model-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;
+}
+.chip-a{background:#fef3c7;color:#92400e;}
+.chip-d{background:#ede9fe;color:#5b21b6;}
+.chip-free{background:#dcfce7;color:#166534;}
+
+/* ─── SECTION DIVIDER ─── */
+.section-div{
+  display:flex;align-items:center;gap:12px;margin:4px 0 18px;
+}
+.section-div span{font-size:11.5px;font-weight:700;color:var(--muted);white-space:nowrap;}
+.section-div::before,.section-div::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Sync notice */
+.sync-note{
+  display:flex;align-items:flex-start;gap:10px;padding:12px 16px;
+  background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;
+  font-size:12.5px;color:#9a3412;line-height:1.6;margin-top:16px;
+}
+.sync-note strong{font-weight:700;}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <a class="logo" href="index.html">
+    <div class="logo-icon">EC</div>
+    <div><div class="logo-text">ERA-CAM</div><div class="logo-sub">Erajaya Campaign Monitoring</div></div>
+  </a>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
+  <nav>
+    <div class="nav-item"><a href="index.html" class="nav-link">Overview</a></div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Flyer <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Flyer Campaign</div>
+        <a href="flyer.html"><span class="icon">📊</span><span class="lbl">Flyer Promo Feb By Sales</span></a>
+        <a href="flyer-february.html"><span class="icon">📦</span><span class="lbl">Flyer Promo Feb By Qty</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Spanduk <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Spanduk Campaign</div>
+        <a href="spanduk.html"><span class="icon">🪧</span><span class="lbl">Spanduk Fasad</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Umbul-Umbul <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Umbul-Umbul Campaign</div>
+        <a href="umbul-umbul.html"><span class="icon">🏮</span><span class="lbl">Umbul-Umbul SEP Serpong</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">AI Analysis <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">AI-Powered Analysis</div>
+        <a href="brand.html"><span class="icon">🏷️</span><span class="lbl">Per Brand Scorecard</span></a>
+        <a href="ai-summary.html"><span class="icon">🤖</span><span class="lbl">AI Executive Summary</span></a>
+        <a href="annual-report.html"><span class="icon">📅</span><span class="lbl">Laporan Tahunan 2026</span></a>
+        <a href="year-end-report.html"><span class="icon">🏆</span><span class="lbl">Year-End Business Impact</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link nav-admin">⚙ Admin <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Admin Tools</div>
+        <a href="campaign-input.html"><span class="icon">➕</span><span class="lbl">Input Campaign Baru</span></a>
+        <a href="settings.html" style="background:#f0fdf4"><span class="icon">🔑</span><span class="lbl">API Keys Settings</span><span class="dbadge" style="background:#059669;color:#fff">Baru</span></a>
+        <a href="admin.html"><span class="icon">⚙</span><span class="lbl">Admin Panel</span></a>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="ph-eyebrow">ERA-CAM · Admin Settings</div>
+  <div class="ph-title">🔑 API Keys Configuration</div>
+  <div class="ph-sub">
+    Kelola API keys untuk Anthropic (Claude) dan DeepSeek AI — tersimpan lokal di browser Anda, tidak dikirim ke server mana pun.
+  </div>
+</div>
+
+<div class="body">
+
+  <!-- ── INFO BOX ── -->
+  <div class="info-box">
+    <strong>🔒 Keamanan & Privasi:</strong> API keys disimpan hanya di <code>localStorage</code> browser ini (lokal, tidak dikirim ke cloud).
+    Key digunakan langsung dari browser → server dev lokal → API provider.
+    Jangan gunakan di komputer yang dibagi dengan orang lain.
+    Dapatkan key di: <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> &amp;
+    <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       CARD 1 — ANTHROPIC (CLAUDE)
+  ══════════════════════════════════════════════ -->
+  <div class="settings-card">
+    <div class="card-header">
+      <span class="card-icon">🟠</span>
+      <div>
+        <div class="card-title">Anthropic — Claude AI</div>
+        <div class="card-sub">Digunakan di: Chatbot, AI Analysis, Year-End Report (Claude Haiku &amp; Sonnet)</div>
+      </div>
+      <span class="provider-badge badge-anthropic" id="badgeAnthropic">⏳ Mengecek...</span>
+    </div>
+    <div class="card-body">
+      <div class="field-group">
+        <div class="field-label">
+          Anthropic API Key
+          <span class="field-hint">sk-ant-api03-...</span>
+        </div>
+        <div class="key-wrap">
+          <input class="key-input" type="password" id="keyAnthropic"
+            placeholder="sk-ant-api03-xxxxxxxxxxxxxxxxxxxx"
+            autocomplete="off" spellcheck="false"
+            oninput="onKeyInput('anthropic')">
+          <button class="eye-btn" onclick="toggleEye('keyAnthropic',this)" title="Show/Hide">👁</button>
+        </div>
+        <div class="status-row" id="statusAnthropic">
+          <span class="status-dot dot-none"></span>
+          <span style="color:var(--muted)">Belum dikonfigurasi</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;">
+          💡 <b>Tips:</b> Copy key langsung dari <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--blue)">console.anthropic.com</a> — jangan dari dokumen/email karena tanda <code>-</code> bisa berubah menjadi <code>–</code> (en-dash) akibat autocorrect.
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-save" id="btnSaveAnthropic" onclick="saveKey('anthropic')">
+          💾 Simpan Key
+        </button>
+        <button class="btn-test" id="btnTestAnthropic" onclick="testKey('anthropic')" disabled>
+          🧪 Test Koneksi
+        </button>
+        <button class="btn-clear" onclick="clearKey('anthropic')">🗑 Hapus</button>
+        <span class="toast" id="toastAnthropic"></span>
+      </div>
+
+      <div class="sync-note" style="margin-top:16px;">
+        <span style="font-size:16px;flex-shrink:0;">ℹ️</span>
+        <span>Key ini juga tersimpan di <strong>chatbot widget</strong> (ikon 💬 di pojok halaman).
+        Jika Anda sudah set key di chatbot sebelumnya, key akan muncul otomatis di sini.
+        Perubahan di halaman ini langsung berlaku di semua fitur ERA-CAM.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       CARD 2 — DEEPSEEK
+  ══════════════════════════════════════════════ -->
+  <div class="settings-card">
+    <div class="card-header">
+      <span class="card-icon">🔵</span>
+      <div>
+        <div class="card-title">DeepSeek AI</div>
+        <div class="card-sub">Digunakan di: Year-End Report (DeepSeek-V3 &amp; DeepSeek-R1 Reasoner)</div>
+      </div>
+      <span class="provider-badge badge-deepseek" id="badgeDeepseek">⏳ Mengecek...</span>
+    </div>
+    <div class="card-body">
+      <div class="field-group">
+        <div class="field-label">
+          DeepSeek API Key
+          <span class="field-hint">sk-xxxxxxxxxxxxxxxxxxxxxxxx</span>
+        </div>
+        <div class="key-wrap">
+          <input class="key-input" type="password" id="keyDeepseek"
+            placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            autocomplete="off" spellcheck="false"
+            oninput="onKeyInput('deepseek')">
+          <button class="eye-btn" onclick="toggleEye('keyDeepseek',this)" title="Show/Hide">👁</button>
+        </div>
+        <div class="status-row" id="statusDeepseek">
+          <span class="status-dot dot-none"></span>
+          <span style="color:var(--muted)">Belum dikonfigurasi</span>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-save" id="btnSaveDeepseek" onclick="saveKey('deepseek')">
+          💾 Simpan Key
+        </button>
+        <button class="btn-test" id="btnTestDeepseek" onclick="testKey('deepseek')" disabled>
+          🧪 Test Koneksi
+        </button>
+        <button class="btn-clear" onclick="clearKey('deepseek')">🗑 Hapus</button>
+        <span class="toast" id="toastDeepseek"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       CARD 3 — MODEL REFERENCE TABLE
+  ══════════════════════════════════════════════ -->
+  <div class="settings-card">
+    <div class="card-header">
+      <span class="card-icon">📋</span>
+      <div>
+        <div class="card-title">Model Reference</div>
+        <div class="card-sub">Daftar model AI yang tersedia di ERA-CAM dan di mana digunakan</div>
+      </div>
+    </div>
+    <div class="card-body" style="padding-top:12px;">
+      <table class="usage-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Provider</th>
+            <th>Digunakan Di</th>
+            <th>Kecepatan</th>
+            <th>Kualitas</th>
+            <th>Biaya</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="model-chip chip-a">claude-haiku-4-5</span></td>
+            <td>Anthropic</td>
+            <td>Chatbot, Year-End Report (Haiku)</td>
+            <td>⚡ Sangat Cepat</td>
+            <td>⭐⭐⭐</td>
+            <td><span class="model-chip chip-free">Murah</span></td>
+          </tr>
+          <tr>
+            <td><span class="model-chip chip-a">claude-sonnet-4-6</span></td>
+            <td>Anthropic</td>
+            <td>Year-End Report (Sonnet)</td>
+            <td>🏃 Cepat</td>
+            <td>⭐⭐⭐⭐⭐</td>
+            <td><span class="model-chip" style="background:#fef3c7;color:#92400e;">Sedang</span></td>
+          </tr>
+          <tr>
+            <td><span class="model-chip chip-d">deepseek-chat</span></td>
+            <td>DeepSeek</td>
+            <td>Year-End Report (DeepSeek-V3)</td>
+            <td>🏃 Cepat</td>
+            <td>⭐⭐⭐⭐⭐</td>
+            <td><span class="model-chip chip-free">Sangat Murah</span></td>
+          </tr>
+          <tr>
+            <td><span class="model-chip chip-d">deepseek-reasoner</span></td>
+            <td>DeepSeek</td>
+            <td>Year-End Report (R1 Reasoner)</td>
+            <td>🐢 Lambat (deep thinking)</td>
+            <td>⭐⭐⭐⭐⭐</td>
+            <td><span class="model-chip" style="background:#ede9fe;color:#5b21b6;">Sedang</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       CARD 4 — QUICK LINKS
+  ══════════════════════════════════════════════ -->
+  <div class="settings-card">
+    <div class="card-header">
+      <span class="card-icon">🚀</span>
+      <div>
+        <div class="card-title">Setelah Set API Key</div>
+        <div class="card-sub">Langsung coba fitur AI ERA-CAM</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;flex-wrap:wrap;gap:10px;">
+        <a href="year-end-report.html" style="display:flex;align-items:center;gap:8px;padding:12px 18px;background:linear-gradient(135deg,var(--primary),#3a86ff);color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;">
+          🏆 Year-End AI Report
+        </a>
+        <a href="annual-report.html" style="display:flex;align-items:center;gap:8px;padding:12px 18px;background:#f0f9ff;color:var(--primary);border:1.5px solid #bfdbfe;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;">
+          📊 Annual Report
+        </a>
+        <a href="ai-summary.html" style="display:flex;align-items:center;gap:8px;padding:12px 18px;background:#f0f9ff;color:var(--primary);border:1.5px solid #bfdbfe;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;">
+          🤖 AI Executive Summary
+        </a>
+        <a href="index.html" style="display:flex;align-items:center;gap:8px;padding:12px 18px;background:#f8f9fb;color:var(--text);border:1.5px solid var(--border);border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;">
+          🏠 Dashboard Utama
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.body -->
+
+<footer style="background:var(--primary);color:#a8b8d8;text-align:center;padding:14px;font-size:12px;margin-top:8px;">
+  <b style="color:var(--gold)">ERA-CAM</b> · API Keys Settings ·
+  Keys disimpan di <code style="color:#f4a11d">localStorage</code> browser — <b style="color:#6ee7a0">tidak pernah dikirim ke cloud</b>
+</footer>
+
+<script>
+// ─── localStorage keys ─────────────────────────────────────────────────────
+const LS_ANTHROPIC = 'eracam_api_key';
+const LS_DEEPSEEK  = 'eracam_deepseek_key';
+
+// ─── SANITIZE ──────────────────────────────────────────────────────────────
+// Bersihkan karakter tipografis yang sering muncul karena autocorrect saat copy-paste
+function sanitizeKey(key) {
+  if (!key) return key;
+  const map = {
+    '–': '-', '—': '-', '‒': '-', '‑': '-', // en/em/figure/non-breaking dash
+    '‘': "'", '’': "'",   // smart single quotes
+    '“': '"', '”': '"',   // smart double quotes
+    '­': '',  '​': '',    // soft hyphen, zero-width space
+    ' ': ' ',                  // non-breaking space
+  };
+  let clean = key;
+  for (const [bad, good] of Object.entries(map)) clean = clean.split(bad).join(good);
+  // Keep only printable ASCII (32-126)
+  clean = clean.split('').filter(c => c.charCodeAt(0) >= 32 && c.charCodeAt(0) <= 126).join('');
+  return clean.trim();
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadExistingKeys();
+  initMobileNav();
+});
+
+function loadExistingKeys() {
+  const aKey = localStorage.getItem(LS_ANTHROPIC) || '';
+  const dKey = localStorage.getItem(LS_DEEPSEEK)  || '';
+
+  if (aKey) {
+    document.getElementById('keyAnthropic').value = aKey;
+    document.getElementById('keyAnthropic').classList.add('has-value');
+    setStatus('anthropic', 'ok', '✅ Key tersimpan — siap digunakan');
+    setBadge('anthropic', true);
+    document.getElementById('btnTestAnthropic').disabled = false;
+  } else {
+    setBadge('anthropic', false);
+  }
+
+  if (dKey) {
+    document.getElementById('keyDeepseek').value = dKey;
+    document.getElementById('keyDeepseek').classList.add('has-value');
+    setStatus('deepseek', 'ok', '✅ Key tersimpan — siap digunakan');
+    setBadge('deepseek', true);
+    document.getElementById('btnTestDeepseek').disabled = false;
+  } else {
+    setBadge('deepseek', false);
+  }
+}
+
+// ─── INPUT HANDLER ─────────────────────────────────────────────────────────
+function onKeyInput(provider) {
+  const id  = provider === 'anthropic' ? 'keyAnthropic' : 'keyDeepseek';
+  const inp = document.getElementById(id);
+  const val = inp.value.trim();
+  inp.classList.toggle('has-value', val.length > 0);
+  const btnTest = document.getElementById(provider === 'anthropic' ? 'btnTestAnthropic' : 'btnTestDeepseek');
+  btnTest.disabled = val.length === 0;
+  if (val.length === 0) {
+    setStatus(provider, 'none', 'Kosong — masukkan API key');
+  } else {
+    setStatus(provider, 'typing', 'Klik Simpan untuk menyimpan key ini');
+  }
+}
+
+// ─── SAVE ──────────────────────────────────────────────────────────────────
+function saveKey(provider) {
+  const id  = provider === 'anthropic' ? 'keyAnthropic' : 'keyDeepseek';
+  const raw = document.getElementById(id).value;
+  const val = sanitizeKey(raw);
+
+  if (!val) {
+    showToast(provider, 'err', '⚠️ Key tidak boleh kosong');
+    return;
+  }
+
+  // If sanitize changed the value, update the input and warn
+  if (val !== raw.trim()) {
+    document.getElementById(id).value = val;
+    showToast(provider, 'ok', '⚠️ Karakter tidak valid dihapus otomatis dari key');
+    setTimeout(() => {}, 100); // let toast show briefly
+  }
+
+  // Validate prefix
+  if (provider === 'anthropic' && !val.startsWith('sk-ant')) {
+    if (!confirm('Key ini tidak dimulai dengan "sk-ant". Tetap simpan sebagai Anthropic key?')) return;
+  }
+  if (provider === 'deepseek' && !val.startsWith('sk-')) {
+    if (!confirm('Key ini tidak dimulai dengan "sk-". Tetap simpan sebagai DeepSeek key?')) return;
+  }
+
+  const lsKey = provider === 'anthropic' ? LS_ANTHROPIC : LS_DEEPSEEK;
+  localStorage.setItem(lsKey, val);
+
+  // Also sync to server for server-side proxy
+  syncToServer(provider, val);
+
+  setStatus(provider, 'ok', '✅ Key tersimpan — siap digunakan');
+  setBadge(provider, true);
+  showToast(provider, 'ok', '✅ Tersimpan!');
+  document.getElementById(id).classList.add('has-value');
+  document.getElementById(provider === 'anthropic' ? 'btnTestAnthropic' : 'btnTestDeepseek').disabled = false;
+}
+
+// ─── SYNC TO SERVER (for server-side env key) ──────────────────────────────
+async function syncToServer(provider, key) {
+  try {
+    const body = provider === 'anthropic' ? { api_key: key } : { deepseek_key: key };
+    await fetch('/api/config', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body),
+    });
+  } catch(e) {
+    // server might not be running — that's fine, localStorage is the source of truth
+  }
+}
+
+// ─── TEST CONNECTION ────────────────────────────────────────────────────────
+async function testKey(provider) {
+  const id  = provider === 'anthropic' ? 'keyAnthropic' : 'keyDeepseek';
+  const key = document.getElementById(id).value.trim();
+  if (!key) return;
+
+  const btnTest = document.getElementById(provider === 'anthropic' ? 'btnTestAnthropic' : 'btnTestDeepseek');
+  btnTest.disabled = true;
+  btnTest.innerHTML = '⏳ Testing...';
+  setStatus(provider, 'testing', 'Menguji koneksi ke API...');
+  showToast(provider, '', '');
+
+  try {
+    let ok = false;
+    let errMsg = '';
+
+    if (provider === 'anthropic') {
+      const res  = await fetch('/api/claude', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model: 'haiku',
+          api_key: key,
+          max_tokens: 10,
+          messages: [{ role:'user', content:'Hi' }],
+        }),
+      });
+      const data = await res.json();
+      ok     = res.ok && data.content;
+      errMsg = data.error || `HTTP ${res.status}`;
+    } else {
+      // DeepSeek via server proxy
+      const res  = await fetch('/api/deepseek', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          api_key: key,
+          max_tokens: 10,
+          messages: [{ role:'user', content:'Hi' }],
+        }),
+      });
+      const data = await res.json();
+      ok     = res.ok && (data.choices || data.content);
+      errMsg = data.error || data.message || `HTTP ${res.status}`;
+    }
+
+    if (ok) {
+      setStatus(provider, 'ok', '✅ Koneksi berhasil — API key valid!');
+      showToast(provider, 'ok', '✅ Koneksi berhasil!');
+    } else {
+      setStatus(provider, 'err', `❌ Gagal: ${errMsg}`);
+      showToast(provider, 'err', `❌ ${errMsg}`);
+    }
+  } catch(e) {
+    setStatus(provider, 'err', `❌ Error: ${e.message}`);
+    showToast(provider, 'err', `❌ ${e.message}`);
+  }
+
+  btnTest.disabled = false;
+  btnTest.innerHTML = '🧪 Test Koneksi';
+}
+
+// ─── CLEAR ─────────────────────────────────────────────────────────────────
+function clearKey(provider) {
+  if (!confirm(`Hapus ${provider === 'anthropic' ? 'Anthropic' : 'DeepSeek'} API key?`)) return;
+  const id  = provider === 'anthropic' ? 'keyAnthropic' : 'keyDeepseek';
+  const lsKey = provider === 'anthropic' ? LS_ANTHROPIC : LS_DEEPSEEK;
+  localStorage.removeItem(lsKey);
+  document.getElementById(id).value = '';
+  document.getElementById(id).classList.remove('has-value');
+  setStatus(provider, 'none', 'Key dihapus');
+  setBadge(provider, false);
+  showToast(provider, 'ok', '🗑 Key dihapus');
+  document.getElementById(provider === 'anthropic' ? 'btnTestAnthropic' : 'btnTestDeepseek').disabled = true;
+  syncToServer(provider, '');
+}
+
+// ─── UI HELPERS ─────────────────────────────────────────────────────────────
+function setStatus(provider, state, msg) {
+  const el = document.getElementById('status' + (provider === 'anthropic' ? 'Anthropic' : 'Deepseek'));
+  if (!el) return;
+  const dotCls = state === 'ok' ? 'dot-ok' : state === 'err' ? 'dot-err' : 'dot-none';
+  const txtCol = state === 'ok' ? 'var(--green)' : state === 'err' ? 'var(--red)' : 'var(--muted)';
+  el.innerHTML = `<span class="status-dot ${dotCls}"></span><span style="color:${txtCol}">${msg}</span>`;
+}
+
+function setBadge(provider, connected) {
+  const el = document.getElementById('badge' + (provider === 'anthropic' ? 'Anthropic' : 'Deepseek'));
+  if (!el) return;
+  if (connected) {
+    el.className = 'provider-badge badge-connected';
+    el.textContent = '✅ Terkonfigurasi';
+  } else {
+    el.className = provider === 'anthropic'
+      ? 'provider-badge badge-disconnected'
+      : 'provider-badge badge-disconnected';
+    el.textContent = '❌ Belum diset';
+  }
+}
+
+function showToast(provider, type, msg) {
+  const el = document.getElementById('toast' + (provider === 'anthropic' ? 'Anthropic' : 'Deepseek'));
+  if (!el) return;
+  el.className = 'toast' + (type ? ' '+type+' show' : '');
+  el.textContent = msg;
+  if (type && msg) {
+    setTimeout(() => { el.className = 'toast'; }, 3500);
+  }
+}
+
+function toggleEye(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
+}
+
+// ─── MOBILE NAV ─────────────────────────────────────────────────────────────
+function toggleMobileNav() {
+  document.querySelector('.topnav nav').classList.toggle('open');
+  document.getElementById('navHamburger').classList.toggle('open');
+}
+function initMobileNav() {
+  document.querySelectorAll('.nav-item > button.nav-link').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      if (window.innerWidth > 768) return;
+      e.stopPropagation();
+      const item = this.closest('.nav-item');
+      const isOpen = item.classList.contains('mobile-open');
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('mobile-open'));
+      if (!isOpen) item.classList.add('mobile-open');
+    });
+  });
+}
+</script>
+<script src="chatbot.js?v=3"></script>
+</body>
+</html>

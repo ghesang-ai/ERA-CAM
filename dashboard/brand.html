@@ -174,7 +174,15 @@
         <a href="ai-summary.html"><span class="icon">🤖</span><span class="lbl">AI Executive Summary</span><span class="dbadge" style="background:#7c3aed;color:#fff">AI</span></a>
       </div>
     </div>
-    <div class="nav-item"><a href="admin.html" class="nav-link nav-admin">⚙ Admin</a></div>
+    <div class="nav-item">
+      <button type="button" class="nav-link nav-admin">⚙ Admin <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Admin Tools</div>
+        <a href="campaign-input.html" style="background:#fff7ed"><span class="icon">➕</span><span class="lbl">Input Campaign Baru</span><span class="dbadge" style="background:#ea580c;color:#fff">NEW</span></a>
+        <a href="settings.html" style="background:#f0fdf4"><span class="icon">🔑</span><span class="lbl">API Keys Settings</span><span class="dbadge" style="background:#059669;color:#fff">Baru</span></a>
+        <a href="admin.html"><span class="icon">⚙</span><span class="lbl">Admin Panel</span></a>
+      </div>
+    </div>
   </nav>
 </div>
 
@@ -720,5 +728,6 @@ function buildCategoryTab() {
   }).join('');
 }
 </script>
+<script src="chatbot.js?v=3"></script>
 </body>
 </html>

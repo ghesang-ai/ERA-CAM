@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERA-CAM — Laporan Tahunan 2026</title>
+<link rel="stylesheet" href="nav.css?v=2">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --primary:#1a2e5a; --gold:#f4a11d; --green:#2dc653; --red:#e63946;
+  --blue:#3a86ff; --purple:#7c3aed; --orange:#ea580c; --teal:#0ea5e9;
+  --amber:#d97706; --emerald:#059669;
+  --bg:#eef1f8; --card:#fff; --text:#1a1a2e; --muted:#6b7280; --border:#e5e7eb;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);}
+
+/* ─── PAGE HEADER ─── */
+.page-header{
+  background:linear-gradient(135deg,#1a2e5a 0%,#243b6e 60%,#2d4a8a 100%);
+  padding:24px 28px 20px; color:#fff;
+  display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px;
+}
+.ph-left h1{font-size:22px;font-weight:900;margin-bottom:4px;}
+.ph-left p{font-size:13px;color:#a8b8d8;line-height:1.5;}
+.ph-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.ph-badge{
+  font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;
+  background:rgba(255,255,255,0.12);color:#e2e8f0;border:1px solid rgba(255,255,255,0.2);
+}
+.ph-badge.gold{background:rgba(244,161,29,0.2);color:#f4a11d;border-color:rgba(244,161,29,0.4);}
+.ph-badge.green{background:rgba(45,198,83,0.2);color:#6ee7a0;border-color:rgba(45,198,83,0.3);}
+.ph-year-selector{
+  background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.25);
+  border-radius:10px;padding:8px 14px;color:#fff;font-size:13px;font-weight:700;
+  cursor:pointer;outline:none;
+}
+.ph-year-selector option{background:#1a2e5a;color:#fff;}
+
+/* ─── FILTER BAR ─── */
+.filter-bar{
+  background:#fff;border-bottom:1px solid var(--border);
+  padding:12px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.filter-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;}
+.filter-chip{
+  font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;
+  border:1.5px solid var(--border);color:var(--muted);cursor:pointer;transition:all 0.15s;
+  background:#fafbfc;
+}
+.filter-chip:hover{border-color:var(--primary);color:var(--primary);}
+.filter-chip.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.filter-spacer{flex:1;}
+.filter-total{font-size:12px;font-weight:700;color:var(--muted);}
+.filter-total span{color:var(--primary);}
+
+/* ─── BODY ─── */
+.body{padding:22px 28px;max-width:1400px;margin:0 auto;}
+@media(max-width:600px){.body{padding:14px 14px;}}
+
+/* ─── KPI ROW ─── */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:22px;}
+@media(max-width:1100px){.kpi-row{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:640px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
+.kpi-card{
+  background:var(--card);border-radius:14px;padding:18px 18px 16px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.07);
+  border-top:3px solid transparent;
+}
+.kpi-card.amber{border-top-color:var(--gold);}
+.kpi-card.blue{border-top-color:var(--blue);}
+.kpi-card.green{border-top-color:var(--green);}
+.kpi-card.purple{border-top-color:var(--purple);}
+.kpi-card.orange{border-top-color:var(--orange);}
+.kpi-icon{font-size:20px;margin-bottom:8px;}
+.kpi-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px;}
+.kpi-value{font-size:22px;font-weight:900;line-height:1;margin-bottom:5px;}
+.kpi-sub{font-size:11px;color:var(--muted);line-height:1.4;}
+.kpi-trend{font-size:11px;font-weight:700;margin-top:5px;}
+.up{color:var(--green);}
+.dn{color:var(--red);}
+.neutral{color:var(--gold);}
+
+/* ─── SECTION ─── */
+.section{margin-bottom:22px;}
+.section-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;flex-wrap:wrap;gap:8px;
+}
+.section-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;}
+.section-action{font-size:12px;font-weight:600;color:var(--blue);cursor:pointer;text-decoration:none;}
+
+/* ─── CHARTS ─── */
+.charts-grid{display:grid;grid-template-columns:1.8fr 1fr;gap:16px;margin-bottom:22px;}
+@media(max-width:900px){.charts-grid{grid-template-columns:1fr;}}
+.charts-grid-3{display:grid;grid-template-columns:2fr 1fr 1.2fr;gap:16px;margin-bottom:22px;}
+@media(max-width:1100px){.charts-grid-3{grid-template-columns:1fr 1fr;}}
+@media(max-width:640px){.charts-grid-3{grid-template-columns:1fr;}}
+
+.chart-card{
+  background:var(--card);border-radius:14px;padding:20px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.07);
+}
+.chart-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.chart-sub{font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.4;}
+.chart-wrap{position:relative;}
+.chart-wrap canvas{max-height:260px;}
+.chart-wrap-sm canvas{max-height:220px;}
+
+/* ─── CUMULATIVE LINE ─── */
+.ytd-progress{
+  background:var(--card);border-radius:14px;padding:20px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.07);
+}
+.ytd-bar-wrap{margin-top:10px;}
+.ytd-bar-track{
+  background:#f0f2f7;border-radius:8px;height:10px;overflow:hidden;margin-bottom:4px;
+}
+.ytd-bar-fill{
+  height:100%;border-radius:8px;
+  background:linear-gradient(90deg,var(--primary),var(--blue));
+  transition:width 0.6s ease;
+}
+.ytd-bar-label{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);}
+
+/* ─── CAMPAIGN TABLE ─── */
+.table-card{
+  background:var(--card);border-radius:14px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.07);overflow:hidden;
+  margin-bottom:22px;
+}
+.table-card-hdr{
+  padding:16px 20px;background:#f8f9fb;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+.table-card-title{font-size:13px;font-weight:700;color:var(--text);}
+.table-card-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.add-btn{
+  font-size:11.5px;font-weight:700;padding:7px 16px;border-radius:8px;
+  background:var(--primary);color:#fff;border:none;cursor:pointer;transition:all 0.15s;
+  text-decoration:none;display:inline-flex;align-items:center;gap:5px;
+}
+.add-btn:hover{background:#243b6e;color:#fff;}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+.tbl th{
+  padding:10px 14px;text-align:left;font-size:10.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);
+  background:#f8f9fb;border-bottom:1px solid var(--border);
+  white-space:nowrap;
+}
+.tbl td{padding:13px 14px;border-bottom:1px solid #f3f4f6;vertical-align:top;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:#f8f9ff;}
+.tbl tfoot td{
+  padding:12px 14px;background:#f8f9fb;border-top:2px solid var(--border);
+  font-weight:700;font-size:12.5px;
+}
+.type-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:8px;
+  white-space:nowrap;
+}
+.type-flyer{background:#dbeafe;color:#1e40af;}
+.type-spanduk{background:#fef3c7;color:#92400e;}
+.type-umbul{background:#f3e8ff;color:#6b21a8;}
+.status-badge{
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;
+  display:inline-block;
+}
+.status-done{background:#dcfce7;color:#166534;}
+.status-active{background:#dbeafe;color:#1e40af;}
+.status-planned{background:#fef3c7;color:#92400e;}
+.roi-positive{color:var(--green);font-weight:700;}
+.roi-negative{color:var(--red);font-weight:700;}
+.roi-na{color:var(--muted);font-style:italic;}
+.tbl-num{text-align:right;}
+
+/* ─── QUARTER BREAKDOWN ─── */
+.quarter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+@media(max-width:900px){.quarter-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.quarter-grid{grid-template-columns:1fr 1fr;}}
+.q-card{
+  background:var(--card);border-radius:12px;padding:16px;
+  box-shadow:0 1px 6px rgba(0,0,0,0.06);border-left:3px solid var(--border);
+}
+.q-card.q1{border-left-color:#3a86ff;}
+.q-card.q2{border-left-color:#f4a11d;}
+.q-card.q3{border-left-color:#2dc653;}
+.q-card.q4{border-left-color:#7c3aed;}
+.q-card.empty{opacity:0.5;}
+.q-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;}
+.q-cetak{font-size:18px;font-weight:900;color:var(--primary);margin-bottom:3px;}
+.q-campaigns{font-size:11px;color:var(--muted);}
+.q-roi{font-size:11.5px;font-weight:700;color:var(--green);margin-top:5px;}
+
+/* ─── INSIGHTS BOX ─── */
+.insight-box{
+  background:linear-gradient(135deg,#eff6ff,#eef1f8);
+  border:1.5px solid #bfdbfe;border-radius:12px;
+  padding:16px 18px;margin-bottom:22px;
+}
+.insight-box h4{font-size:13px;font-weight:700;color:var(--primary);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+.insight-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;}
+.insight-item{
+  background:#fff;border-radius:8px;padding:10px 13px;
+  border-left:3px solid var(--blue);font-size:12px;color:var(--text);line-height:1.5;
+}
+.insight-item b{color:var(--primary);}
+
+/* ─── AI ANALYSIS ─── */
+.ai-section{
+  background:var(--card);border-radius:14px;padding:22px 24px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.07);margin-bottom:22px;
+}
+#annual-ai-panel{}
+
+/* ─── FOOTER ─── */
+footer{background:var(--primary);color:#a8b8d8;text-align:center;padding:14px;font-size:12px;margin-top:28px;}
+footer b{color:var(--gold);}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:768px){
+  .page-header{padding:18px 16px;}
+  .filter-bar{padding:10px 16px;}
+  .body{padding:14px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topnav">
+  <a class="logo" href="index.html">
+    <div class="logo-icon">EC</div>
+    <div><div class="logo-text">ERA-CAM</div><div class="logo-sub">Erajaya Campaign Monitoring</div></div>
+  </a>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
+  <nav>
+    <div class="nav-item"><a href="index.html" class="nav-link">Overview</a></div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Flyer <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Flyer Campaign</div>
+        <a href="flyer.html"><span class="icon">📊</span><span class="lbl">Flyer Promo Feb By Sales</span></a>
+        <a href="flyer-february.html"><span class="icon">📦</span><span class="lbl">Flyer Promo Feb By Qty</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Spanduk <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Spanduk Campaign</div>
+        <a href="spanduk.html"><span class="icon">🪧</span><span class="lbl">Spanduk Fasad</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Umbul-Umbul <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Umbul-Umbul Campaign</div>
+        <a href="umbul-umbul.html"><span class="icon">🏮</span><span class="lbl">Umbul-Umbul SEP Serpong</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">AI Analysis <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">AI-Powered Analysis</div>
+        <a href="brand.html"><span class="icon">🏷️</span><span class="lbl">Per Brand Scorecard</span></a>
+        <a href="ai-summary.html"><span class="icon">🤖</span><span class="lbl">AI Executive Summary</span></a>
+        <a href="annual-report.html"><span class="icon">📅</span><span class="lbl">Laporan Tahunan 2026</span><span class="dbadge" style="background:#ea580c;color:#fff">NEW</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link nav-admin">⚙ Admin <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Admin Tools</div>
+        <a href="campaign-input.html"><span class="icon">➕</span><span class="lbl">Input Campaign Baru</span></a>
+        <a href="settings.html" style="background:#f0fdf4"><span class="icon">🔑</span><span class="lbl">API Keys Settings</span><span class="dbadge" style="background:#059669;color:#fff">Baru</span></a>
+        <a href="admin.html"><span class="icon">⚙</span><span class="lbl">Admin Panel</span></a>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="ph-left">
+    <h1>📅 Laporan Tahunan Biaya Cetak</h1>
+    <p>Tracking semua biaya produksi cetak kampanye promosi & analisis dampak bisnis</p>
+    <div class="ph-badges">
+      <span class="ph-badge gold" id="hdTotalCetak">Total Cetak: Rp 31,8jt</span>
+      <span class="ph-badge green" id="hdJumlahCampaign">3 Campaign</span>
+      <span class="ph-badge" id="hdJumlahOutlet">150 Outlet</span>
+      <span class="ph-badge" id="hdBlendedRoi">Blended ROI: —</span>
+    </div>
+  </div>
+  <div>
+    <select class="ph-year-selector" id="yearSelector" onchange="renderAll()">
+      <option value="2026" selected>Tahun 2026</option>
+      <option value="2027">Tahun 2027</option>
+    </select>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">Filter Tipe:</span>
+  <span class="filter-chip active" data-tipe="semua" onclick="filterByTipe(this,'semua')">Semua</span>
+  <span class="filter-chip" data-tipe="flyer" onclick="filterByTipe(this,'flyer')">📄 Flyer</span>
+  <span class="filter-chip" data-tipe="spanduk" onclick="filterByTipe(this,'spanduk')">🪧 Spanduk</span>
+  <span class="filter-chip" data-tipe="umbul-umbul" onclick="filterByTipe(this,'umbul-umbul')">🚩 Umbul-Umbul</span>
+  <div class="filter-spacer"></div>
+  <span class="filter-total">Menampilkan <span id="filterCount">3</span> campaign · Data per <b>Apr 2026</b></span>
+</div>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi-card amber">
+      <div class="kpi-icon">🖨️</div>
+      <div class="kpi-label">Total Biaya Cetak YTD</div>
+      <div class="kpi-value" style="color:var(--amber)" id="kpiTotalCetak">—</div>
+      <div class="kpi-sub">Flyer + Spanduk + Umbul-Umbul</div>
+      <div class="kpi-trend neutral" id="kpiCetakBreakdown">—</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-icon">📺</div>
+      <div class="kpi-label">Total Biaya Media YTD</div>
+      <div class="kpi-value" style="color:var(--blue)" id="kpiTotalMedia">—</div>
+      <div class="kpi-sub">Biaya pemasangan / sewa lokasi</div>
+      <div class="kpi-trend neutral" id="kpiMediaBreakdown">—</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-label">Net Revenue Increment</div>
+      <div class="kpi-value" id="kpiRevInc">—</div>
+      <div class="kpi-sub" id="kpiRevIncSub">Akumulasi semua campaign</div>
+      <div class="kpi-trend" id="kpiRevIncTrend">—</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-icon">💹</div>
+      <div class="kpi-label">Blended ROI Cetak</div>
+      <div class="kpi-value" style="color:var(--purple)" id="kpiBlendedRoi">—</div>
+      <div class="kpi-sub">Revenue increment / Biaya cetak</div>
+      <div class="kpi-trend neutral" id="kpiBlendedRoiSub">—</div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-icon">🗂️</div>
+      <div class="kpi-label">Jumlah Campaign</div>
+      <div class="kpi-value" style="color:var(--orange)" id="kpiJumlahCampaign">—</div>
+      <div class="kpi-sub" id="kpiCampaignSub">Outlet tercover</div>
+      <div class="kpi-trend neutral" id="kpiCampaignTrend">—</div>
+    </div>
+  </div>
+
+  <!-- QUARTER BREAKDOWN -->
+  <div class="section">
+    <div class="section-hdr">
+      <span class="section-title">📊 Breakdown per Quarter 2026</span>
+    </div>
+    <div class="quarter-grid" id="quarterGrid">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 1: Monthly Bar + Donut -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Biaya Cetak per Bulan — 2026</div>
+      <div class="chart-sub">Total biaya produksi cetak yang dikeluarkan setiap bulan. Bulan tanpa kampanye bernilai Rp 0.</div>
+      <div class="chart-wrap">
+        <canvas id="chartMonthly"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Distribusi Biaya per Tipe Media</div>
+      <div class="chart-sub">Porsi biaya cetak yang dialokasikan per jenis media promosi.</div>
+      <div class="chart-wrap chart-wrap-sm">
+        <canvas id="chartDonut"></canvas>
+      </div>
+      <div id="donutLegend" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 2: Cumulative + Revenue bar -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Kumulatif Biaya Cetak YTD — 2026</div>
+      <div class="chart-sub">Akumulasi total pengeluaran cetak sepanjang tahun. Naik setiap ada campaign baru.</div>
+      <div class="chart-wrap">
+        <canvas id="chartCumulative"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Revenue Increment vs Biaya Cetak</div>
+      <div class="chart-sub">Perbandingan biaya yang dikeluarkan vs revenue yang dihasilkan per tipe media.</div>
+      <div class="chart-wrap chart-wrap-sm">
+        <canvas id="chartRevVsCost"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="insight-box" id="insightBox">
+    <h4>💡 Key Insights Otomatis</h4>
+    <div class="insight-list" id="insightList">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- CAMPAIGN REGISTRY TABLE -->
+  <div class="table-card">
+    <div class="table-card-hdr">
+      <div>
+        <div class="table-card-title">📋 Campaign Registry 2026</div>
+        <div class="table-card-sub">Semua campaign materi promosi yang tercatat — tambah baris baru di <code>data.js → campaignRegistry</code> setiap ada campaign baru</div>
+      </div>
+      <a href="admin.html" class="add-btn">⚙ Admin / Tambah Data</a>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="tbl" id="registryTable">
+        <thead>
+          <tr>
+            <th>ID Campaign</th>
+            <th>Nama Campaign</th>
+            <th>Tipe</th>
+            <th>Bln / Quarter</th>
+            <th class="tbl-num">Toko</th>
+            <th class="tbl-num">Biaya Cetak</th>
+            <th class="tbl-num">Total Investasi</th>
+            <th class="tbl-num">Revenue Inc.</th>
+            <th class="tbl-num">ROI Cetak</th>
+            <th>Status</th>
+            <th>Catatan</th>
+          </tr>
+        </thead>
+        <tbody id="registryBody">
+          <!-- populated by JS -->
+        </tbody>
+        <tfoot>
+          <tr id="registryFooter">
+            <!-- populated by JS -->
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- AI BUSINESS IMPACT ANALYSIS -->
+  <div class="ai-section">
+    <div id="annual-ai-panel"></div>
+  </div>
+
+</div>
+
+<footer>
+  <b>ERA-CAM</b> · Laporan Tahunan Biaya Cetak 2026 · Erajaya Campaign Analytics &amp; Monitoring ·
+  Data source: campaignRegistry (data.js) · Diperbarui setiap ada campaign baru
+</footer>
+
+<script src="data.js"></script>
+<script src="ai-analysis.js"></script>
+<script src="chatbot.js?v=3"></script>
+<script>
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+const fmtM    = v => v >= 1e9 ? 'Rp '+(v/1e9).toFixed(2)+'M' : v >= 1e6 ? 'Rp '+(v/1e6).toFixed(1)+'jt' : 'Rp '+v.toLocaleString('id-ID');
+const fmtFull = v => {
+  if (v === 0) return 'Rp 0';
+  const abs = Math.abs(v);
+  let s = abs >= 1e9 ? (abs/1e9).toFixed(2)+' M' : abs >= 1e6 ? (abs/1e6).toFixed(1)+' jt' : abs.toLocaleString('id-ID');
+  return (v < 0 ? '-' : '') + 'Rp ' + s;
+};
+const fmtRp   = v => 'Rp ' + Math.abs(v).toLocaleString('id-ID');
+const MONTHS  = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+const TIPE_COLORS = {
+  'flyer':       { bg:'#3a86ff', light:'#dbeafe', text:'#1e40af' },
+  'spanduk':     { bg:'#d97706', light:'#fef3c7', text:'#92400e' },
+  'umbul-umbul': { bg:'#7c3aed', light:'#f3e8ff', text:'#6b21a8' },
+};
+const Q_COLORS = { Q1:'#3a86ff', Q2:'#f4a11d', Q3:'#2dc653', Q4:'#7c3aed' };
+let activeTipe = 'semua';
+let charts = {};
+
+// ─── FILTER ───────────────────────────────────────────────────────────────────
+function filterByTipe(el, tipe) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeTipe = tipe;
+  renderAll();
+}
+
+function getFiltered() {
+  let data = campaignRegistry;
+  if (activeTipe !== 'semua') data = data.filter(c => c.tipe === activeTipe);
+  return data;
+}
+
+// ─── KPI CARDS ────────────────────────────────────────────────────────────────
+function renderKPIs(filtered) {
+  const totalCetak   = filtered.reduce((s,c) => s + c.biaya_cetak, 0);
+  const totalMedia   = filtered.reduce((s,c) => s + c.biaya_media, 0);
+  const totalRev     = filtered.reduce((s,c) => s + c.revenue_increment, 0);
+  const blendedRoi   = totalCetak > 0 ? (totalRev / totalCetak).toFixed(1) : '—';
+  const totalOutlet  = filtered.reduce((s,c) => s + c.jumlah_toko, 0);
+
+  document.getElementById('kpiTotalCetak').textContent   = fmtM(totalCetak);
+  document.getElementById('kpiTotalMedia').textContent   = fmtM(totalMedia);
+
+  const revEl = document.getElementById('kpiRevInc');
+  revEl.textContent = fmtM(totalRev);
+  revEl.style.color = totalRev >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('kpiRevIncSub').textContent    = `${filtered.length} campaign`;
+  document.getElementById('kpiRevIncTrend').textContent  = totalRev >= 0 ? `▲ ${fmtM(totalRev)} total` : `▼ ${fmtM(totalRev)} net`;
+  document.getElementById('kpiRevIncTrend').className    = 'kpi-trend ' + (totalRev >= 0 ? 'up' : 'dn');
+
+  document.getElementById('kpiBlendedRoi').textContent   = blendedRoi !== '—' ? blendedRoi + 'x' : '—';
+  document.getElementById('kpiBlendedRoiSub').textContent = totalCetak > 0 ? `${fmtM(totalRev)} / ${fmtM(totalCetak)}` : 'Belum ada data';
+
+  document.getElementById('kpiJumlahCampaign').textContent = filtered.length;
+  document.getElementById('kpiCampaignSub').textContent    = `${totalOutlet} outlet tercover`;
+  document.getElementById('kpiCampaignTrend').textContent  = `${filtered.filter(c=>c.status==='Selesai').length} selesai · ${filtered.filter(c=>c.status==='Planned').length} planned`;
+
+  // Breakdown text
+  const byCetak = {};
+  filtered.forEach(c => { byCetak[c.tipe] = (byCetak[c.tipe]||0) + c.biaya_cetak; });
+  const cetakParts = Object.entries(byCetak).map(([t,v]) => `${t}: ${fmtM(v)}`).join(' · ');
+  document.getElementById('kpiCetakBreakdown').textContent  = cetakParts || '—';
+  document.getElementById('kpiMediaBreakdown').textContent  = totalMedia > 0 ? `Spanduk: ${fmtM(totalMedia)}` : 'Flyer & Umbul: tanpa biaya media';
+
+  // Header badges
+  document.getElementById('hdTotalCetak').textContent       = `Total Cetak: ${fmtM(totalCetak)}`;
+  document.getElementById('hdJumlahCampaign').textContent   = `${filtered.length} Campaign`;
+  document.getElementById('hdJumlahOutlet').textContent     = `${totalOutlet} Outlet`;
+  document.getElementById('hdBlendedRoi').textContent       = `Blended ROI: ${blendedRoi !== '—' ? blendedRoi+'x' : '—'}`;
+  document.getElementById('filterCount').textContent        = filtered.length;
+}
+
+// ─── QUARTER GRID ─────────────────────────────────────────────────────────────
+function renderQuarters(filtered) {
+  const quarters = ['Q1','Q2','Q3','Q4'];
+  const html = quarters.map(q => {
+    const items = filtered.filter(c => c.quarter === q);
+    const cetak = items.reduce((s,c) => s + c.biaya_cetak, 0);
+    const rev   = items.reduce((s,c) => s + c.revenue_increment, 0);
+    const roi   = cetak > 0 ? (rev / cetak).toFixed(1) : null;
+    const empty = items.length === 0;
+    return `<div class="q-card ${q.toLowerCase()} ${empty ? 'empty' : ''}">
+      <div class="q-name">${q} · ${q==='Q1'?'Jan–Mar':q==='Q2'?'Apr–Jun':q==='Q3'?'Jul–Sep':'Okt–Des'}</div>
+      <div class="q-cetak">${cetak > 0 ? fmtM(cetak) : 'Rp 0'}</div>
+      <div class="q-campaigns">${items.length} campaign · ${items.reduce((s,c)=>s+c.jumlah_toko,0)} outlet</div>
+      ${roi !== null ? `<div class="q-roi ${rev<0?'dn':''}">ROI Cetak: ${roi}x</div>` : '<div class="q-campaigns" style="margin-top:5px">Belum ada campaign</div>'}
+    </div>`;
+  }).join('');
+  document.getElementById('quarterGrid').innerHTML = html;
+}
+
+// ─── CHARTS ───────────────────────────────────────────────────────────────────
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+function renderChartMonthly(filtered) {
+  destroyChart('monthly');
+  const monthly = {};
+  for (let i=1;i<=12;i++) monthly[i] = filtered.filter(c=>c.bulan===i).reduce((s,c)=>s+c.biaya_cetak,0);
+  const ctx = document.getElementById('chartMonthly').getContext('2d');
+  charts['monthly'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: MONTHS,
+      datasets: [{
+        label: 'Biaya Cetak (Rp)',
+        data: Object.values(monthly),
+        backgroundColor: Object.values(monthly).map(v => v > 0 ? '#3a86ff' : '#e5e7eb'),
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => ' ' + fmtM(ctx.raw) }
+        }
+      },
+      scales: {
+        y: {
+          ticks: {
+            callback: v => fmtM(v),
+            font: { size: 10 }
+          },
+          grid: { color: '#f0f2f7' }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderChartDonut(filtered) {
+  destroyChart('donut');
+  const byTipe = {};
+  filtered.forEach(c => { byTipe[c.tipe] = (byTipe[c.tipe]||0) + c.biaya_cetak; });
+  const tipes  = Object.keys(byTipe);
+  const values = Object.values(byTipe);
+  const colors = tipes.map(t => (TIPE_COLORS[t]||{bg:'#94a3b8'}).bg);
+  const total  = values.reduce((s,v)=>s+v,0);
+
+  const ctx = document.getElementById('chartDonut').getContext('2d');
+  charts['donut'] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: tipes.map(t => t.charAt(0).toUpperCase()+t.slice(1)),
+      datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, borderColor: '#fff', hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true,
+      cutout: '65%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${fmtM(ctx.raw)} (${((ctx.raw/total)*100).toFixed(1)}%)`
+          }
+        }
+      }
+    }
+  });
+
+  // Custom legend
+  const legend = tipes.map((t,i) => {
+    const pct = total > 0 ? ((values[i]/total)*100).toFixed(1) : '0';
+    return `<div style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:5px;">
+      <span style="width:10px;height:10px;border-radius:3px;background:${colors[i]};flex-shrink:0;"></span>
+      <span style="flex:1;color:var(--text);font-weight:600;">${t.charAt(0).toUpperCase()+t.slice(1)}</span>
+      <span style="color:var(--muted)">${pct}%</span>
+      <span style="font-weight:700;color:var(--primary)">${fmtM(values[i])}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('donutLegend').innerHTML = legend;
+}
+
+function renderChartCumulative(filtered) {
+  destroyChart('cumulative');
+  const monthly = {};
+  for (let i=1;i<=12;i++) monthly[i] = filtered.filter(c=>c.bulan===i).reduce((s,c)=>s+c.biaya_cetak,0);
+  let run = 0;
+  const cumData = Object.values(monthly).map(v => { run += v; return run; });
+  const ctx = document.getElementById('chartCumulative').getContext('2d');
+  charts['cumulative'] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: MONTHS,
+      datasets: [{
+        label: 'Kumulatif Biaya Cetak',
+        data: cumData,
+        borderColor: '#7c3aed',
+        backgroundColor: 'rgba(124,58,237,0.08)',
+        tension: 0.35,
+        fill: true,
+        pointBackgroundColor: cumData.map(v => v > 0 ? '#7c3aed' : '#e5e7eb'),
+        pointRadius: 5,
+        pointHoverRadius: 7,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' Kumulatif: ' + fmtM(ctx.raw) } }
+      },
+      scales: {
+        y: {
+          ticks: { callback: v => fmtM(v), font: { size: 10 } },
+          grid: { color: '#f0f2f7' }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderChartRevVsCost(filtered) {
+  destroyChart('revcost');
+  const byTipe = {};
+  filtered.forEach(c => {
+    if (!byTipe[c.tipe]) byTipe[c.tipe] = { cetak: 0, rev: 0 };
+    byTipe[c.tipe].cetak += c.biaya_cetak;
+    byTipe[c.tipe].rev   += c.revenue_increment;
+  });
+  const tipes  = Object.keys(byTipe);
+  const labels = tipes.map(t => t.charAt(0).toUpperCase()+t.slice(1));
+  const colors = tipes.map(t => (TIPE_COLORS[t]||{bg:'#94a3b8'}).bg);
+  const ctx = document.getElementById('chartRevVsCost').getContext('2d');
+  charts['revcost'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Biaya Cetak',
+          data: tipes.map(t => byTipe[t].cetak),
+          backgroundColor: colors.map(c => c+'80'),
+          borderColor: colors,
+          borderWidth: 2,
+          borderRadius: 5,
+        },
+        {
+          label: 'Revenue Increment',
+          data: tipes.map(t => Math.max(0, byTipe[t].rev)),
+          backgroundColor: 'rgba(45,198,83,0.25)',
+          borderColor: '#2dc653',
+          borderWidth: 2,
+          borderRadius: 5,
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + fmtM(ctx.raw) } }
+      },
+      scales: {
+        y: { ticks: { callback: v => fmtM(v), font: { size: 10 } }, grid: { color: '#f0f2f7' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ─── INSIGHTS ─────────────────────────────────────────────────────────────────
+function renderInsights(filtered) {
+  const totalCetak = filtered.reduce((s,c)=>s+c.biaya_cetak,0);
+  const totalRev   = filtered.reduce((s,c)=>s+c.revenue_increment,0);
+  const byTipe     = {};
+  filtered.forEach(c => {
+    if (!byTipe[c.tipe]) byTipe[c.tipe] = {cetak:0,rev:0,count:0};
+    byTipe[c.tipe].cetak += c.biaya_cetak;
+    byTipe[c.tipe].rev   += c.revenue_increment;
+    byTipe[c.tipe].count++;
+  });
+  const bestTipe = Object.entries(byTipe)
+    .filter(([,v]) => v.cetak > 0)
+    .sort((a,b) => (b[1].rev/b[1].cetak) - (a[1].rev/a[1].cetak))[0];
+  const biggestCetak = Object.entries(byTipe).sort((a,b)=>b[1].cetak-a[1].cetak)[0];
+  const positiveRev  = filtered.filter(c=>c.revenue_increment>0).length;
+
+  const items = [];
+  if (totalCetak > 0) items.push(`<div class="insight-item">🖨️ Total biaya cetak YTD <b>${fmtM(totalCetak)}</b> — dikeluarkan untuk <b>${filtered.length} campaign</b> di ${filtered.reduce((s,c)=>s+c.jumlah_toko,0)} outlet</div>`);
+  if (biggestCetak) items.push(`<div class="insight-item">📊 Tipe <b>${biggestCetak[0]}</b> menyerap biaya cetak terbesar — <b>${fmtM(biggestCetak[1].cetak)}</b> (${totalCetak>0?((biggestCetak[1].cetak/totalCetak)*100).toFixed(0):'—'}% dari total)</div>`);
+  if (bestTipe) items.push(`<div class="insight-item">💹 ROI cetak terbaik: tipe <b>${bestTipe[0]}</b> — <b>${bestTipe[1].cetak>0?(bestTipe[1].rev/bestTipe[1].cetak).toFixed(1)+'x':'—'}</b> per rupiah yang diinvestasikan</div>`);
+  items.push(`<div class="insight-item">${totalRev>=0?'📈':'📉'} Net revenue increment semua campaign: <b style="color:${totalRev>=0?'var(--green)':'var(--red)'}">${fmtM(totalRev)}</b> — <b>${positiveRev}/${filtered.length}</b> campaign menghasilkan revenue positif</div>`);
+  items.push(`<div class="insight-item">📅 Campaign terekam dari <b>Q1–Q2 2026</b> — tambahkan entry baru di <code>campaignRegistry</code> setiap ada campaign baru untuk tracking otomatis hingga Desember 2026</div>`);
+  if (filtered.filter(c=>c.status==='Planned').length > 0) {
+    items.push(`<div class="insight-item">🗓️ <b>${filtered.filter(c=>c.status==='Planned').length} campaign planned</b> belum dimulai — biaya cetak belum dihitung dalam total YTD</div>`);
+  }
+  document.getElementById('insightList').innerHTML = items.join('');
+}
+
+// ─── TABLE ────────────────────────────────────────────────────────────────────
+function renderTable(filtered) {
+  const TIPE_CLASS = { 'flyer':'type-flyer','spanduk':'type-spanduk','umbul-umbul':'type-umbul' };
+  const STS_CLASS  = { 'Selesai':'status-done','Berjalan':'status-active','Planned':'status-planned' };
+
+  const rows = filtered.map(c => {
+    const totalInv = c.biaya_cetak + c.biaya_media;
+    const roi      = c.biaya_cetak > 0 ? (c.revenue_increment / c.biaya_cetak).toFixed(1) : null;
+    const roiClass = roi === null ? 'roi-na' : parseFloat(roi) >= 0 ? 'roi-positive' : 'roi-negative';
+    return `<tr>
+      <td><code style="font-size:11px;color:var(--muted)">${c.id}</code></td>
+      <td>
+        <div style="font-weight:700;font-size:13px;margin-bottom:2px">${c.icon} ${c.nama}</div>
+      </td>
+      <td><span class="type-badge ${TIPE_CLASS[c.tipe]||''}">${c.tipe}</span></td>
+      <td>
+        <div style="font-weight:700">${MONTHS[c.bulan-1]} '${String(c.tahun).slice(2)}</div>
+        <div style="font-size:10.5px;color:var(--muted)">${c.quarter}</div>
+      </td>
+      <td class="tbl-num" style="font-weight:700">${c.jumlah_toko.toLocaleString('id-ID')}</td>
+      <td class="tbl-num" style="color:var(--amber);font-weight:700">${fmtM(c.biaya_cetak)}</td>
+      <td class="tbl-num" style="font-weight:700">${fmtM(totalInv)}</td>
+      <td class="tbl-num"><span class="${c.revenue_increment>=0?'roi-positive':'roi-negative'}">${fmtM(c.revenue_increment)}</span></td>
+      <td class="tbl-num"><span class="${roiClass}">${roi !== null ? roi+'x' : '—'}</span></td>
+      <td><span class="status-badge ${STS_CLASS[c.status]||''}">${c.status}</span></td>
+      <td style="font-size:11.5px;color:var(--muted);max-width:200px;line-height:1.4">${c.catatan}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('registryBody').innerHTML = rows || '<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--muted)">Tidak ada campaign untuk filter ini</td></tr>';
+
+  // Footer totals
+  const totalCetak = filtered.reduce((s,c)=>s+c.biaya_cetak,0);
+  const totalMedia = filtered.reduce((s,c)=>s+c.biaya_media,0);
+  const totalInv   = totalCetak + totalMedia;
+  const totalRev   = filtered.reduce((s,c)=>s+c.revenue_increment,0);
+  const totalOutlet = filtered.reduce((s,c)=>s+c.jumlah_toko,0);
+  const blended    = totalCetak>0 ? (totalRev/totalCetak).toFixed(1)+'x' : '—';
+  document.getElementById('registryFooter').innerHTML = `
+    <td colspan="3" style="color:var(--muted)">TOTAL · ${filtered.length} campaign</td>
+    <td class="tbl-num">${totalOutlet}</td>
+    <td class="tbl-num" style="color:var(--amber)">${fmtM(totalCetak)}</td>
+    <td class="tbl-num">${fmtM(totalInv)}</td>
+    <td class="tbl-num"><span class="${totalRev>=0?'roi-positive':'roi-negative'}">${fmtM(totalRev)}</span></td>
+    <td class="tbl-num"><span class="${parseFloat(blended)>=0||blended==='—'?'roi-positive':''}">${blended}</span></td>
+    <td colspan="2"></td>`;
+}
+
+// ─── AI ANALYSIS ─────────────────────────────────────────────────────────────
+function buildSystemPrompt(filtered) {
+  const totalCetak = filtered.reduce((s,c)=>s+c.biaya_cetak,0);
+  const totalMedia = filtered.reduce((s,c)=>s+c.biaya_media,0);
+  const totalRev   = filtered.reduce((s,c)=>s+c.revenue_increment,0);
+  const blended    = totalCetak>0?(totalRev/totalCetak).toFixed(1)+'x':'—';
+
+  const lines = filtered.map(c =>
+    `  • ${c.id} | ${c.nama} | ${MONTHS[c.bulan-1]} 2026 | ${c.tipe} | ${c.jumlah_toko} toko | Biaya Cetak: ${fmtM(c.biaya_cetak)} | Biaya Media: ${fmtM(c.biaya_media)} | Revenue Inc: ${fmtM(c.revenue_increment)} | ROI: ${c.biaya_cetak>0?(c.revenue_increment/c.biaya_cetak).toFixed(1)+'x':'—'} | ${c.status}`
+  ).join('\n');
+
+  return `Anda adalah Business Intelligence Analyst ERA-CAM (Erajaya Campaign Analytics & Monitoring).
+Tugas Anda menganalisis data laporan tahunan biaya cetak materi promosi Erafone/Erajaya untuk tahun 2026.
+
+DATA CAMPAIGN REGISTRY 2026 (${filtered.length} campaign ditampilkan):
+${lines}
+
+RINGKASAN AGREGAT:
+• Total Biaya Cetak YTD: ${fmtM(totalCetak)}
+• Total Biaya Media YTD: ${fmtM(totalMedia)}
+• Total Investasi: ${fmtM(totalCetak+totalMedia)}
+• Net Revenue Increment: ${fmtM(totalRev)}
+• Blended ROI Cetak: ${blended}
+• Total Outlet: ${filtered.reduce((s,c)=>s+c.jumlah_toko,0)} toko
+
+KONTEKS BISNIS:
+• ERA-CAM adalah sistem monitoring kampanye promosi toko Erafone/Erajaya
+• Campaign media: Flyer (distribusi ke 136 toko), Spanduk Fasad (13 outlet premium), Umbul-Umbul (1 SEP lokasi)
+• Flyer: biaya cetak Rp 7,276,000 → revenue increment Rp 82M → ROI cetak 11,3x
+• Spanduk: biaya cetak Rp 22,3M + media Rp 23,89M → profit increment ~Rp 1,77M (net semua outlet)
+• Umbul-Umbul: biaya cetak Rp 2,25M → revenue delta -Rp 236M (brand awareness, bukan direct revenue)
+• Catatan: Umbul-Umbul Samsung lebih ke brand activation, revenue negatif bukan indikasi gagal
+
+Jawab dalam Bahasa Indonesia. Format pakai struktur: 📊 heading, bullet points, angka spesifik dari data di atas.
+Fokus pada: efisiensi biaya, ROI per tipe media, tren, rekomendasi budget allocation 2027, seasonal insight.`;
+}
+
+function initAI(filtered) {
+  initAIAnalysis({
+    containerId: 'annual-ai-panel',
+    pageTitle:   'Business Impact Analysis — Laporan Tahunan 2026',
+    aspects: [
+      'Cost Efficiency',
+      'ROI per Media',
+      'Budget Allocation',
+      'Business Impact',
+      'Seasonal Pattern',
+      'Rekomendasi 2027',
+    ],
+    systemPrompt: buildSystemPrompt(filtered),
+  });
+}
+
+// ─── MAIN RENDER ──────────────────────────────────────────────────────────────
+function renderAll() {
+  const filtered = getFiltered();
+  renderKPIs(filtered);
+  renderQuarters(filtered);
+  renderChartMonthly(filtered);
+  renderChartDonut(filtered);
+  renderChartCumulative(filtered);
+  renderChartRevVsCost(filtered);
+  renderInsights(filtered);
+  renderTable(filtered);
+  initAI(filtered);
+}
+
+document.addEventListener('DOMContentLoaded', renderAll);
+</script>
+</body>
+</html>

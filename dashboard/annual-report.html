@@ -879,7 +879,7 @@ function renderTable(filtered) {
   const totalOutlet = filtered.reduce((s,c)=>s+c.jumlah_toko,0);
   const blended    = totalCetak>0 ? (totalRev/totalCetak).toFixed(1)+'x' : '—';
   document.getElementById('registryFooter').innerHTML = `
-    <td colspan="3" style="color:var(--muted)">TOTAL · ${filtered.length} campaign</td>
+    <td colspan="4" style="color:var(--muted)">TOTAL · ${filtered.length} campaign</td>
     <td class="tbl-num">${totalOutlet}</td>
     <td class="tbl-num" style="color:var(--amber)">${fmtM(totalCetak)}</td>
     <td class="tbl-num">${fmtM(totalInv)}</td>

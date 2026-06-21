@@ -358,22 +358,6 @@ const campaignRegistry = [
     catatan:            "Samsung SEP Serpong Paradise Walk · brand awareness campaign",
   },
 
-  {
-    id:                 "FLY-2026-05",
-    nama:               "Flyer Promo Mei 2026",
-    bulan:              5,
-    tahun:              2026,
-    quarter:            "Q2",
-    tipe:               "flyer",
-    icon:               "📄",
-    jumlah_toko:        80,
-    biaya_cetak:        5000000,
-    biaya_media:        0,
-    revenue_increment:  55000000,
-    status:             "Planned",
-    catatan:            "Test entry — hapus setelah cek",
-  },
-
   // ── TEMPLATE — Uncomment & isi untuk campaign berikutnya ────────────────────
   // {
   //   id:                 "FLY-2026-05",

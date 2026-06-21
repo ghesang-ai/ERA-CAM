@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERA-CAM — Flyer Promo April By Qty</title>
+<style>
+  :root {
+    --primary:#1a2e5a; --gold:#f4a11d; --green:#2dc653; --red:#e63946;
+    --blue:#3a86ff; --purple:#7c3aed; --orange:#ea580c;
+    --bg:#f0f2f7; --card:#ffffff; --text:#1a1a2e; --muted:#6b7280; --border:#e5e7eb;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); color:var(--text); }
+  .badge { background:var(--gold); color:var(--primary); font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px; margin-left:5px; }
+  .hero { background:linear-gradient(135deg,#1a2e5a 0%,#1a4d3a 60%,#1e3a5f 100%); padding:30px 32px 24px; color:#fff; }
+  .hero h1 { font-size:24px; font-weight:800; }
+  .hero p { color:#a8c8b8; font-size:13px; margin-top:4px; }
+  .hero-meta { display:flex; gap:14px; margin-top:14px; flex-wrap:wrap; }
+  .hero-meta span { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:4px 12px; font-size:12px; color:#c8d8f0; }
+  .hero-meta span b { color:var(--gold); }
+  .section { padding:20px 32px; }
+  .section-title { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:14px; }
+  .kpi-card { background:var(--card); border-radius:12px; padding:16px 18px; box-shadow:0 1px 4px rgba(0,0,0,0.07); border-left:4px solid var(--primary); }
+  .kpi-card.green  { border-left-color:var(--green); }
+  .kpi-card.gold   { border-left-color:var(--gold); }
+  .kpi-card.blue   { border-left-color:var(--blue); }
+  .kpi-card.purple { border-left-color:var(--purple); }
+  .kpi-card.orange { border-left-color:var(--orange); }
+  .kpi-card.red    { border-left-color:var(--red); }
+  .kpi-label { font-size:10.5px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+  .kpi-value { font-size:22px; font-weight:800; margin-top:5px; line-height:1.1; }
+  .kpi-sub { font-size:11px; color:var(--muted); margin-top:3px; }
+  .kpi-trend { font-size:11px; font-weight:600; margin-top:4px; }
+  .kpi-trend.up { color:var(--green); }
+  .kpi-trend.dn { color:var(--red); }
+  .insight-bar { background:linear-gradient(135deg,#fff8e7,#fff); border:1.5px solid var(--gold); border-radius:12px; padding:16px 20px; margin-bottom:0; }
+  .insight-bar h4 { font-size:13px; font-weight:700; color:var(--gold); margin-bottom:8px; }
+  .insight-bar ul { list-style:none; display:flex; flex-wrap:wrap; gap:8px 24px; }
+  .insight-bar ul li { font-size:12.5px; color:var(--text); }
+  .insight-bar ul li::before { content:'•'; color:var(--gold); margin-right:6px; font-weight:700; }
+  .tab-bar { display:flex; gap:4px; background:var(--card); border-radius:12px; padding:6px; box-shadow:0 1px 4px rgba(0,0,0,0.07); margin-bottom:18px; width:fit-content; flex-wrap:wrap; }
+  .tab-btn { padding:8px 18px; border-radius:8px; border:none; font-size:13px; font-weight:600; cursor:pointer; background:transparent; color:var(--muted); transition:all 0.2s; }
+  .tab-btn.active { background:var(--primary); color:#fff; }
+  .tab-btn:hover:not(.active) { background:#f3f4f6; color:var(--text); }
+  .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:900px) { .chart-grid { grid-template-columns:1fr; } }
+  .chart-card { background:var(--card); border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,0.07); padding:18px 20px; }
+  .chart-card h4 { font-size:13px; font-weight:700; margin-bottom:14px; }
+  canvas { max-height:280px; }
+  .product-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+  .product-card { background:var(--card); border-radius:12px; padding:16px 18px; box-shadow:0 1px 4px rgba(0,0,0,0.07); border-top:3px solid var(--blue); transition:transform 0.15s,box-shadow 0.15s; cursor:pointer; }
+  .product-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+  .product-card h5 { font-size:12.5px; font-weight:700; line-height:1.35; }
+  .product-card .total-units { font-size:22px; font-weight:900; color:var(--blue); margin-top:8px; }
+  .product-card .month-row { display:flex; gap:6px; margin-top:8px; }
+  .month-chip { flex:1; text-align:center; background:#f3f4f6; border-radius:6px; padding:4px 2px; }
+  .month-chip .ml { font-size:9px; color:var(--muted); font-weight:600; }
+  .month-chip .mv { font-size:12px; font-weight:800; }
+  .month-chip.highlight { background:#dbeafe; }
+  .month-chip.highlight .mv { color:#1e40af; }
+  .table-wrap { background:var(--card); border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,0.07); overflow:hidden; }
+  .table-header { padding:16px 20px 12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+  .table-header h3 { font-size:14px; font-weight:700; }
+  .table-header p { font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .filter-bar { padding:12px 20px; background:#fafbfc; border-bottom:1px solid var(--border); display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; }
+  .filter-bar label { font-size:11px; font-weight:600; color:var(--muted); display:block; margin-bottom:4px; }
+  .filter-bar select, .filter-bar input { padding:7px 11px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; background:#fff; color:var(--text); outline:none; }
+  .filter-bar select:focus, .filter-bar input:focus { border-color:var(--primary); }
+  .filter-bar input[type=text] { width:200px; }
+  .btn { display:inline-flex; align-items:center; gap:5px; padding:7px 16px; border-radius:8px; font-size:12.5px; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:#fff; color:var(--text); transition:all 0.2s; }
+  .btn:hover { border-color:var(--primary); color:var(--primary); }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th { background:#f8f9fb; padding:9px 13px; text-align:left; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--border); white-space:nowrap; cursor:pointer; user-select:none; }
+  th:hover { background:#f0f2f7; color:var(--primary); }
+  td { padding:9px 13px; border-bottom:1px solid #f3f4f6; vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#f8f9fb; }
+  .up { color:var(--green); font-weight:600; }
+  .dn { color:var(--red);   font-weight:600; }
+  .neu { color:var(--muted); font-weight:600; }
+  .num { font-weight:700; }
+  .count-tag { font-size:12px; color:var(--muted); background:#f3f4f6; padding:3px 10px; border-radius:8px; }
+  .badge-s { display:inline-flex; align-items:center; font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:10px; white-space:nowrap; }
+  .s-strong   { background:#dbeafe; color:#1e40af; }
+  .s-moderate { background:#d1fae5; color:#065f46; }
+  .s-weak     { background:#fef3c7; color:#92400e; }
+  .s-no       { background:#fee2e2; color:#991b1b; }
+  .t-excellent { background:#d1fae5; color:#065f46; }
+  .t-good      { background:#dbeafe; color:#1e40af; }
+  .t-decline   { background:#fee2e2; color:#991b1b; }
+  footer { background:var(--primary); color:#a8b8d8; text-align:center; padding:14px; font-size:12px; margin-top:28px; }
+  footer b { color:var(--gold); }
+  @media (max-width:768px) { .section { padding:14px; } .hero { padding:20px 14px; } }
+</style>
+<link rel="stylesheet" href="nav.css?v=2">
+</head>
+<body>
+
+<div class="topnav">
+  <a class="logo" href="index.html">
+    <div class="logo-icon">EC</div>
+    <div><div class="logo-text">ERA-CAM</div><div class="logo-sub">Erajaya Campaign Monitoring</div></div>
+  </a>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
+  <nav>
+    <div class="nav-item"><a href="index.html" class="nav-link">Overview</a></div>
+    <div class="nav-item">
+      <button type="button" class="nav-link active">Flyer <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Flyer Campaign</div>
+        <a href="flyer.html"><span class="icon">📊</span><span class="lbl">Flyer Promo Feb By Sales</span><span class="dbadge">135</span></a>
+        <a href="flyer-february.html"><span class="icon">📦</span><span class="lbl">Flyer Promo Feb By Qty</span><span class="dbadge">131</span></a>
+        <a href="flyer-april.html" class="active"><span class="icon">📦</span><span class="lbl">Flyer Promo Apr By Qty</span><span class="dbadge">118</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Spanduk <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Spanduk Campaign</div>
+        <a href="spanduk.html"><span class="icon">🪧</span><span class="lbl">Spanduk Fasad</span><span class="dbadge">13</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">Umbul-Umbul <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">Umbul-Umbul Campaign</div>
+        <a href="#"><span class="icon">🏮</span><span class="lbl">Umbul-Umbul</span><span class="dbadge soon">Soon</span></a>
+      </div>
+    </div>
+    <div class="nav-item">
+      <button type="button" class="nav-link">AI Analysis <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropdown-header">AI-Powered Analysis</div>
+        <a href="brand.html"><span class="icon">🏷️</span><span class="lbl">Per Brand Scorecard</span><span class="dbadge">15</span></a>
+        <a href="ai-summary.html"><span class="icon">📋</span><span class="lbl">Auto Executive Summary</span><span class="dbadge" style="background:#2dc653;color:#fff">Auto</span></a>
+      </div>
+    </div>
+    <div class="nav-item"><a href="admin.html" class="nav-link nav-admin">⚙ Admin</a></div>
+  </nav>
+</div>
+
+<div class="hero">
+  <h1>Flyer Promo April — Unit Sales</h1>
+  <p>Before-After QTY Measurement · Maret → April → Mei 2026 · Region 5</p>
+  <div class="hero-meta">
+    <span>Total Outlet: <b>118</b></span>
+    <span>Total Produk: <b>36 SKU</b></span>
+    <span>Before (Maret): <b>6.901 unit</b></span>
+    <span>After (Mei): <b>6.155 unit</b></span>
+    <span>Region: <b>Jabodetabek + Banten</b></span>
+  </div>
+</div>
+
+<!-- INSIGHT BAR -->
+<div class="section" style="padding-bottom:0">
+  <div class="insight-bar">
+    <h4>⚡ Analisis Impact Flyer April 2026</h4>
+    <ul>
+      <li>33 outlet (28%) menunjukkan impact STRONG (Mei > Maret +10%)</li>
+      <li>15 outlet (13%) impact Moderate, 14 outlet (12%) impact Weak</li>
+      <li>56 outlet (47%) belum menunjukkan impact positif bulan Mei</li>
+      <li>Produk terlaris Mei: OPPO A6X (1.546 unit), A57 5G (762 unit), Note Edge 5G (541 unit)</li>
+      <li>A57 5G & A37 5G: produk baru masuk April–Mei, tunjukkan pertumbuhan positif</li>
+    </ul>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="section">
+  <div class="section-title">Summary KPIs · Before → During → After</div>
+  <div class="kpi-grid">
+    <div class="kpi-card green">
+      <div class="kpi-label">Total Unit Maret (Before)</div>
+      <div class="kpi-value" style="color:var(--green)">6.901</div>
+      <div class="kpi-sub">Baseline sebelum flyer</div>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-label">Total Unit April (During)</div>
+      <div class="kpi-value" style="color:var(--gold)">6.615</div>
+      <div class="kpi-sub">Saat flyer berlangsung</div>
+      <div class="kpi-trend dn">▼ -4,1% vs Maret</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-label">Total Unit Mei (After)</div>
+      <div class="kpi-value" style="color:var(--blue)">6.155</div>
+      <div class="kpi-sub">Setelah flyer beredar</div>
+      <div class="kpi-trend dn">▼ -10,8% vs Maret</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-label">Total 3 Bulan</div>
+      <div class="kpi-value" style="color:var(--purple)">19.671</div>
+      <div class="kpi-sub">Kumulatif Mar–Apr–Mei</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Strong Impact</div>
+      <div class="kpi-value" style="color:var(--green)">33</div>
+      <div class="kpi-sub">Outlet (May > Mar +10%)</div>
+      <div class="kpi-trend up">▲ 28% dari total outlet</div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-label">No Impact</div>
+      <div class="kpi-value" style="color:var(--orange)">56</div>
+      <div class="kpi-sub">Outlet perlu perhatian</div>
+      <div class="kpi-trend dn">▼ 47% dari total outlet</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-label">Produk Terlaris (Mei)</div>
+      <div class="kpi-value" style="color:var(--blue);font-size:15px">OPPO A6X</div>
+      <div class="kpi-sub">1.546 unit di bulan Mei</div>
+    </div>
+    <div class="kpi-card gold">
+      <div class="kpi-label">Outlet Terlaris (Mei)</div>
+      <div class="kpi-value" style="color:var(--gold);font-size:13px" id="kpiTopStore">—</div>
+      <div class="kpi-sub" id="kpiTopStoreSub">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">Visualisasi</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h4>Top 15 Produk — Total Unit (Mar+Apr+Mei)</h4>
+      <canvas id="cProducts"></canvas>
+    </div>
+    <div class="chart-card">
+      <h4>Tren Bulanan — Top 8 Produk (unit)</h4>
+      <canvas id="cTrend"></canvas>
+    </div>
+    <div class="chart-card">
+      <h4>Top 20 Outlet — Unit Mei 2026</h4>
+      <canvas id="cStores"></canvas>
+    </div>
+    <div class="chart-card">
+      <h4>Distribusi Impact Flyer April (118 outlet)</h4>
+      <canvas id="cImpact"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="section" style="padding-top:0">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('products',this)">📦 36 Produk</button>
+    <button class="tab-btn" onclick="switchTab('stores',this)">🏪 118 Outlet</button>
+    <button class="tab-btn" onclick="switchTab('impact',this)">📊 Before-After Impact</button>
+  </div>
+
+  <!-- TAB: PRODUCTS -->
+  <div id="tab-products">
+    <div class="section-title" style="margin-bottom:10px">Semua 36 SKU dalam Flyer April 2026</div>
+    <div class="product-grid" id="productCards"></div>
+  </div>
+
+  <!-- TAB: STORES -->
+  <div id="tab-stores" style="display:none">
+    <div class="table-wrap">
+      <div class="table-header">
+        <div><h3>Data per Outlet — 118 Toko</h3><p>Klik header kolom untuk sort</p></div>
+        <span class="count-tag" id="storeCount">118 outlet</span>
+      </div>
+      <div class="filter-bar">
+        <div><label>Cari Outlet</label><input type="text" id="storeSearch" placeholder="Nama atau kode..." oninput="renderStoreTable()"></div>
+        <div><label>Sort</label>
+          <select id="storeSort" onchange="renderStoreTable()">
+            <option value="may_desc">Unit Mei (tertinggi)</option>
+            <option value="march_desc">Unit Maret (tertinggi)</option>
+            <option value="growth_desc">Growth May/Mar (tertinggi)</option>
+            <option value="growth_asc">Growth May/Mar (terendah)</option>
+            <option value="name_asc">Nama A–Z</option>
+          </select>
+        </div>
+        <div><label>Impact</label>
+          <select id="storeImpact" onchange="renderStoreTable()">
+            <option value="">Semua Impact</option>
+            <option value="Strong">Strong</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Weak">Weak</option>
+            <option value="No Impact">No Impact</option>
+          </select>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="storeTable">
+          <thead>
+            <tr>
+              <th>Kode</th>
+              <th>Nama Outlet</th>
+              <th>Mar (Before)</th>
+              <th>Apr (During)</th>
+              <th>Mei (After)</th>
+              <th>Δ Apr/Mar</th>
+              <th>Δ Mei/Mar</th>
+              <th>Impact</th>
+              <th>Tier</th>
+            </tr>
+          </thead>
+          <tbody id="storeTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: IMPACT -->
+  <div id="tab-impact" style="display:none">
+    <div class="chart-grid" style="margin-bottom:18px">
+      <div class="chart-card">
+        <h4>Outlet Strong Impact — May vs March Growth</h4>
+        <canvas id="cStrongImpact"></canvas>
+      </div>
+      <div class="chart-card">
+        <h4>Scatter: March vs May Unit per Outlet</h4>
+        <canvas id="cScatter"></canvas>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-header">
+        <div><h3>Top Outlet Strong Impact (May > March +10%)</h3><p>Sorted by Growth Mei vs Maret</p></div>
+        <span class="count-tag">33 outlet</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th><th>Kode</th><th>Nama Outlet</th>
+              <th>Mar</th><th>Apr</th><th>Mei</th>
+              <th>Δ Mei/Mar</th><th>Δ unit</th>
+            </tr>
+          </thead>
+          <tbody id="strongTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <b>ERA-CAM</b> · Erajaya Campaign Monitoring · Flyer Promo April 2026 · Data: Region 5 Jabodetabek + Banten · <b>118 outlet · 36 SKU</b>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const storesData = [{"kode": "E027", "nama": "ERAFONE DAAN MOGOT MALL", "march": 126, "april": 109, "may": 131, "growth_apr_march": -13.5, "growth_may_march": 4.0, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E028", "nama": "ERAFONE MAL PURI INDAH", "march": 133, "april": 139, "may": 86, "growth_apr_march": 4.5, "growth_may_march": -35.3, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E029", "nama": "ERAFONE LIPPO MALL PURI", "march": 154, "april": 133, "may": 127, "growth_apr_march": -13.6, "growth_may_march": -17.5, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E037", "nama": "ERAFONE GAJAH MADA PLAZA", "march": 60, "april": 46, "may": 41, "growth_apr_march": -23.3, "growth_may_march": -31.7, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E038", "nama": "ERAFONE MALL ATRIUM SENEN", "march": 56, "april": 35, "may": 29, "growth_apr_march": -37.5, "growth_may_march": -48.2, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E043", "nama": "ERAFONE PLAZA BINTARO JAYA", "march": 103, "april": 66, "may": 94, "growth_apr_march": -35.9, "growth_may_march": -8.7, "status_impact": "Weak", "tier": "Good"}, {"kode": "E047", "nama": "ERAFONE 1 ITC CEMPAKA MAS", "march": 41, "april": 74, "may": 41, "growth_apr_march": 80.5, "growth_may_march": 0.0, "status_impact": "Weak", "tier": "Good"}, {"kode": "E081", "nama": "ERAFONE MALL OF SERANG", "march": 130, "april": 98, "may": 83, "growth_apr_march": -24.6, "growth_may_march": -36.2, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E082", "nama": "ERAFONE LIVING WORLD ALAM SUTERA", "march": 77, "april": 51, "may": 78, "growth_apr_march": -33.8, "growth_may_march": 1.3, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E084", "nama": "ERAFONE 1 SUPERMALL KARAWACI", "march": 146, "april": 110, "may": 89, "growth_apr_march": -24.7, "growth_may_march": -39.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E087", "nama": "ERAFONE ITC BSD", "march": 39, "april": 38, "may": 55, "growth_apr_march": -2.6, "growth_may_march": 41.0, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E088", "nama": "ERAFONE AEON MAL BSD CITY", "march": 104, "april": 88, "may": 96, "growth_apr_march": -15.4, "growth_may_march": -7.7, "status_impact": "Weak", "tier": "Good"}, {"kode": "E096", "nama": "ERAFONE 2 ITC ROXY MAS", "march": 41, "april": 42, "may": 35, "growth_apr_march": 2.4, "growth_may_march": -14.6, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E113", "nama": "ERAFONE GRAND INDONESIA", "march": 138, "april": 108, "may": 111, "growth_apr_march": -21.7, "growth_may_march": -19.6, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E119", "nama": "ERAFONE TANGERANG CITY MALL", "march": 151, "april": 124, "may": 155, "growth_apr_march": -17.9, "growth_may_march": 2.6, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E137", "nama": "ERAFONE GREEN PRAMUKA SQUARE", "march": 61, "april": 68, "may": 61, "growth_apr_march": 11.5, "growth_may_march": 0.0, "status_impact": "Weak", "tier": "Good"}, {"kode": "E150", "nama": "ERAFONE CILEGON CENTER MALL", "march": 117, "april": 92, "may": 107, "growth_apr_march": -21.4, "growth_may_march": -8.5, "status_impact": "Weak", "tier": "Good"}, {"kode": "E158", "nama": "ERAFONE MAL CIPUTRA JAKARTA", "march": 39, "april": 80, "may": 44, "growth_apr_march": 105.1, "growth_may_march": 12.8, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E160", "nama": "ERAFONE RUKO CEGER TANGERANG", "march": 68, "april": 53, "may": 70, "growth_apr_march": -22.1, "growth_may_march": 2.9, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E164", "nama": "ERAFONE MAL TAMAN ANGGREK", "march": 105, "april": 104, "may": 84, "growth_apr_march": -1.0, "growth_may_march": -20.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E172", "nama": "ERAFONE RUKO KEBON JERUK BINUS", "march": 82, "april": 131, "may": 84, "growth_apr_march": 59.8, "growth_may_march": 2.4, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E191", "nama": "ERAFONE RUKO SURYA KENCANA PAMULANG", "march": 54, "april": 54, "may": 70, "growth_apr_march": 0.0, "growth_may_march": 29.6, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E194", "nama": "ERAFONE RUKO RANGKASBITUNG", "march": 119, "april": 86, "may": 89, "growth_apr_march": -27.7, "growth_may_march": -25.2, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E201", "nama": "ERAFONE RUKO KRESEK BALARAJA", "march": 45, "april": 66, "may": 42, "growth_apr_march": 46.7, "growth_may_march": -6.7, "status_impact": "Weak", "tier": "Good"}, {"kode": "E209", "nama": "ERAFONE RUKO AHMAD YANI SERANG", "march": 105, "april": 114, "may": 78, "growth_apr_march": 8.6, "growth_may_march": -25.7, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E215", "nama": "ERAFONE GREEN SEDAYU MALL", "march": 88, "april": 86, "may": 78, "growth_apr_march": -2.3, "growth_may_march": -11.4, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E216", "nama": "ERAFONE SENAYAN PARK MALL", "march": 10, "april": 22, "may": 2, "growth_apr_march": 120.0, "growth_may_march": -80.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E221", "nama": "ERAFONE AND MORE CIPUTRA CITRA RAYA", "march": 125, "april": 113, "may": 172, "growth_apr_march": -9.6, "growth_may_march": 37.6, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E231", "nama": "ERAFONE RUKO HOS COKROAMINOTO", "march": 62, "april": 124, "may": 75, "growth_apr_march": 100.0, "growth_may_march": 21.0, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E233", "nama": "ERAFONE RUKO TAMAN SURYA JAKBAR", "march": 64, "april": 43, "may": 50, "growth_apr_march": -32.8, "growth_may_march": -21.9, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E253", "nama": "ERAFONE RUKO CURUG TANGERANG", "march": 37, "april": 48, "may": 44, "growth_apr_march": 29.7, "growth_may_march": 18.9, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E281", "nama": "ERAFONE SENAYAN CITY 3.0", "march": 76, "april": 81, "may": 42, "growth_apr_march": 6.6, "growth_may_march": -44.7, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E290", "nama": "ERAFONE RUKO PORIS TANGERANG", "march": 46, "april": 45, "may": 41, "growth_apr_march": -2.2, "growth_may_march": -10.9, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E308", "nama": "ERAFONE RUKO MAYOR SAFEI", "march": 90, "april": 60, "may": 65, "growth_apr_march": -33.3, "growth_may_march": -27.8, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E312", "nama": "ERAFONE KRESEK KOSAMBI", "march": 25, "april": 33, "may": 29, "growth_apr_march": 32.0, "growth_may_march": 16.0, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E320", "nama": "ERAFONE RUKO PANDEGLANG", "march": 54, "april": 39, "may": 56, "growth_apr_march": -27.8, "growth_may_march": 3.7, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E321", "nama": "ERAFONE RUKO SUDIMARA", "march": 38, "april": 45, "may": 48, "growth_apr_march": 18.4, "growth_may_march": 26.3, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E322", "nama": "ERAFONE RUKO MERUYA", "march": 31, "april": 63, "may": 32, "growth_apr_march": 103.2, "growth_may_march": 3.2, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E369", "nama": "ERAFONE RUKO BOROBUDUR", "march": 45, "april": 39, "may": 48, "growth_apr_march": -13.3, "growth_may_march": 6.7, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E370", "nama": "ERAFONE RUKO BERINGIN", "march": 30, "april": 24, "may": 18, "growth_apr_march": -20.0, "growth_may_march": -40.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E381", "nama": "ERAFONE RUKO PETA BARAT JAKBAR", "march": 33, "april": 57, "may": 40, "growth_apr_march": 72.7, "growth_may_march": 21.2, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E391", "nama": "ERAFONE RUKO SUPRATMAN CIPUTAT", "march": 23, "april": 31, "may": 29, "growth_apr_march": 34.8, "growth_may_march": 26.1, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E396", "nama": "ERAFONE & MORE RUKO ITC ROXY MAS", "march": 83, "april": 77, "may": 57, "growth_apr_march": -7.2, "growth_may_march": -31.3, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E408", "nama": "ERAFONE RUKO SUMUR BATU", "march": 93, "april": 82, "may": 96, "growth_apr_march": -11.8, "growth_may_march": 3.2, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E413", "nama": "ERAFONE RUKO KEDOYA", "march": 39, "april": 53, "may": 53, "growth_apr_march": 35.9, "growth_may_march": 35.9, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E414", "nama": "ERAFONE RUKO PERCETAKAN NEGARA", "march": 92, "april": 102, "may": 112, "growth_apr_march": 10.9, "growth_may_march": 21.7, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E420", "nama": "ERAFONE RUKO CEMPAKA PUTIH", "march": 5, "april": 0, "may": 0, "growth_apr_march": -100.0, "growth_may_march": -100.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E422", "nama": "ERAFONE RUKO MOH TOHA TANGERANG", "march": 37, "april": 30, "may": 38, "growth_apr_march": -18.9, "growth_may_march": 2.7, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E453", "nama": "ERAFONE RUKO DURI KOSAMBI", "march": 32, "april": 29, "may": 18, "growth_apr_march": -9.4, "growth_may_march": -43.8, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E465", "nama": "ERAFONE RUKO KEBAYORAN LAMA", "march": 17, "april": 20, "may": 32, "growth_apr_march": 17.6, "growth_may_march": 88.2, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E484", "nama": "ERAFONE SERPONG PARADISE WALK", "march": 31, "april": 25, "may": 33, "growth_apr_march": -19.4, "growth_may_march": 6.5, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E499", "nama": "ERAFONE LABUAN", "march": 44, "april": 29, "may": 25, "growth_apr_march": -34.1, "growth_may_march": -43.2, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E508", "nama": "ERAFONE JEMBATAN LIMA", "march": 35, "april": 47, "may": 46, "growth_apr_march": 34.3, "growth_may_march": 31.4, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E514", "nama": "ERAFONE MERUYA SELATAN", "march": 17, "april": 28, "may": 18, "growth_apr_march": 64.7, "growth_may_march": 5.9, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E544", "nama": "ERAFONE CILEGON", "march": 69, "april": 51, "may": 44, "growth_apr_march": -26.1, "growth_may_march": -36.2, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E582", "nama": "ERAFONE RUKO SRENGSENG", "march": 21, "april": 31, "may": 31, "growth_apr_march": 47.6, "growth_may_march": 47.6, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E586", "nama": "ERAFONE RUKO GRAHA RAYA", "march": 25, "april": 27, "may": 31, "growth_apr_march": 8.0, "growth_may_march": 24.0, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E589", "nama": "ERAFONE RUKO PANIMBANG", "march": 52, "april": 42, "may": 56, "growth_apr_march": -19.2, "growth_may_march": 7.7, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E593", "nama": "ERAFONE RUKO MANGGA BESAR", "march": 56, "april": 80, "may": 44, "growth_apr_march": 42.9, "growth_may_march": -21.4, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E612", "nama": "ERAFONE RUKO JOMBANG", "march": 45, "april": 28, "may": 22, "growth_apr_march": -37.8, "growth_may_march": -51.1, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E616", "nama": "ERAFONE 2.5 MERUYA ILIR", "march": 8, "april": 9, "may": 7, "growth_apr_march": 12.5, "growth_may_march": -12.5, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E620", "nama": "ERAFONE 2.5 PADJAJARAN PAMULANG", "march": 9, "april": 3, "may": 2, "growth_apr_march": -66.7, "growth_may_march": -77.8, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E627", "nama": "ERAFONE RUKO CISOKA", "march": 36, "april": 31, "may": 38, "growth_apr_march": -13.9, "growth_may_march": 5.6, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E646", "nama": "ERAFONE  BATU CEPER", "march": 41, "april": 56, "may": 30, "growth_apr_march": 36.6, "growth_may_march": -26.8, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E663", "nama": "ERAFONE GARUDA KEMAYORAN", "march": 28, "april": 34, "may": 27, "growth_apr_march": 21.4, "growth_may_march": -3.6, "status_impact": "Weak", "tier": "Good"}, {"kode": "E678", "nama": "ERAFONE MB BENDUNGAN HILIR", "march": 36, "april": 29, "may": 35, "growth_apr_march": -19.4, "growth_may_march": -2.8, "status_impact": "Weak", "tier": "Good"}, {"kode": "E679", "nama": "ERAFONE MB JOGLO RAYA", "march": 21, "april": 29, "may": 26, "growth_apr_march": 38.1, "growth_may_march": 23.8, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E682", "nama": "ERAFONE MB KH MANSYUR TANAH ABANG", "march": 14, "april": 24, "may": 0, "growth_apr_march": 71.4, "growth_may_march": -100.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E684", "nama": "ERAFONE MB SANGIANG", "march": 28, "april": 28, "may": 45, "growth_apr_march": 0.0, "growth_may_march": 60.7, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E685", "nama": "ERAFONE MB PONDOK BETUNG", "march": 24, "april": 12, "may": 12, "growth_apr_march": -50.0, "growth_may_march": -50.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E696", "nama": "ERAFONE MB RASUNA SAID", "march": 23, "april": 57, "may": 20, "growth_apr_march": 147.8, "growth_may_march": -13.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E704", "nama": "ERAFONE MB  KH DEWANTARA CIPUTAT", "march": 11, "april": 9, "may": 17, "growth_apr_march": -18.2, "growth_may_march": 54.5, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E732", "nama": "ERAFONE SABANG JAKPUS", "march": 29, "april": 31, "may": 46, "growth_apr_march": 6.9, "growth_may_march": 58.6, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E744", "nama": "ERAFONE MB  RAJEK", "march": 10, "april": 19, "may": 18, "growth_apr_march": 90.0, "growth_may_march": 80.0, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E777", "nama": "ERAFONE CIHUNI GADING SERPONG", "march": 35, "april": 12, "may": 44, "growth_apr_march": -65.7, "growth_may_march": 25.7, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E787", "nama": "ERAFONE MB RUKOTIGARAKSA", "march": 25, "april": 24, "may": 17, "growth_apr_march": -4.0, "growth_may_march": -32.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E812", "nama": "ERAFONE MB KUTABUMI", "march": 29, "april": 19, "may": 21, "growth_apr_march": -34.5, "growth_may_march": -27.6, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E813", "nama": "ERAFONE MB SERPONG GARDEN CISAUK", "march": 19, "april": 14, "may": 13, "growth_apr_march": -26.3, "growth_may_march": -31.6, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E821", "nama": "ERAFONE MB ANYER", "march": 54, "april": 52, "may": 44, "growth_apr_march": -3.7, "growth_may_march": -18.5, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E822", "nama": "ERAFONE MB KRAGILAN", "march": 81, "april": 52, "may": 48, "growth_apr_march": -35.8, "growth_may_march": -40.7, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E833", "nama": "ERAFONE RUKO RANGKASBITUNG 2", "march": 60, "april": 43, "may": 37, "growth_apr_march": -28.3, "growth_may_march": -38.3, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E834", "nama": "ERAFONE KEDAUNG TANGSEL", "march": 41, "april": 41, "may": 19, "growth_apr_march": 0.0, "growth_may_march": -53.7, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E848", "nama": "ERAFONE PASAR KEMIS", "march": 11, "april": 14, "may": 13, "growth_apr_march": 27.3, "growth_may_march": 18.2, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E873", "nama": "ERAFONE MB LEGOK", "march": 28, "april": 29, "may": 24, "growth_apr_march": 3.6, "growth_may_march": -14.3, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E874", "nama": "ERAFONE MB DASANA INDAH", "march": 20, "april": 19, "may": 16, "growth_apr_march": -5.0, "growth_may_march": -20.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E875", "nama": "ERAFONE MB POS PENGUMBEN", "march": 19, "april": 18, "may": 18, "growth_apr_march": -5.3, "growth_may_march": -5.3, "status_impact": "Weak", "tier": "Good"}, {"kode": "E879", "nama": "ERAFONE MB CIPARE", "march": 49, "april": 38, "may": 27, "growth_apr_march": -22.4, "growth_may_march": -44.9, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E898", "nama": "ERAFONE MB SAMANHUDI", "march": 32, "april": 42, "may": 47, "growth_apr_march": 31.2, "growth_may_march": 46.9, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E923", "nama": "ERAFONE MB JALAN PANJANG", "march": 7, "april": 7, "may": 15, "growth_apr_march": 0.0, "growth_may_march": 114.3, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E941", "nama": "ERAFONE MB RAYA SERPONG", "march": 42, "april": 36, "may": 35, "growth_apr_march": -14.3, "growth_may_march": -16.7, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E942", "nama": "ERAFONE MB KEMBANGAN UTARA", "march": 22, "april": 16, "may": 25, "growth_apr_march": -27.3, "growth_may_march": 13.6, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E943", "nama": "ERAFONE MB TAMAN RATU", "march": 32, "april": 21, "may": 35, "growth_apr_march": -34.4, "growth_may_march": 9.4, "status_impact": "Moderate", "tier": "Good"}, {"kode": "E960", "nama": "ERAFONE MB MENCENG RAYA", "march": 26, "april": 29, "may": 30, "growth_apr_march": 11.5, "growth_may_march": 15.4, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "E991", "nama": "ERAFONE 2.5 KEMANGGISAN UTAMA RAYA", "march": 27, "april": 37, "may": 24, "growth_apr_march": 37.0, "growth_may_march": -11.1, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "E992", "nama": "ERAFONE 2.5 KAPUK CENGKARENG", "march": 55, "april": 64, "may": 33, "growth_apr_march": 16.4, "growth_may_march": -40.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "F003", "nama": "ERAFONE 2.5 CILEDUG RAYA", "march": 47, "april": 32, "may": 46, "growth_apr_march": -31.9, "growth_may_march": -2.1, "status_impact": "Weak", "tier": "Good"}, {"kode": "F022", "nama": "ERAFONE 2.5 PAMULANG", "march": 32, "april": 22, "may": 40, "growth_apr_march": -31.2, "growth_may_march": 25.0, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "F058", "nama": "ERAFONE 2.5 TELAGA BESTARI", "march": 19, "april": 16, "may": 15, "growth_apr_march": -15.8, "growth_may_march": -21.1, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "F066", "nama": "ERAFONE 2.5 SEPATAN", "march": 20, "april": 19, "may": 12, "growth_apr_march": -5.0, "growth_may_march": -40.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "F073", "nama": "ERAFONE AGORA MALL", "march": 10, "april": 33, "may": 15, "growth_apr_march": 230.0, "growth_may_march": 50.0, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "F079", "nama": "ERAFONE 2.5 GRAND BATAVIA", "march": 23, "april": 28, "may": 34, "growth_apr_march": 21.7, "growth_may_march": 47.8, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "M013", "nama": "MEGASTORE SUPERMAL KARAWACI", "march": 197, "april": 146, "may": 188, "growth_apr_march": -25.9, "growth_may_march": -4.6, "status_impact": "Weak", "tier": "Good"}, {"kode": "M014", "nama": "ERAFONE AND MORE BINTARO X-CHANGE", "march": 275, "april": 291, "may": 218, "growth_apr_march": 5.8, "growth_may_march": -20.7, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "M019", "nama": "MEGASTORE SUMMARECON MALL SERPONG", "march": 210, "april": 184, "may": 210, "growth_apr_march": -12.4, "growth_may_march": 0.0, "status_impact": "Weak", "tier": "Good"}, {"kode": "M021", "nama": "ERAFONE & MORE RUKO CILEDUG", "march": 224, "april": 190, "may": 142, "growth_apr_march": -15.2, "growth_may_march": -36.6, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "M027", "nama": "ERAFONE & MORE RUKO CIPUTAT", "march": 51, "april": 37, "may": 49, "growth_apr_march": -27.5, "growth_may_march": -3.9, "status_impact": "Weak", "tier": "Good"}, {"kode": "M048", "nama": "MEGASTORE RUKO CIKUPA", "march": 75, "april": 89, "may": 66, "growth_apr_march": 18.7, "growth_may_march": -12.0, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "M061", "nama": "ERAFONE & MORE RUKO JATIUWUNG", "march": 54, "april": 75, "may": 76, "growth_apr_march": 38.9, "growth_may_march": 40.7, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "M068", "nama": "ERAFONE & MORE RUKO KAMAL CENGKAREN", "march": 83, "april": 89, "may": 77, "growth_apr_march": 7.2, "growth_may_march": -7.2, "status_impact": "Weak", "tier": "Good"}, {"kode": "M091", "nama": "MEGASTORE CENTRAL PARK 3.0", "march": 231, "april": 218, "may": 179, "growth_apr_march": -5.6, "growth_may_march": -22.5, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "M093", "nama": "MEGASTORE RUKO CIPONDOH TANGERANG", "march": 49, "april": 40, "may": 33, "growth_apr_march": -18.4, "growth_may_march": -32.7, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "M104", "nama": "MEGASTORE RUKO REMPOA CIPUTAT", "march": 33, "april": 31, "may": 24, "growth_apr_march": -6.1, "growth_may_march": -27.3, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "M163", "nama": "ERAFONE & MORE SERPONG", "march": 15, "april": 23, "may": 21, "growth_apr_march": 53.3, "growth_may_march": 40.0, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "M167", "nama": "ERAFONE & MORE TELUK NAGA", "march": 24, "april": 31, "may": 40, "growth_apr_march": 29.2, "growth_may_march": 66.7, "status_impact": "Strong", "tier": "Excellent"}, {"kode": "M176", "nama": "ERAFONE & MORE KISAMAUN", "march": 31, "april": 29, "may": 18, "growth_apr_march": -6.5, "growth_may_march": -41.9, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "M212", "nama": "ERAFONE & MORE RAWASARI", "march": 73, "april": 74, "may": 49, "growth_apr_march": 1.4, "growth_may_march": -32.9, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "M219", "nama": "ERAFONE & MORE PURI INDAH MALL 2", "march": 99, "april": 53, "may": 74, "growth_apr_march": -46.5, "growth_may_march": -25.3, "status_impact": "No Impact", "tier": "Decline"}, {"kode": "M222", "nama": "ERAFONE & MORE EASTVARA MALL", "march": 30, "april": 24, "may": 16, "growth_apr_march": -20.0, "growth_may_march": -46.7, "status_impact": "No Impact", "tier": "Decline"}];
+
+const productsData = {"A6X": {"march": 1811, "april": 2400, "may": 1546}, "A57 5G": {"march": 0, "april": 520, "may": 762}, "NOTE EDGE 5G": {"march": 478, "april": 474, "may": 541}, "RENO 15F": {"march": 884, "april": 515, "may": 442}, "A37 5G": {"march": 0, "april": 206, "may": 419}, "BAND": {"march": 302, "april": 184, "may": 361}, "V70 FE 5G": {"march": 330, "april": 292, "may": 274}, "XPAD 30 EDGE": {"march": 260, "april": 203, "may": 269}, "IPHONE 17": {"march": 337, "april": 339, "may": 261}, "V70 5G": {"march": 266, "april": 245, "may": 194}, "TAB A11+": {"march": 204, "april": 181, "may": 165}, "S26 ULTRA": {"march": 0, "april": 70, "may": 162}, "REALME 16 5G": {"march": 0, "april": 111, "may": 156}, "RENO 15 5G": {"march": 308, "april": 191, "may": 148}, "GROOVY": {"march": 0, "april": 77, "may": 128}, "X6C": {"march": 0, "april": 121, "may": 117}, "XIAOMI 17": {"march": 108, "april": 86, "may": 98}, "MI PAD 7": {"march": 121, "april": 83, "may": 95}, "C85 5G": {"march": 177, "april": 131, "may": 93}, "CAMON 50": {"march": 0, "april": 77, "may": 81}, "PAD 10": {"march": 55, "april": 65, "may": 77}, "IQ 15 R": {"march": 30, "april": 91, "may": 72}, "AIRPODS": {"march": 85, "april": 68, "may": 69}, "MATEPAD 12X 2026": {"march": 0, "april": 65, "may": 67}, "P80": {"march": 0, "april": 116, "may": 66}, "XIAOMI 17 ULTRA": {"march": 28, "april": 22, "may": 58}, "P80 PRO": {"march": 0, "april": 35, "may": 44}, "RENO 15 PRO MAX 5G": {"march": 0, "april": 27, "may": 40}, "IPAD AIR 11\" M3": {"march": 25, "april": 33, "may": 34}, "CAMON 50 PRO": {"march": 0, "april": 24, "may": 32}, "FHD": {"march": 32, "april": 19, "may": 24}, "P80 ULTRA": {"march": 0, "april": 17, "may": 23}, "UHD": {"march": 26, "april": 19, "may": 22}, "NOTE EDGE 5G": {"march": 0, "april": 0, "may": 0}, "IPAD AIR 13\" M3": {"march": 13, "april": 15, "may": 18}, "MI PAD 7 PRO": {"march": 0, "april": 13, "may": 11}};
+
+const productsOrdered = ["A6X","A57 5G","NOTE EDGE 5G","RENO 15F","A37 5G","BAND","V70 FE 5G","XPAD 30 EDGE","IPHONE 17","V70 5G","TAB A11+","S26 ULTRA","REALME 16 5G","RENO 15 5G","GROOVY","X6C","XIAOMI 17","MI PAD 7","C85 5G","CAMON 50","PAD 10","IQ 15 R","AIRPODS","MATEPAD 12X 2026","P80","XIAOMI 17 ULTRA","P80 PRO","RENO 15 PRO MAX 5G","IPAD AIR 11\" M3","CAMON 50 PRO","FHD","P80 ULTRA","UHD","IPAD AIR 13\" M3","MI PAD 7 PRO"];
+
+// ─── UTILS ─────────────────────────────────────────────────────────────────
+function fmtPct(v) {
+  const s = v >= 0 ? '+' : '';
+  return s + v.toFixed(1) + '%';
+}
+function impactBadge(si) {
+  const m = {Strong:'s-strong',Moderate:'s-moderate',Weak:'s-weak','No Impact':'s-no'};
+  return `<span class="badge-s ${m[si]||'s-no'}">${si}</span>`;
+}
+function tierBadge(t) {
+  const m = {Excellent:'t-excellent',Good:'t-good',Decline:'t-decline'};
+  return `<span class="badge-s ${m[t]||'t-decline'}">${t}</span>`;
+}
+
+// ─── TOP STORE KPI ──────────────────────────────────────────────────────────
+const topStore = [...storesData].sort((a,b) => b.may - a.may)[0];
+document.getElementById('kpiTopStore').textContent = topStore.nama.replace('ERAFONE ','');
+document.getElementById('kpiTopStoreSub').textContent = topStore.may + ' unit (Mei)';
+
+// ─── CHARTS ────────────────────────────────────────────────────────────────
+Chart.defaults.font.family = "'Segoe UI', Arial, sans-serif";
+
+// Chart 1: Top 15 Products by total
+const topProds = productsOrdered.filter(p => productsData[p]).slice(0, 15);
+new Chart(document.getElementById('cProducts'), {
+  type: 'bar',
+  data: {
+    labels: topProds.map(p => p.length > 14 ? p.slice(0,14)+'…' : p),
+    datasets: [
+      { label: 'Maret', data: topProds.map(p => productsData[p].march), backgroundColor: '#93c5fd' },
+      { label: 'April', data: topProds.map(p => productsData[p].april), backgroundColor: '#f4a11d' },
+      { label: 'Mei', data: topProds.map(p => productsData[p].may), backgroundColor: '#2dc653' }
+    ]
+  },
+  options: { responsive:true, plugins:{ legend:{ position:'top', labels:{ boxWidth:12, font:{size:11} } } }, scales:{ x:{ ticks:{ font:{size:10} } }, y:{ beginAtZero:true } } }
+});
+
+// Chart 2: Trend top 8 products
+const top8 = productsOrdered.filter(p => productsData[p]).slice(0, 8);
+const colors8 = ['#3a86ff','#f4a11d','#2dc653','#e63946','#7c3aed','#ea580c','#0891b2','#65a30d'];
+new Chart(document.getElementById('cTrend'), {
+  type: 'line',
+  data: {
+    labels: ['Maret', 'April', 'Mei'],
+    datasets: top8.map((p,i) => ({
+      label: p.length > 12 ? p.slice(0,12)+'…' : p,
+      data: [productsData[p].march, productsData[p].april, productsData[p].may],
+      borderColor: colors8[i], backgroundColor: colors8[i]+'22',
+      tension: 0.3, fill: false, pointRadius: 4
+    }))
+  },
+  options: { responsive:true, plugins:{ legend:{ position:'top', labels:{ boxWidth:12, font:{size:10} } } } }
+});
+
+// Chart 3: Top 20 stores by May
+const top20 = [...storesData].sort((a,b) => b.may - a.may).slice(0, 20);
+new Chart(document.getElementById('cStores'), {
+  type: 'bar',
+  data: {
+    labels: top20.map(s => s.nama.replace('ERAFONE ','').replace('MEGASTORE ','').replace('& MORE ','').slice(0,18)),
+    datasets: [
+      { label: 'Mar', data: top20.map(s => s.march), backgroundColor: '#93c5fd' },
+      { label: 'Apr', data: top20.map(s => s.april), backgroundColor: '#fcd34d' },
+      { label: 'Mei', data: top20.map(s => s.may), backgroundColor: '#2dc653' }
+    ]
+  },
+  options: { indexAxis:'y', responsive:true, plugins:{ legend:{ position:'top', labels:{ boxWidth:12, font:{size:11} } } }, scales:{ x:{ beginAtZero:true }, y:{ ticks:{ font:{size:10} } } } }
+});
+
+// Chart 4: Impact distribution donut
+new Chart(document.getElementById('cImpact'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Strong (33)', 'Moderate (15)', 'Weak (14)', 'No Impact (56)'],
+    datasets: [{ data: [33, 15, 14, 56], backgroundColor: ['#3a86ff','#2dc653','#fcd34d','#e63946'], borderWidth: 2 }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 12 }, boxWidth: 14 } },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => `${ctx.label}: ${ctx.raw} outlet (${(ctx.raw/118*100).toFixed(1)}%)`
+        }
+      }
+    }
+  }
+});
+
+// ─── PRODUCT CARDS ─────────────────────────────────────────────────────────
+const productCards = document.getElementById('productCards');
+productsOrdered.filter(p => productsData[p]).forEach(p => {
+  const d = productsData[p];
+  const total = d.march + d.april + d.may;
+  const g = d.march > 0 ? ((d.may / d.march - 1) * 100).toFixed(1) : 'New';
+  const gColor = d.march === 0 ? '#7c3aed' : d.may >= d.march ? 'var(--green)' : 'var(--red)';
+  const gSign = d.march === 0 ? '' : d.may >= d.march ? '▲' : '▼';
+  const maxV = Math.max(d.march, d.april, d.may);
+  productCards.innerHTML += `
+    <div class="product-card">
+      <h5>${p}</h5>
+      <div class="total-units">${total.toLocaleString('id-ID')}</div>
+      <div class="month-row">
+        <div class="month-chip"><div class="ml">MAR</div><div class="mv">${d.march}</div></div>
+        <div class="month-chip"><div class="ml">APR</div><div class="mv">${d.april}</div></div>
+        <div class="month-chip highlight"><div class="ml">MEI</div><div class="mv">${d.may}</div></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;margin-top:8px;color:${gColor}">${gSign} Mei/Mar: ${g === 'New' ? '🆕 Produk Baru' : g + '%'}</div>
+    </div>`;
+});
+
+// ─── STORE TABLE ───────────────────────────────────────────────────────────
+function renderStoreTable() {
+  const q = document.getElementById('storeSearch').value.toLowerCase();
+  const sort = document.getElementById('storeSort').value;
+  const impact = document.getElementById('storeImpact').value;
+  let data = storesData.filter(s =>
+    (!q || s.nama.toLowerCase().includes(q) || s.kode.toLowerCase().includes(q)) &&
+    (!impact || s.status_impact === impact)
+  );
+  if (sort === 'may_desc') data.sort((a,b) => b.may - a.may);
+  else if (sort === 'march_desc') data.sort((a,b) => b.march - a.march);
+  else if (sort === 'growth_desc') data.sort((a,b) => b.growth_may_march - a.growth_may_march);
+  else if (sort === 'growth_asc') data.sort((a,b) => a.growth_may_march - b.growth_may_march);
+  else if (sort === 'name_asc') data.sort((a,b) => a.nama.localeCompare(b.nama));
+  document.getElementById('storeCount').textContent = data.length + ' outlet';
+  document.getElementById('storeTbody').innerHTML = data.map(s => {
+    const gApr = s.growth_apr_march;
+    const gMay = s.growth_may_march;
+    return `<tr>
+      <td><code style="font-size:11px;background:#f3f4f6;padding:2px 5px;border-radius:4px">${s.kode}</code></td>
+      <td style="font-weight:600;max-width:220px">${s.nama}</td>
+      <td class="num">${s.march}</td>
+      <td class="num">${s.april}</td>
+      <td class="num" style="font-weight:800">${s.may}</td>
+      <td class="${gApr >= 0 ? 'up' : 'dn'}">${fmtPct(gApr)}</td>
+      <td class="${gMay > 10 ? 'up' : gMay < -5 ? 'dn' : 'neu'}">${fmtPct(gMay)}</td>
+      <td>${impactBadge(s.status_impact)}</td>
+      <td>${tierBadge(s.tier)}</td>
+    </tr>`;
+  }).join('');
+}
+renderStoreTable();
+
+// ─── IMPACT TAB ────────────────────────────────────────────────────────────
+const strongStores = [...storesData].filter(s => s.status_impact === 'Strong').sort((a,b) => b.growth_may_march - a.growth_may_march);
+
+// Strong impact chart
+new Chart(document.getElementById('cStrongImpact'), {
+  type: 'bar',
+  data: {
+    labels: strongStores.slice(0,15).map(s => s.nama.replace(/ERAFONE |MEGASTORE |& MORE /g,'').slice(0,18)),
+    datasets: [{
+      label: 'Growth Mei vs Maret (%)',
+      data: strongStores.slice(0,15).map(s => s.growth_may_march),
+      backgroundColor: strongStores.slice(0,15).map(s => s.growth_may_march > 50 ? '#1e40af' : '#3a86ff')
+    }]
+  },
+  options: {
+    indexAxis: 'y', responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { x: { beginAtZero: true, ticks: { callback: v => v + '%' } }, y: { ticks: { font: { size: 10 } } } }
+  }
+});
+
+// Scatter chart
+new Chart(document.getElementById('cScatter'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      {
+        label: 'Strong', data: storesData.filter(s => s.status_impact==='Strong').map(s => ({x:s.march,y:s.may})),
+        backgroundColor: '#3a86ff88', borderColor: '#3a86ff', pointRadius: 6
+      },
+      {
+        label: 'Moderate', data: storesData.filter(s => s.status_impact==='Moderate').map(s => ({x:s.march,y:s.may})),
+        backgroundColor: '#2dc65388', borderColor: '#2dc653', pointRadius: 5
+      },
+      {
+        label: 'Weak', data: storesData.filter(s => s.status_impact==='Weak').map(s => ({x:s.march,y:s.may})),
+        backgroundColor: '#fcd34d88', borderColor: '#f4a11d', pointRadius: 5
+      },
+      {
+        label: 'No Impact', data: storesData.filter(s => s.status_impact==='No Impact').map(s => ({x:s.march,y:s.may})),
+        backgroundColor: '#e6394688', borderColor: '#e63946', pointRadius: 5
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
+    scales: {
+      x: { title: { display: true, text: 'Unit Maret (Before)' } },
+      y: { title: { display: true, text: 'Unit Mei (After)' } }
+    }
+  }
+});
+
+// Strong table
+document.getElementById('strongTbody').innerHTML = strongStores.map((s,i) => `
+  <tr>
+    <td style="font-weight:700;color:var(--muted)">${i+1}</td>
+    <td><code style="font-size:11px;background:#f3f4f6;padding:2px 5px;border-radius:4px">${s.kode}</code></td>
+    <td style="font-weight:600">${s.nama}</td>
+    <td class="num">${s.march}</td>
+    <td class="num">${s.april}</td>
+    <td class="num" style="font-weight:800;color:var(--blue)">${s.may}</td>
+    <td class="up">${fmtPct(s.growth_may_march)}</td>
+    <td class="up">+${s.may - s.march} unit</td>
+  </tr>`).join('');
+
+// ─── TAB SWITCH ────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['products','stores','impact'].forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? '' : 'none';
+  });
+}
+
+// ─── NAV ───────────────────────────────────────────────────────────────────
+function toggleMobileNav() {
+  document.querySelector('.topnav').classList.toggle('mobile-open');
+}
+document.querySelectorAll('.nav-item > button').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const item = this.closest('.nav-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+document.addEventListener('click', () => document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('open')));
+</script>
+</body>
+</html>

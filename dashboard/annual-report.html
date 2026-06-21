@@ -142,6 +142,85 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--te
   text-decoration:none;display:inline-flex;align-items:center;gap:5px;
 }
 .add-btn:hover{background:#243b6e;color:#fff;}
+
+/* ─── MODAL ─── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:1000;
+  align-items:center;justify-content:center;padding:16px;
+}
+.modal-overlay.open{display:flex;}
+.modal-box{
+  background:#fff;border-radius:16px;width:100%;max-width:560px;
+  max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.22);
+}
+.modal-head{
+  padding:20px 24px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;
+  position:sticky;top:0;background:#fff;z-index:1;
+}
+.modal-head h3{font-size:16px;font-weight:800;}
+.modal-head p{font-size:12px;color:var(--muted);margin-top:3px;}
+.modal-close{
+  width:32px;height:32px;border:none;background:#f3f4f6;border-radius:8px;
+  cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.modal-close:hover{background:#e5e7eb;}
+.modal-body{padding:20px 24px;}
+.mf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.mf-row.full{grid-template-columns:1fr;}
+.mf-group label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:5px;}
+.mf-group label span{color:var(--red);margin-left:2px;}
+.mf-input,.mf-select,.mf-textarea{
+  width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:13px;color:var(--text);font-family:inherit;outline:none;transition:border-color 0.15s;
+  background:#fff;
+}
+.mf-input:focus,.mf-select:focus,.mf-textarea:focus{border-color:var(--primary);}
+.mf-hint{font-size:10.5px;color:var(--muted);margin-top:3px;}
+.rp-wrap{position:relative;}
+.rp-prefix{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:var(--muted);}
+.rp-wrap .mf-input{padding-left:32px;}
+.rp-display{font-size:11px;color:var(--green);font-weight:700;margin-top:3px;}
+.modal-footer{
+  padding:16px 24px;border-top:1px solid var(--border);
+  display:flex;gap:10px;justify-content:flex-end;
+  position:sticky;bottom:0;background:#fff;
+}
+.btn-cancel{
+  padding:9px 20px;border-radius:8px;border:1.5px solid var(--border);
+  background:#fff;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;
+}
+.btn-cancel:hover{border-color:var(--red);color:var(--red);}
+.btn-save{
+  padding:9px 24px;border-radius:8px;border:none;
+  background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer;
+  transition:background 0.15s;
+}
+.btn-save:hover{background:#243b6e;}
+.modal-id-preview{
+  font-size:11px;background:#f0f4ff;border:1px solid #c7d7ff;border-radius:6px;
+  padding:5px 10px;color:var(--primary);font-weight:700;margin-top:4px;display:inline-block;
+}
+.ls-badge{
+  font-size:10px;background:#fef3c7;color:#92400e;border-radius:4px;
+  padding:2px 6px;font-weight:700;margin-left:6px;vertical-align:middle;
+}
+.delete-row-btn{
+  font-size:10px;padding:3px 8px;border:1px solid #fca5a5;border-radius:4px;
+  background:#fff;color:#dc2626;cursor:pointer;
+}
+.delete-row-btn:hover{background:#fee2e2;}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:2000;
+  background:#1a2e5a;color:#fff;padding:12px 20px;border-radius:10px;
+  font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.2);
+  transform:translateY(80px);opacity:0;transition:all 0.3s;pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{background:#059669;}
+.toast.error{background:#dc2626;}
 .tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
 .tbl th{
   padding:10px 14px;text-align:left;font-size:10.5px;font-weight:700;
@@ -418,7 +497,7 @@ footer b{color:var(--gold);}
         <div class="table-card-title">📋 Campaign Registry 2026</div>
         <div class="table-card-sub">Semua campaign materi promosi yang tercatat — tambah baris baru di <code>data.js → campaignRegistry</code> setiap ada campaign baru</div>
       </div>
-      <a href="admin.html" class="add-btn">⚙ Admin / Tambah Data</a>
+      <button type="button" onclick="openAddModal()" class="add-btn">➕ Tambah Campaign</button>
     </div>
     <div style="overflow-x:auto;">
       <table class="tbl" id="registryTable">
@@ -435,6 +514,7 @@ footer b{color:var(--gold);}
             <th class="tbl-num">ROI Cetak</th>
             <th>Status</th>
             <th>Catatan</th>
+            <th></th>
           </tr>
         </thead>
         <tbody id="registryBody">
@@ -493,7 +573,7 @@ function filterByTipe(el, tipe) {
 }
 
 function getFiltered() {
-  let data = campaignRegistry;
+  let data = getAllCampaigns();
   if (activeTipe !== 'semua') data = data.filter(c => c.tipe === activeTipe);
   return data;
 }
@@ -770,7 +850,7 @@ function renderTable(filtered) {
     const roi      = c.biaya_cetak > 0 ? (c.revenue_increment / c.biaya_cetak).toFixed(1) : null;
     const roiClass = roi === null ? 'roi-na' : parseFloat(roi) >= 0 ? 'roi-positive' : 'roi-negative';
     return `<tr>
-      <td><code style="font-size:11px;color:var(--muted)">${c.id}</code></td>
+      <td><code style="font-size:11px;color:var(--muted)">${c.id}</code>${c._fromLS ? '<span class="ls-badge">manual</span>' : ''}</td>
       <td>
         <div style="font-weight:700;font-size:13px;margin-bottom:2px">${c.icon} ${c.nama}</div>
       </td>
@@ -786,9 +866,10 @@ function renderTable(filtered) {
       <td class="tbl-num"><span class="${roiClass}">${roi !== null ? roi+'x' : '—'}</span></td>
       <td><span class="status-badge ${STS_CLASS[c.status]||''}">${c.status}</span></td>
       <td style="font-size:11.5px;color:var(--muted);max-width:200px;line-height:1.4">${c.catatan}</td>
+      <td>${c._fromLS ? `<button class="delete-row-btn" onclick="deleteLsCampaign('${c.id}')">🗑 Hapus</button>` : ''}</td>
     </tr>`;
   }).join('');
-  document.getElementById('registryBody').innerHTML = rows || '<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--muted)">Tidak ada campaign untuk filter ini</td></tr>';
+  document.getElementById('registryBody').innerHTML = rows || '<tr><td colspan="13" style="text-align:center;padding:24px;color:var(--muted)">Tidak ada campaign untuk filter ini</td></tr>';
 
   // Footer totals
   const totalCetak = filtered.reduce((s,c)=>s+c.biaya_cetak,0);
@@ -875,6 +956,202 @@ function renderAll() {
 }
 
 document.addEventListener('DOMContentLoaded', renderAll);
+
+// ─── LOCALSTORAGE CAMPAIGNS ───────────────────────────────────────────────────
+const LS_KEY = 'era_cam_campaigns';
+
+function lsLoad() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { return []; }
+}
+function lsSave(arr) { localStorage.setItem(LS_KEY, JSON.stringify(arr)); }
+
+function getAllCampaigns() {
+  const ls = lsLoad().map(c => ({...c, _fromLS: true}));
+  return [...campaignRegistry, ...ls];
+}
+
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+function openAddModal() {
+  document.getElementById('addModal').classList.add('open');
+  updateIdPreview();
+}
+function closeModal() {
+  document.getElementById('addModal').classList.remove('open');
+  document.getElementById('campaignForm').reset();
+  document.getElementById('rpCetakDisplay').textContent = '';
+  document.getElementById('rpRevDisplay').textContent = '';
+}
+
+function updateIdPreview() {
+  const tipe = document.getElementById('fTipe').value;
+  const bulan = document.getElementById('fBulan').value;
+  const prefix = {flyer:'FLY',spanduk:'SPD','umbul-umbul':'UMB'}[tipe] || 'CMP';
+  const yr = new Date().getFullYear();
+  const mm = bulan.padStart(2,'0');
+  const existing = getAllCampaigns().filter(c => c.id && c.id.startsWith(prefix+'-'+yr+'-'+mm));
+  const seq = String(existing.length + 1).padStart(2,'0');
+  document.getElementById('idPreview').textContent = `${prefix}-${yr}-${mm}-${seq}`;
+}
+
+function fmtRpInput(val) {
+  const num = parseInt(val.replace(/\D/g,'')) || 0;
+  return num === 0 ? '' : 'Rp ' + num.toLocaleString('id-ID');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  ['fTipe','fBulan'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', updateIdPreview);
+  });
+  document.getElementById('fBiayaCetak')?.addEventListener('input', e => {
+    document.getElementById('rpCetakDisplay').textContent = fmtRpInput(e.target.value);
+  });
+  document.getElementById('fRevInc')?.addEventListener('input', e => {
+    document.getElementById('rpRevDisplay').textContent = fmtRpInput(e.target.value);
+  });
+  document.getElementById('addModal')?.addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+});
+
+function submitCampaign(e) {
+  e.preventDefault();
+  const tipe  = document.getElementById('fTipe').value;
+  const bulan = parseInt(document.getElementById('fBulan').value);
+  const prefix = {flyer:'FLY',spanduk:'SPD','umbul-umbul':'UMB'}[tipe] || 'CMP';
+  const yr = new Date().getFullYear();
+  const mm = String(bulan).padStart(2,'0');
+  const existing = getAllCampaigns().filter(c => c.id && c.id.startsWith(prefix+'-'+yr+'-'+mm));
+  const seq = String(existing.length + 1).padStart(2,'0');
+  const id = `${prefix}-${yr}-${mm}-${seq}`;
+
+  const q = bulan <= 3 ? 'Q1' : bulan <= 6 ? 'Q2' : bulan <= 9 ? 'Q3' : 'Q4';
+  const icon = {flyer:'📄',spanduk:'🪧','umbul-umbul':'🚩'}[tipe] || '📋';
+  const TIPE_ICONS = {flyer:'📄',spanduk:'🪧','umbul-umbul':'🚩'};
+
+  const campaign = {
+    id, tahun: yr, bulan, quarter: q, tipe, icon: TIPE_ICONS[tipe]||'📋',
+    nama: document.getElementById('fNama').value.trim(),
+    jumlah_toko: parseInt(document.getElementById('fJumlahToko').value) || 0,
+    biaya_cetak: parseInt(document.getElementById('fBiayaCetak').value.replace(/\D/g,'')) || 0,
+    biaya_media: 0,
+    revenue_increment: parseInt(document.getElementById('fRevInc').value.replace(/\D/g,'')) || 0,
+    status: document.getElementById('fStatus').value,
+    catatan: document.getElementById('fCatatan').value.trim(),
+  };
+
+  const arr = lsLoad();
+  arr.push(campaign);
+  lsSave(arr);
+  closeModal();
+  renderAll();
+  showToast('Campaign berhasil ditambahkan!', 'success');
+}
+
+function deleteLsCampaign(id) {
+  if (!confirm('Hapus campaign ini?')) return;
+  const arr = lsLoad().filter(c => c.id !== id);
+  lsSave(arr);
+  renderAll();
+  showToast('Campaign dihapus.', 'success');
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.className = 'toast', 2800);
+}
 </script>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <h3>➕ Tambah Campaign Baru</h3>
+        <p>Data tersimpan di browser (localStorage) — langsung tampil di tabel</p>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <form id="campaignForm" onsubmit="submitCampaign(event)">
+      <div class="modal-body">
+        <div class="mf-row">
+          <div class="mf-group">
+            <label>Tipe Campaign <span>*</span></label>
+            <select class="mf-select" id="fTipe" required>
+              <option value="flyer">📄 Flyer</option>
+              <option value="spanduk">🪧 Spanduk</option>
+              <option value="umbul-umbul">🚩 Umbul-Umbul</option>
+            </select>
+          </div>
+          <div class="mf-group">
+            <label>Bulan <span>*</span></label>
+            <select class="mf-select" id="fBulan" required>
+              <option value="1">Januari</option><option value="2">Februari</option>
+              <option value="3">Maret</option><option value="4">April</option>
+              <option value="5">Mei</option><option value="6">Juni</option>
+              <option value="7">Juli</option><option value="8">Agustus</option>
+              <option value="9">September</option><option value="10">Oktober</option>
+              <option value="11">November</option><option value="12">Desember</option>
+            </select>
+          </div>
+        </div>
+        <div class="mf-row full">
+          <div class="mf-group">
+            <label>Nama Campaign <span>*</span></label>
+            <input class="mf-input" id="fNama" type="text" placeholder="cth: Flyer Promo Samsung Mei 2026" required>
+            <div class="mf-hint">ID otomatis: <span class="modal-id-preview" id="idPreview">—</span></div>
+          </div>
+        </div>
+        <div class="mf-row">
+          <div class="mf-group">
+            <label>Jumlah Toko <span>*</span></label>
+            <input class="mf-input" id="fJumlahToko" type="number" min="0" placeholder="cth: 136" required>
+          </div>
+          <div class="mf-group">
+            <label>Status</label>
+            <select class="mf-select" id="fStatus">
+              <option value="Selesai">✅ Selesai</option>
+              <option value="Berjalan">🔄 Berjalan</option>
+              <option value="Planned">📅 Planned</option>
+            </select>
+          </div>
+        </div>
+        <div class="mf-row">
+          <div class="mf-group">
+            <label>Biaya Cetak (Rp)</label>
+            <div class="rp-wrap">
+              <span class="rp-prefix">Rp</span>
+              <input class="mf-input" id="fBiayaCetak" type="number" min="0" placeholder="0">
+            </div>
+            <div class="rp-display" id="rpCetakDisplay"></div>
+          </div>
+          <div class="mf-group">
+            <label>Revenue Increment (Rp)</label>
+            <div class="rp-wrap">
+              <span class="rp-prefix">Rp</span>
+              <input class="mf-input" id="fRevInc" type="number" min="0" placeholder="0">
+            </div>
+            <div class="rp-display" id="rpRevDisplay"></div>
+          </div>
+        </div>
+        <div class="mf-row full">
+          <div class="mf-group">
+            <label>Catatan</label>
+            <textarea class="mf-textarea" id="fCatatan" rows="2" placeholder="cth: 118 toko area Jabodetabek · Promo Samsung Apr 2026"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Batal</button>
+        <button type="submit" class="btn-save">💾 Simpan Campaign</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
 </body>
 </html>

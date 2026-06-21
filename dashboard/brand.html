@@ -61,7 +61,7 @@
   .brand-rank { font-size:10px; color:var(--muted); margin-top:1px; }
   .brand-total { font-size:28px; font-weight:900; margin-bottom:4px; }
   .brand-unit-label { font-size:10px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; }
-  .brand-months { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:10px; }
+  .brand-months { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr; gap:4px; margin-bottom:10px; }
   .month-box { text-align:center; background:#f8f9fb; border-radius:7px; padding:6px 3px; }
   .month-box .ml { font-size:9px; color:var(--muted); font-weight:600; }
   .month-box .mv { font-size:13px; font-weight:800; }
@@ -189,10 +189,10 @@
 
 <!-- HERO -->
 <div class="hero">
-  <h1>Per Brand Scorecard — Q1 2026</h1>
-  <p>Analisis performa per brand/merek · Flyer Promo Campaign · Januari – Maret 2026</p>
+  <h1>Per Brand Scorecard — Q1–Q2 2026</h1>
+  <p>Analisis performa per brand/merek · Flyer Promo Campaign · Januari – Mei 2026</p>
   <div class="hero-meta">
-    <span>Total Outlet: <b>131</b></span>
+    <span>Total Outlet: <b>136 + 118</b></span>
     <span>Total SKU: <b>29 produk</b></span>
     <span>Total Unit: <b id="heroTotalUnit">—</b></span>
     <span>Brand Aktif: <b id="heroBrandCount">—</b></span>
@@ -259,7 +259,7 @@
 <div id="tab-charts" class="section" style="display:none">
   <div class="chart-grid three" style="margin-bottom:18px">
     <div class="chart-card">
-      <h4>Top 10 Brand — Total Unit Q1 2026</h4>
+      <h4>Top 10 Brand — Total Unit Jan–Mei 2026</h4>
       <p class="chart-sub">Diurutkan dari terbanyak. Hover untuk detail per bulan.</p>
       <canvas id="cBrandBar"></canvas>
     </div>
@@ -276,7 +276,7 @@
       <canvas id="cBrandTrend"></canvas>
     </div>
     <div class="chart-card">
-      <h4>Growth Jan→Mar per Brand (%)</h4>
+      <h4>Growth Jan→Mei per Brand (%)</h4>
       <p class="chart-sub">Brand positif (hijau) vs negatif (merah)</p>
       <canvas id="cBrandGrowth"></canvas>
     </div>
@@ -288,7 +288,7 @@
   <div class="table-wrap">
     <div class="table-header">
       <div>
-        <h3>Perbandingan Brand — Q1 2026</h3>
+        <h3>Perbandingan Brand — Jan–Mei 2026</h3>
         <p>Klik header kolom untuk sort · <span id="tableCount">—</span> brand ditampilkan</p>
       </div>
       <input type="text" id="searchBrand" placeholder="Cari brand…" oninput="renderTable()" style="padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12.5px;width:180px">
@@ -304,6 +304,8 @@
           <th onclick="sortTable('jan')">Jan ↕</th>
           <th onclick="sortTable('feb')">Feb ↕</th>
           <th onclick="sortTable('mar')">Mar ↕</th>
+          <th onclick="sortTable('apr')">Apr ↕</th>
+          <th onclick="sortTable('may')">Mei ↕</th>
           <th onclick="sortTable('growth')">Growth ↕</th>
           <th onclick="sortTable('skus')">SKUs ↕</th>
           <th>Top Produk</th>
@@ -320,7 +322,7 @@
   <div id="categoryContent"></div>
 </div>
 
-<footer>ERA-CAM · Per Brand Scorecard · Q1 2026 · <b>Erajaya Campaign Monitoring</b></footer>
+<footer>ERA-CAM · Per Brand Scorecard · Q1–Q2 2026 · <b>Erajaya Campaign Monitoring</b></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="data_flyer_feb.js"></script>
@@ -397,11 +399,29 @@ function getBrandCategory(brand) {
   return allTablet ? 'Tablet' : 'Smartphone';
 }
 
+/* ===== APRIL DATA (dari Flyer April 118 toko) ===== */
+const APR_DATA = {"A6X":{"apr":2400,"may":1546},"A57 5G":{"apr":520,"may":762},"NOTE EDGE 5G":{"apr":474,"may":541},"RENO 15F":{"apr":515,"may":442},"A37 5G":{"apr":206,"may":419},"BAND":{"apr":184,"may":361},"V70 FE 5G":{"apr":292,"may":274},"XPAD 30 EDGE":{"apr":203,"may":269},"IPHONE 17":{"apr":339,"may":261},"V70 5G":{"apr":245,"may":194},"TAB A11+":{"apr":181,"may":165},"S26 ULTRA":{"apr":70,"may":162},"REALME 16 5G":{"apr":111,"may":156},"RENO 15 5G":{"apr":191,"may":148},"GROOVY":{"apr":77,"may":128},"X6C":{"apr":121,"may":117},"XIAOMI 17":{"apr":86,"may":98},"MI PAD 7":{"apr":83,"may":95},"C85 5G":{"apr":131,"may":93},"CAMON 50":{"apr":77,"may":81},"PAD 10":{"apr":65,"may":77},"IQ 15 R":{"apr":91,"may":72},"AIRPODS":{"apr":68,"may":69},"MATEPAD 12X 2026":{"apr":65,"may":67},"P80":{"apr":116,"may":66},"XIAOMI 17 ULTRA":{"apr":22,"may":58},"P80 PRO":{"apr":35,"may":44},"RENO 15 PRO MAX 5G":{"apr":27,"may":40},"IPAD AIR 11 M3":{"apr":33,"may":34},"CAMON 50 PRO":{"apr":24,"may":32},"FHD":{"apr":19,"may":24},"P80 ULTRA":{"apr":17,"may":23},"UHD":{"apr":19,"may":22},"IPAD AIR 13 M3":{"apr":15,"may":18},"MI PAD 7 PRO":{"apr":13,"may":11}};
+
+const APR_PRODUCT_BRAND = {
+  "A6X":"OPPO","A57 5G":"OPPO","RENO 15F":"OPPO","A37 5G":"OPPO","RENO 15 5G":"OPPO","RENO 15 PRO MAX 5G":"OPPO",
+  "NOTE EDGE 5G":"Infinix","XPAD 30 EDGE":"Infinix","GROOVY":"Infinix",
+  "BAND":"Xiaomi","XIAOMI 17":"Xiaomi","MI PAD 7":"Xiaomi","XIAOMI 17 ULTRA":"Xiaomi","MI PAD 7 PRO":"Xiaomi",
+  "V70 FE 5G":"vivo","V70 5G":"vivo",
+  "IPHONE 17":"Apple","AIRPODS":"Apple","IPAD AIR 11 M3":"Apple","IPAD AIR 13 M3":"Apple",
+  "TAB A11+":"Samsung","S26 ULTRA":"Samsung","UHD":"Samsung",
+  "REALME 16 5G":"realme",
+  "X6C":"HONOR","PAD 10":"HONOR",
+  "C85 5G":"TECNO","CAMON 50":"TECNO","CAMON 50 PRO":"TECNO",
+  "IQ 15 R":"iQOO",
+  "MATEPAD 12X 2026":"HUAWEI","P80":"HUAWEI","P80 PRO":"HUAWEI","P80 ULTRA":"HUAWEI",
+  "FHD":"Polytron"
+};
+
 /* ===== BUILD BRAND STATS ===== */
 function buildBrandStats() {
   const stats = {};
   for (const brand of Object.keys(BRAND_MAP)) {
-    stats[brand] = { brand, jan:0, feb:0, mar:0, products:{}, skus: BRAND_MAP[brand].length };
+    stats[brand] = { brand, jan:0, feb:0, mar:0, apr:0, may:0, products:{}, skus: BRAND_MAP[brand].length };
     for (const p of BRAND_MAP[brand]) stats[brand].products[p] = {jan:0,feb:0,mar:0};
   }
   for (const store of flyerFebStores) {
@@ -419,9 +439,21 @@ function buildBrandStats() {
       }
     }
   }
+  // Tambahkan April & Mei dari data Flyer April
+  for (const [prod, val] of Object.entries(APR_DATA)) {
+    const brand = APR_PRODUCT_BRAND[prod];
+    if (!brand) continue;
+    if (!stats[brand]) {
+      stats[brand] = { brand, jan:0, feb:0, mar:0, apr:0, may:0, products:{}, skus:0, kategori:'Smartphone' };
+    }
+    stats[brand].apr += (val.apr||0);
+    stats[brand].may += (val.may||0);
+  }
   return Object.values(stats).map(d => {
-    d.total = d.jan + d.feb + d.mar;
-    d.growth = d.jan > 0 ? (d.mar - d.jan) / d.jan : 0;
+    d.total = d.jan + d.feb + d.mar + d.apr + d.may;
+    const last = d.may > 0 ? d.may : (d.apr > 0 ? d.apr : d.mar);
+    const first = d.jan > 0 ? d.jan : (d.feb > 0 ? d.feb : d.mar);
+    d.growth = first > 0 ? (last - first) / first : 0;
     d.kategori = getBrandCategory(d.brand);
     // Top product
     let topProd = null, topUnits = 0;
@@ -432,7 +464,7 @@ function buildBrandStats() {
     d.top_product = topProd;
     d.top_product_units = topUnits;
     return d;
-  }).sort((a,b) => b.total - a.total);
+  }).filter(d => d.total > 0).sort((a,b) => b.total - a.total);
 }
 
 const BRAND_STATS = buildBrandStats();
@@ -458,12 +490,12 @@ document.getElementById('kpiTabletPct').textContent = (tabTotal/GRAND_TOTAL*100)
 
 const fastest = [...BRAND_STATS].filter(b=>b.jan>0).sort((a,b)=>b.growth-a.growth)[0];
 document.getElementById('kpiFastest').textContent = fastest.brand;
-document.getElementById('kpiFastestGrowth').textContent = fmtPct(fastest.growth) + ' Jan→Mar';
+document.getElementById('kpiFastestGrowth').textContent = fmtPct(fastest.growth) + ' Jan→Mei';
 
 const allProds = [];
 for (const b of BRAND_STATS) {
   for (const [p,d] of Object.entries(b.products)) {
-    allProds.push({product:p,total:d.jan+d.feb+d.mar,brand:b.brand});
+    allProds.push({product:p,total:d.jan+d.feb+d.mar+(b.apr||0)+(b.may||0),brand:b.brand});
   }
 }
 allProds.sort((a,b)=>b.total-a.total);
@@ -526,15 +558,17 @@ function renderBrandCards() {
         </div>
       </div>
       <div class="brand-total" style="color:${color}">${fmt(b.total)}</div>
-      <div class="brand-unit-label">Unit Q1 2026 · ${(b.total/GRAND_TOTAL*100).toFixed(1)}% share</div>
+      <div class="brand-unit-label">Unit Jan–Mei 2026 · ${(b.total/GRAND_TOTAL*100).toFixed(1)}% share</div>
       <div class="brand-months">
         <div class="month-box"><div class="ml">JAN</div><div class="mv">${fmt(b.jan)}</div></div>
         <div class="month-box"><div class="ml">FEB</div><div class="mv">${fmt(b.feb)}</div></div>
         <div class="month-box"><div class="ml">MAR</div><div class="mv">${fmt(b.mar)}</div></div>
+        <div class="month-box"><div class="ml">APR</div><div class="mv">${fmt(b.apr)}</div></div>
+        <div class="month-box"><div class="ml">MEI</div><div class="mv">${fmt(b.may)}</div></div>
       </div>
       <div class="mini-bar"><div class="mini-bar-fill" style="width:${(b.total/maxTotal*100).toFixed(1)}%;background:${color}"></div></div>
       <div class="brand-growth">
-        <span class="brand-growth-label">Growth Jan→Mar</span>
+        <span class="brand-growth-label">Growth Jan→Mei</span>
         <span class="brand-growth-val ${growthUp?'up':'dn'}">${growthUp?'▲':'▼'} ${fmtPct(b.growth)}</span>
       </div>
       ${b.top_product ? `<div class="brand-top-prod">🏆 ${b.top_product} (${fmt(b.top_product_units)} unit)</div>` : ''}
@@ -558,7 +592,9 @@ function buildCharts() {
       datasets:[
         {label:'Jan',data:top10.map(b=>b.jan),backgroundColor:'#3a86ff88',borderRadius:3},
         {label:'Feb',data:top10.map(b=>b.feb),backgroundColor:'#f4a11d88',borderRadius:3},
-        {label:'Mar',data:top10.map(b=>b.mar),backgroundColor:'#2dc65388',borderRadius:3}
+        {label:'Mar',data:top10.map(b=>b.mar),backgroundColor:'#2dc65388',borderRadius:3},
+        {label:'Apr',data:top10.map(b=>b.apr),backgroundColor:'#7c3aed88',borderRadius:3},
+        {label:'Mei',data:top10.map(b=>b.may),backgroundColor:'#e6394688',borderRadius:3}
       ]
     },
     options:{
@@ -598,10 +634,10 @@ function buildCharts() {
   new Chart(document.getElementById('cBrandTrend'), {
     type:'line',
     data:{
-      labels:['Januari','Februari','Maret'],
+      labels:['Januari','Februari','Maret','April','Mei'],
       datasets: top8.map((b,i) => ({
         label:b.brand,
-        data:[b.jan,b.feb,b.mar],
+        data:[b.jan,b.feb,b.mar,b.apr,b.may],
         borderColor: BRAND_COLORS[b.brand]||PALETTE[i],
         backgroundColor:(BRAND_COLORS[b.brand]||PALETTE[i])+'22',
         tension:0.3, pointRadius:5, fill:false
@@ -621,7 +657,7 @@ function buildCharts() {
     data:{
       labels:sorted.map(b=>b.brand),
       datasets:[{
-        label:'Growth Jan→Mar',
+        label:'Growth Jan→Mei',
         data:sorted.map(b=>+(b.growth*100).toFixed(1)),
         backgroundColor:sorted.map(b=>b.growth>=0?'#2dc65388':'#e6394688'),
         borderColor:sorted.map(b=>b.growth>=0?'#2dc653':'#e63946'),
@@ -677,6 +713,8 @@ function renderTable() {
       <td>${fmt(b.jan)}</td>
       <td>${fmt(b.feb)}</td>
       <td>${fmt(b.mar)}</td>
+      <td>${fmt(b.apr)}</td>
+      <td>${fmt(b.may)}</td>
       <td><span class="growth-badge ${growthUp?'up':'dn'}">${growthUp?'▲':'▼'} ${fmtPct(b.growth)}</span></td>
       <td style="text-align:center">${b.skus}</td>
       <td style="font-size:11px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.top_product||'—'}</td>
@@ -716,9 +754,11 @@ function buildCategoryTab() {
               <div class="month-box"><div class="ml">JAN</div><div class="mv">${fmt(b.jan)}</div></div>
               <div class="month-box"><div class="ml">FEB</div><div class="mv">${fmt(b.feb)}</div></div>
               <div class="month-box"><div class="ml">MAR</div><div class="mv">${fmt(b.mar)}</div></div>
+              <div class="month-box"><div class="ml">APR</div><div class="mv">${fmt(b.apr)}</div></div>
+              <div class="month-box"><div class="ml">MEI</div><div class="mv">${fmt(b.may)}</div></div>
             </div>
             <div class="brand-growth">
-              <span class="brand-growth-label">Growth Jan→Mar</span>
+              <span class="brand-growth-label">Growth Jan→Mei</span>
               <span class="brand-growth-val ${growthUp?'up':'dn'}">${growthUp?'▲':'▼'} ${fmtPct(b.growth)}</span>
             </div>
             ${b.top_product?`<div class="brand-top-prod">🏆 ${b.top_product}</div>`:''}

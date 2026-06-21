@@ -866,7 +866,7 @@ function renderTable(filtered) {
       <td class="tbl-num"><span class="${roiClass}">${roi !== null ? roi+'x' : '—'}</span></td>
       <td><span class="status-badge ${STS_CLASS[c.status]||''}">${c.status}</span></td>
       <td style="font-size:11.5px;color:var(--muted);max-width:200px;line-height:1.4">${c.catatan}</td>
-      <td>${c._fromLS ? `<button class="delete-row-btn" onclick="deleteLsCampaign('${c.id}')">🗑 Hapus</button>` : ''}</td>
+      <td><button class="delete-row-btn" onclick="deleteAnyCampaign('${c.id}',${!!c._fromLS})">${c._fromLS ? '🗑 Hapus' : '🗑'}</button></td>
     </tr>`;
   }).join('');
   document.getElementById('registryBody').innerHTML = rows || '<tr><td colspan="13" style="text-align:center;padding:24px;color:var(--muted)">Tidak ada campaign untuk filter ini</td></tr>';
@@ -885,7 +885,7 @@ function renderTable(filtered) {
     <td class="tbl-num">${fmtM(totalInv)}</td>
     <td class="tbl-num"><span class="${totalRev>=0?'roi-positive':'roi-negative'}">${fmtM(totalRev)}</span></td>
     <td class="tbl-num"><span class="${parseFloat(blended)>=0||blended==='—'?'roi-positive':''}">${blended}</span></td>
-    <td colspan="2"></td>`;
+    <td colspan="3"></td>`;
 }
 
 // ─── AI ANALYSIS ─────────────────────────────────────────────────────────────
@@ -1050,6 +1050,14 @@ function deleteLsCampaign(id) {
   lsSave(arr);
   renderAll();
   showToast('Campaign dihapus.', 'success');
+}
+
+function deleteAnyCampaign(id, fromLS) {
+  if (fromLS) {
+    deleteLsCampaign(id);
+  } else {
+    alert('Campaign dari data.js tidak bisa dihapus langsung di sini.\nHapus entri dengan ID "' + id + '" di file dashboard/data.js → campaignRegistry.');
+  }
 }
 
 function showToast(msg, type='success') {

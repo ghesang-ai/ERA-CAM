@@ -509,7 +509,6 @@ footer b{color:var(--gold);}
             <th>Bln / Quarter</th>
             <th class="tbl-num">Toko</th>
             <th class="tbl-num">Biaya Cetak</th>
-            <th class="tbl-num">Total Investasi</th>
             <th class="tbl-num">Revenue Inc.</th>
             <th class="tbl-num">ROI Cetak</th>
             <th>Status</th>
@@ -861,7 +860,6 @@ function renderTable(filtered) {
       </td>
       <td class="tbl-num" style="font-weight:700">${c.jumlah_toko.toLocaleString('id-ID')}</td>
       <td class="tbl-num" style="color:var(--amber);font-weight:700">${fmtM(c.biaya_cetak)}</td>
-      <td class="tbl-num" style="font-weight:700">${fmtM(totalInv)}</td>
       <td class="tbl-num"><span class="${c.revenue_increment>=0?'roi-positive':'roi-negative'}">${fmtM(c.revenue_increment)}</span></td>
       <td class="tbl-num"><span class="${roiClass}">${roi !== null ? roi+'x' : '—'}</span></td>
       <td><span class="status-badge ${STS_CLASS[c.status]||''}">${c.status}</span></td>
@@ -869,7 +867,7 @@ function renderTable(filtered) {
       <td><button class="delete-row-btn" onclick="deleteAnyCampaign('${c.id}',${!!c._fromLS})">${c._fromLS ? '🗑 Hapus' : '🗑'}</button></td>
     </tr>`;
   }).join('');
-  document.getElementById('registryBody').innerHTML = rows || '<tr><td colspan="13" style="text-align:center;padding:24px;color:var(--muted)">Tidak ada campaign untuk filter ini</td></tr>';
+  document.getElementById('registryBody').innerHTML = rows || '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--muted)">Tidak ada campaign untuk filter ini</td></tr>';
 
   // Footer totals
   const totalCetak = filtered.reduce((s,c)=>s+c.biaya_cetak,0);
@@ -882,7 +880,6 @@ function renderTable(filtered) {
     <td colspan="4" style="color:var(--muted)">TOTAL · ${filtered.length} campaign</td>
     <td class="tbl-num">${totalOutlet}</td>
     <td class="tbl-num" style="color:var(--amber)">${fmtM(totalCetak)}</td>
-    <td class="tbl-num">${fmtM(totalInv)}</td>
     <td class="tbl-num"><span class="${totalRev>=0?'roi-positive':'roi-negative'}">${fmtM(totalRev)}</span></td>
     <td class="tbl-num"><span class="${parseFloat(blended)>=0||blended==='—'?'roi-positive':''}">${blended}</span></td>
     <td colspan="3"></td>`;

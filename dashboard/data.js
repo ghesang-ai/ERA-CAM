@@ -353,7 +353,7 @@ const campaignRegistry = [
     jumlah_toko:        1,
     biaya_cetak:        biayaProduksiCetak.umbulUmbul.total,     // 2.250.000
     biaya_media:        0,
-    revenue_increment:  umbulData[0].sales_during_rev - umbulData[0].sales_before_rev, // -236.305.056
+    revenue_increment:  0,
     status:             "Selesai",
     catatan:            "Samsung SEP Serpong Paradise Walk · brand awareness campaign",
   },

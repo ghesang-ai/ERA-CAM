@@ -1005,9 +1005,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('fBiayaCetak')?.addEventListener('input', e => {
     document.getElementById('rpCetakDisplay').textContent = fmtRpInput(e.target.value);
   });
-  document.getElementById('fRevInc')?.addEventListener('input', e => {
-    document.getElementById('rpRevDisplay').textContent = fmtRpInput(e.target.value);
-  });
   document.getElementById('addModal')?.addEventListener('click', e => {
     if (e.target === e.currentTarget) closeModal();
   });
@@ -1034,7 +1031,7 @@ function submitCampaign(e) {
     jumlah_toko: parseInt(document.getElementById('fJumlahToko').value) || 0,
     biaya_cetak: parseInt(document.getElementById('fBiayaCetak').value.replace(/\D/g,'')) || 0,
     biaya_media: 0,
-    revenue_increment: parseInt(document.getElementById('fRevInc').value.replace(/\D/g,'')) || 0,
+    revenue_increment: 0,
     status: document.getElementById('fStatus').value,
     catatan: document.getElementById('fCatatan').value.trim(),
   };
@@ -1117,7 +1114,7 @@ function showToast(msg, type='success') {
             </select>
           </div>
         </div>
-        <div class="mf-row">
+        <div class="mf-row full">
           <div class="mf-group">
             <label>Biaya Cetak (Rp)</label>
             <div class="rp-wrap">
@@ -1125,14 +1122,6 @@ function showToast(msg, type='success') {
               <input class="mf-input" id="fBiayaCetak" type="number" min="0" placeholder="0">
             </div>
             <div class="rp-display" id="rpCetakDisplay"></div>
-          </div>
-          <div class="mf-group">
-            <label>Revenue Increment (Rp)</label>
-            <div class="rp-wrap">
-              <span class="rp-prefix">Rp</span>
-              <input class="mf-input" id="fRevInc" type="number" min="0" placeholder="0">
-            </div>
-            <div class="rp-display" id="rpRevDisplay"></div>
           </div>
         </div>
         <div class="mf-row full">
